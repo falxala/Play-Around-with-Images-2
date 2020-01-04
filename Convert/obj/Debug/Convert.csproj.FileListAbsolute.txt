@@ -1,0 +1,55 @@
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\bin\Debug\Convert for twitterv.exe.config
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\bin\Debug\Convert for twitterv.exe
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\bin\Debug\Convert for twitterv.pdb
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\bin\Debug\AsyncEnumerable.dll
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\bin\Debug\Magick.NET-Q16-AnyCPU.dll
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\bin\Debug\Microsoft.Xaml.Behaviors.dll
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\bin\Debug\System.Threading.Tasks.Extensions.dll
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\bin\Debug\AsyncEnumerable.xml
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\bin\Debug\Magick.NET-Q16-AnyCPU.xml
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\bin\Debug\Microsoft.Xaml.Behaviors.pdb
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\bin\Debug\Microsoft.Xaml.Behaviors.xml
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\bin\Debug\System.Threading.Tasks.Extensions.xml
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\obj\Debug\MainWindow.g.cs
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\obj\Debug\SubWindow.g.cs
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\obj\Debug\App.g.cs
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\obj\Debug\Convert for twitterv_MarkupCompile.cache
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\obj\Debug\Convert for twitterv_MarkupCompile.lref
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\obj\Debug\MainWindow.baml
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\obj\Debug\SubWindow.baml
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\obj\Debug\Convert for twitterv.g.resources
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\obj\Debug\Convert_for_twitterv.Properties.Resources.resources
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\obj\Debug\Convert.csproj.GenerateResource.cache
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\obj\Debug\Convert.csproj.CopyComplete
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\obj\Debug\Convert for twitterv.exe
+C:\Users\fortia\source\repos\Convert for twitter\Convert for twitterv\obj\Debug\Convert for twitterv.pdb
+C:\Users\fortia\source\repos\Convert for twitter\Convert\obj\Debug\MainWindow.g.cs
+C:\Users\fortia\source\repos\Convert for twitter\Convert\obj\Debug\SubWindow.g.cs
+C:\Users\fortia\source\repos\Convert for twitter\Convert\obj\Debug\App.g.cs
+C:\Users\fortia\source\repos\Convert for twitter\Convert\obj\Debug\Convert for twitterv_MarkupCompile.cache
+C:\Users\fortia\source\repos\Convert for twitter\Convert\obj\Debug\Convert for twitterv_MarkupCompile.lref
+C:\Users\fortia\source\repos\Convert for twitter\Convert\bin\Debug\Convert for twitterv.exe.config
+C:\Users\fortia\source\repos\Convert for twitter\Convert\bin\Debug\Convert for twitterv.exe
+C:\Users\fortia\source\repos\Convert for twitter\Convert\bin\Debug\Convert for twitterv.pdb
+C:\Users\fortia\source\repos\Convert for twitter\Convert\bin\Debug\AsyncEnumerable.dll
+C:\Users\fortia\source\repos\Convert for twitter\Convert\bin\Debug\Magick.NET-Q16-AnyCPU.dll
+C:\Users\fortia\source\repos\Convert for twitter\Convert\bin\Debug\Microsoft.Xaml.Behaviors.dll
+C:\Users\fortia\source\repos\Convert for twitter\Convert\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\fortia\source\repos\Convert for twitter\Convert\bin\Debug\System.Threading.Tasks.Extensions.dll
+C:\Users\fortia\source\repos\Convert for twitter\Convert\bin\Debug\AsyncEnumerable.xml
+C:\Users\fortia\source\repos\Convert for twitter\Convert\bin\Debug\Magick.NET-Q16-AnyCPU.xml
+C:\Users\fortia\source\repos\Convert for twitter\Convert\bin\Debug\Microsoft.Xaml.Behaviors.pdb
+C:\Users\fortia\source\repos\Convert for twitter\Convert\bin\Debug\Microsoft.Xaml.Behaviors.xml
+C:\Users\fortia\source\repos\Convert for twitter\Convert\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+C:\Users\fortia\source\repos\Convert for twitter\Convert\bin\Debug\System.Threading.Tasks.Extensions.xml
+C:\Users\fortia\source\repos\Convert for twitter\Convert\obj\Debug\MainWindow.baml
+C:\Users\fortia\source\repos\Convert for twitter\Convert\obj\Debug\SubWindow.baml
+C:\Users\fortia\source\repos\Convert for twitter\Convert\obj\Debug\Convert for twitterv.g.resources
+C:\Users\fortia\source\repos\Convert for twitter\Convert\obj\Debug\Convert_for_twitterv.Properties.Resources.resources
+C:\Users\fortia\source\repos\Convert for twitter\Convert\obj\Debug\Convert.csproj.GenerateResource.cache
+C:\Users\fortia\source\repos\Convert for twitter\Convert\obj\Debug\Convert.csproj.CopyComplete
+C:\Users\fortia\source\repos\Convert for twitter\Convert\obj\Debug\Convert for twitterv.exe
+C:\Users\fortia\source\repos\Convert for twitter\Convert\obj\Debug\Convert for twitterv.pdb
+C:\Users\fortia\source\repos\Convert for twitter\Convert\obj\Debug\Convert.csprojAssemblyReference.cache
