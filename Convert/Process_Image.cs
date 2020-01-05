@@ -133,7 +133,15 @@ namespace PlayAroundwithImages2
 
                 using (var myMagick = new ImageMagick.MagickImage(filepath,myMagicReadkSettings))
                 {
-                    myMagick.Alpha(ImageMagick.AlphaOption.Remove);
+                    
+                    if(myMagick.Format == ImageMagick.MagickFormat.Jpeg)
+                    {
+                        myMagick.Alpha(ImageMagick.AlphaOption.Remove);
+                    }
+                    else
+                    {
+                        myMagick.Alpha(ImageMagick.AlphaOption.Activate);
+                    }
 
                     //リサイズ・変形
                     if (!option.Transform)
@@ -216,6 +224,7 @@ namespace PlayAroundwithImages2
             strs[5] = (myMagickInfo.Density.X.ToString());
             strs[6] = (myMagickInfo.Density.Y.ToString());
             strs[7] = (myMagickInfo.Density.Units.ToString());
+            strs[8] = (myMagickInfo.Compression.ToString());
 
             var myMagickSettings = new ImageMagick.MagickReadSettings();
 

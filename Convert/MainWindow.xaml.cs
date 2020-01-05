@@ -45,7 +45,7 @@ namespace PlayAroundwithImages2
             selected_TextB.Text = "";
             MaxDegreeOfParallelism(70.0);
 
-            cnvOption.SaveDirectory = @"./outputs";
+            cnvOption.SaveDirectory = System.Environment.CurrentDirectory + "\\outputs";
         }
 
         readonly int CpuCount = Environment.ProcessorCount;
@@ -451,6 +451,7 @@ namespace PlayAroundwithImages2
         private void limit_filesize_tb_TextChanged(object sender, TextChangedEventArgs e)
         {
             SetSliderFromText(Slider1, limit_filesize_tb);
+            Subwin.ComboBox_extension.SelectedIndex = 5;
         }
 
         private void limit_longside_tb_TextChanged(object sender, TextChangedEventArgs e)
@@ -644,7 +645,6 @@ namespace PlayAroundwithImages2
         {
             cnvOption.Filesize = Double.Parse(limit_filesize_tb.Text);
             cnvOption.Size = new System.Drawing.Size(Int32.Parse(limit_longside_tb.Text), Int32.Parse(limit_longside_tb.Text));
-            cnvOption.Format = ImageMagick.MagickFormat.Jpeg;
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)

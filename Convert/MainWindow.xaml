@@ -6,7 +6,7 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:b="clr-namespace:Experiment.Wpf.Behaviors"
         xmlns:local="clr-namespace:PlayAroundwithImages2"
-        mc:Ignorable="d" Height="600" Width="750" MinWidth="750" Loaded="Window_Loaded" MinHeight="600" Background="#FFC8C8C8" Title="Play Around with Images 2" LocationChanged="Window_LocationChanged" SizeChanged="Window_SizeChanged" Closing="Window_Closing">
+        mc:Ignorable="d" Height="600" Width="750" MinWidth="750" Loaded="Window_Loaded" MinHeight="600" Background="#FF464646" Title="Play Around with Images 2" LocationChanged="Window_LocationChanged" SizeChanged="Window_SizeChanged" Closing="Window_Closing">
 
     <Window.CommandBindings>
         <CommandBinding Command="Paste" Executed="OnCtrlV"/>
@@ -64,17 +64,17 @@
         </Border>
         <Button x:Name="Select_All_Button" Style="{StaticResource HoverButtonStyle}" Content="Select All" Margin="0,5,167,0" VerticalAlignment="Top" Click="Select_All_Button_Click" HorizontalAlignment="Right" Width="76" Foreground="White" Height="20"/>
         <Button x:Name="Deselect_All_Button" Style="{StaticResource HoverButtonStyle}" Content="Clear Select" Margin="0,5,86,0" VerticalAlignment="Top" Click="Deselect_All_Button_Click" HorizontalAlignment="Right" Width="76" Foreground="White" Height="20"/>
-        <Slider x:Name="Slider1" Margin="0,413,10,0" VerticalAlignment="Top" ValueChanged="Slider_ValueChanged" FontSize="14" Height="22" HorizontalAlignment="Right" Width="254" Grid.Column="1"/>
-        <TextBox x:Name="limit_filesize_tb" Height="27" Margin="174,381,0,0" TextWrapping="Wrap" Text="5" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" HorizontalAlignment="Left" Width="50" TextChanged="limit_filesize_tb_TextChanged" Grid.Column="1" PreviewTextInput="limit_filesize_tb_PreviewTextInput"/>
-        <Label Content="Limit File Size (JPEG)" Margin="5,377,0,0" VerticalAlignment="Top" Height="32" FontSize="14" VerticalContentAlignment="Stretch" HorizontalAlignment="Left" Width="164" Grid.Column="1"/>
-        <Label Content="MB" Margin="0,381,10,0" VerticalAlignment="Top" Height="28" FontSize="14" HorizontalContentAlignment="Center" HorizontalAlignment="Right" Width="40" Grid.Column="1"/>
+        <Slider x:Name="Slider1" Margin="0,0,10,134" ValueChanged="Slider_ValueChanged" FontSize="14" HorizontalAlignment="Right" Width="254" Grid.Column="1" Height="22" VerticalAlignment="Bottom"/>
+        <TextBox x:Name="limit_filesize_tb" Margin="174,0,0,161" TextWrapping="Wrap" Text="5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" HorizontalAlignment="Left" Width="50" TextChanged="limit_filesize_tb_TextChanged" Grid.Column="1" PreviewTextInput="limit_filesize_tb_PreviewTextInput" Height="27" VerticalAlignment="Bottom"/>
+        <Label Content="Limit File Size (JPEG)" Margin="5,0,0,160" FontSize="14" VerticalContentAlignment="Stretch" HorizontalAlignment="Left" Width="164" Grid.Column="1" Height="32" VerticalAlignment="Bottom" Foreground="White"/>
+        <Label Content="MB" Margin="0,0,10,160" FontSize="14" HorizontalContentAlignment="Center" HorizontalAlignment="Right" Width="40" Grid.Column="1" Height="28" VerticalAlignment="Bottom" Foreground="White"/>
         <Button x:Name="Convert_Button" Style="{StaticResource HoverButtonStyle}" Content="CONVERT &amp; COPY" Margin="0,0,75,10" FontSize="18" Click="Convert_Button_Click" HorizontalAlignment="Right" Width="189" Height="51" VerticalAlignment="Bottom" Background="#FF999999" Foreground="White" BorderBrush="#FF382F2F" Grid.Column="1" ToolTip="変換を実行し結果をクリップボードにコピーします" ToolTipService.InitialShowDelay ="500">
         </Button>
-        <Slider x:Name="Slider2" Margin="0,472,10,0" VerticalAlignment="Top" ValueChanged="Slider2_ValueChanged" FontSize="14" Height="22" HorizontalAlignment="Right" Width="254" Maximum="8192" SmallChange="1" Grid.Column="1"/>
-        <TextBox x:Name="limit_longside_tb" Height="27" Margin="0,441,50,0" TextWrapping="Wrap" Text="4096" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" HorizontalAlignment="Right" Width="75" TextChanged="limit_longside_tb_TextChanged" Grid.Column="1" PreviewTextInput="limit_longside_tb_PreviewTextInput"/>
-        <Label Content="Long Sides Pixel" Margin="5,440,0,0" VerticalAlignment="Top" Height="32" FontSize="14" VerticalContentAlignment="Stretch" HorizontalAlignment="Left" Width="113" Grid.Column="1"/>
-        <Label Content="px" Margin="0,440,10,0" VerticalAlignment="Top" Height="28" FontSize="14" HorizontalContentAlignment="Center" HorizontalAlignment="Right" Width="40" Grid.Column="1"/>
-        <ListView x:Name="Image_ListView" ItemsSource="{Binding drop_Images}" Margin="10,32,5,10" DragEnter="Image_ListView_DragEnter" Drop="Image_ListView_Drop" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="Image_ListView_SelectionChanged" Foreground="Black" BorderBrush="Black" Background="White">
+        <Slider x:Name="Slider2" Margin="0,0,10,75" ValueChanged="Slider2_ValueChanged" FontSize="14" HorizontalAlignment="Right" Width="254" Maximum="8192" SmallChange="1" Grid.Column="1" Height="22" VerticalAlignment="Bottom"/>
+        <TextBox x:Name="limit_longside_tb" Margin="0,0,50,101" TextWrapping="Wrap" Text="4096" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" HorizontalAlignment="Right" Width="75" TextChanged="limit_longside_tb_TextChanged" Grid.Column="1" PreviewTextInput="limit_longside_tb_PreviewTextInput" Height="27" VerticalAlignment="Bottom"/>
+        <Label Content="Long Sides Pixel" Margin="5,0,0,97" FontSize="14" VerticalContentAlignment="Stretch" HorizontalAlignment="Left" Width="113" Grid.Column="1" Height="32" VerticalAlignment="Bottom" Foreground="White"/>
+        <Label Content="px" Margin="0,0,10,101" FontSize="14" HorizontalContentAlignment="Center" HorizontalAlignment="Right" Width="40" Grid.Column="1" Height="28" VerticalAlignment="Bottom" Foreground="White"/>
+        <ListView x:Name="Image_ListView" ItemsSource="{Binding drop_Images}" Margin="10,32,5,10" DragEnter="Image_ListView_DragEnter" Drop="Image_ListView_Drop" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="Image_ListView_SelectionChanged" Foreground="White" BorderBrush="Black" Background="#FF636363" ScrollViewer.VerticalScrollBarVisibility="Auto">
             <ListView.ContextMenu>
                 <ContextMenu>
                     <MenuItem x:Name="ListView_CntxtMenu" Header="Paste from clipboard" Click="ListView_CntxtMenu_paste_Click"/>
@@ -95,19 +95,19 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <TextBlock x:Name="dropHere_Text" Margin="10,266,10,241" TextWrapping="Wrap" Text="Drop files here" FontSize="36" FontFamily="Dubai Medium" Foreground="#FF979797" DragEnter="Image_ListView_DragEnter" Drop="Image_ListView_Drop" AllowDrop="True" Height="62" Width="658" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center">
+        <TextBlock x:Name="dropHere_Text" Margin="10,266,10,241" TextWrapping="Wrap" Text="Drop files here" FontSize="36" FontFamily="Dubai Medium" Foreground="#FFCFCFCF" DragEnter="Image_ListView_DragEnter" Drop="Image_ListView_Drop" AllowDrop="True" Height="62" Width="658" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center">
             <TextBlock.ContextMenu>
                 <ContextMenu>
                     <MenuItem  Header="Paste from clipboard" Click="ListView_CntxtMenu_paste_Click"/>
                 </ContextMenu>
             </TextBlock.ContextMenu>
         </TextBlock>
-        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="83" Margin="5,286,0,0" VerticalAlignment="Top" Width="259" Grid.Column="1">
-            <TextBlock x:Name="path_textB" Margin="2,1" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" LineStackingStrategy="BlockLineHeight" FontSize="14"><Run Text="["/><Run Text="Path"/><Run Text="]"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Margin="5,286,0,200" Width="259" Grid.Column="1">
+            <TextBlock x:Name="path_textB" Margin="2,1" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" LineStackingStrategy="BlockLineHeight" FontSize="14" Foreground="White"><Run Text="["/><Run Text="Path"/><Run Text="]"/>
             </TextBlock>
         </Border>
         <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="77" Margin="5,204,0,0" VerticalAlignment="Top" Width="259" Grid.Column="1">
-            <TextBlock x:Name="Detail_textB" Margin="2,-1" TextWrapping="Wrap" FontSize="14"><Run Text="["/><Run Text="Detail"/><Run Text="s]"/></TextBlock>
+            <TextBlock x:Name="Detail_textB" Margin="2,-1" TextWrapping="Wrap" FontSize="14" Foreground="White"><Run Text="["/><Run Text="Detail"/><Run Text="s]"/></TextBlock>
         </Border>
         <Button x:Name="SettingWindow_Button" Style="{StaticResource HoverButtonStyle}" Content="&gt;&gt;" Margin="0,0,10,10" FontSize="18" HorizontalAlignment="Right" Width="60" Height="51" VerticalAlignment="Bottom" Background="#FF8F8F8F" Foreground="White" BorderBrush="#FF404040" Grid.Column="1" Click="SettingWindow_Button_Click">
             <ToolTipService.ToolTip>
@@ -115,9 +115,9 @@
             </ToolTipService.ToolTip>
         </Button>
         <Border BorderBrush="Black" BorderThickness="1" Height="194" Margin="0,5,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="259" Grid.Column="1">
-            <TextBlock x:Name="selected_TextB" TextWrapping="WrapWithOverflow" Text="TextBlock" FontSize="18" Margin="9,-1" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" LineStackingStrategy="BlockLineHeight"/>
+            <TextBlock x:Name="selected_TextB" TextWrapping="WrapWithOverflow" Text="TextBlock" FontSize="18" Margin="9,-1" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" LineStackingStrategy="BlockLineHeight" Foreground="White"/>
         </Border>
-        <CheckBox x:Name="Multiple_ChkBox" Content="Multiple" Height="16" Margin="10,9,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Checked="CheckBox_Checked" Unchecked="Multiple_ChkBox_Unchecked"/>
+        <CheckBox x:Name="Multiple_ChkBox" Content="Multiple" Height="16" Margin="10,9,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Checked="CheckBox_Checked" Unchecked="Multiple_ChkBox_Unchecked" Foreground="White"/>
     </Grid>
 
 </Window>

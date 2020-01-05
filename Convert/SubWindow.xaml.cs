@@ -54,7 +54,6 @@ namespace PlayAroundwithImages2
                     {
                         string name = Enum.GetName(typeof(ImageMagick.MagickFormat), Value);
                         ComboBox_extension.Items.Add(new ItemSet((int)Value, name));
-                        //Console.WriteLine("{0}：{1}", name, (int)Value);
                     }
                 }
             }
