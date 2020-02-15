@@ -1,0 +1,39 @@
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Release\PlayAroundwithImages2.exe.config
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Release\PlayAroundwithImages2.exe
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Release\PlayAroundwithImages2.pdb
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Release\AsyncEnumerable.dll
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Release\Magick.NET-Q16-AnyCPU.dll
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Release\Microsoft.WindowsAPICodePack.dll
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Release\Microsoft.WindowsAPICodePack.Shell.dll
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Release\Microsoft.WindowsAPICodePack.ShellExtensions.dll
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Release\Microsoft.Xaml.Behaviors.dll
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Release\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Release\System.Threading.Tasks.Extensions.dll
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Release\ToggleSwitch.dll
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Release\AsyncEnumerable.xml
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Release\Magick.NET-Q16-AnyCPU.xml
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Release\Microsoft.WindowsAPICodePack.pdb
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Release\Microsoft.WindowsAPICodePack.xml
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Release\Microsoft.WindowsAPICodePack.Shell.pdb
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Release\Microsoft.WindowsAPICodePack.Shell.xml
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Release\Microsoft.WindowsAPICodePack.ShellExtensions.pdb
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Release\Microsoft.WindowsAPICodePack.ShellExtensions.xml
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Release\Microsoft.Xaml.Behaviors.pdb
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Release\Microsoft.Xaml.Behaviors.xml
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Release\System.Runtime.CompilerServices.Unsafe.xml
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Release\System.Threading.Tasks.Extensions.xml
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Release\Play Around with Images 2.csprojAssemblyReference.cache
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Release\MainWindow.g.cs
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Release\SubWindow.g.cs
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Release\App.g.cs
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Release\PlayAroundwithImages2_Content.g.cs
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Release\PlayAroundwithImages2_MarkupCompile.cache
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Release\PlayAroundwithImages2_MarkupCompile.lref
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Release\MainWindow.baml
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Release\SubWindow.baml
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Release\PlayAroundwithImages2.g.resources
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Release\PlayAroundwithImages2.Properties.Resources.resources
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Release\Play Around with Images 2.csproj.GenerateResource.cache
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Release\Play Around with Images 2.csproj.CopyComplete
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Release\PlayAroundwithImages2.exe
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Release\PlayAroundwithImages2.pdb

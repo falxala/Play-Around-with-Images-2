@@ -1,0 +1,37 @@
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Debug\Magick.Native-Q16-OpenMP-x64.dll
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Debug\PlayAroundwithImages2.exe.config
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Debug\PlayAroundwithImages2.exe
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Debug\AsyncEnumerable.dll
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Debug\Magick.NET-Q16-OpenMP-x64.dll
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Debug\Microsoft.WindowsAPICodePack.dll
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Debug\Microsoft.WindowsAPICodePack.Shell.dll
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Debug\Microsoft.WindowsAPICodePack.ShellExtensions.dll
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Debug\Microsoft.Xaml.Behaviors.dll
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Debug\System.Threading.Tasks.Extensions.dll
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Debug\ToggleSwitch.dll
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Debug\AsyncEnumerable.xml
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Debug\Magick.NET-Q16-OpenMP-x64.xml
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Debug\Microsoft.WindowsAPICodePack.pdb
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Debug\Microsoft.WindowsAPICodePack.xml
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Debug\Microsoft.WindowsAPICodePack.Shell.pdb
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Debug\Microsoft.WindowsAPICodePack.Shell.xml
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Debug\Microsoft.WindowsAPICodePack.ShellExtensions.pdb
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Debug\Microsoft.WindowsAPICodePack.ShellExtensions.xml
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Debug\Microsoft.Xaml.Behaviors.pdb
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Debug\Microsoft.Xaml.Behaviors.xml
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\bin\Debug\System.Threading.Tasks.Extensions.xml
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Debug\MainWindow.g.cs
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Debug\SubWindow.g.cs
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Debug\App.g.cs
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Debug\PlayAroundwithImages2_Content.g.cs
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Debug\PlayAroundwithImages2_MarkupCompile.cache
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Debug\PlayAroundwithImages2_MarkupCompile.lref
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Debug\MainWindow.baml
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Debug\SubWindow.baml
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Debug\PlayAroundwithImages2.g.resources
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Debug\PlayAroundwithImages2.Properties.Resources.resources
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Debug\Play Around with Images 2 [OpenMP].csproj.GenerateResource.cache
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Debug\Play Around with Images 2 [OpenMP].csproj.CopyComplete
+C:\Users\fortia\source\repos\Play Around with Images 2\Convert\obj\Debug\PlayAroundwithImages2.exe

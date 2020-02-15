@@ -17,6 +17,7 @@ using System.Drawing;
 using System.IO;
 using Dasync.Collections;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace PlayAroundwithImages2
 {
@@ -26,7 +27,7 @@ namespace PlayAroundwithImages2
     /// </summary>
     public partial class MainWindow : Window
     {
-        ObservableCollection<Model.drop_Image> drop_Images = new ObservableCollection<Model.drop_Image>(); // コレクションのインスタンスを作る。
+        public ObservableCollection<Model.drop_Image> drop_Images = new ObservableCollection<Model.drop_Image>(); // コレクションのインスタンスを作る。
 
         public MainWindow()
         {
@@ -44,12 +45,15 @@ namespace PlayAroundwithImages2
             window.KeyDown += HandleKeyPress;
             selected_TextB.Text = "";
             MaxDegreeOfParallelism(70.0);
+            cnvOption.Format = ImageMagick.MagickFormat.Jpeg;
 
             cnvOption.SaveDirectory = System.Environment.CurrentDirectory + "\\outputs";
+            cnvOption.Transform = true;
         }
 
         readonly int CpuCount = Environment.ProcessorCount;
-        int DegreeOfParallelism = 1;
+        //同時変換数
+        public int DegreeOfParallelism = 1;
 
         /// <summary>
         ///　同時使用CPUスレッド数を設定
@@ -342,17 +346,36 @@ namespace PlayAroundwithImages2
         {
             selected_TextB.Text = addText;
             selected_TextB.Text += ((float)n / Count * 100).ToString("F2") + "%" + " ";
-            selected_TextB.Text += "[" + n + "/" + Count + "}";
+            selected_TextB.Text += "[" + n + "/" + Count + "]";
         }
 
         public Process_Image.ConvertOptions cnvOption = new Process_Image.ConvertOptions();
+
+        private CancellationTokenSource tokenSource = null;
         private async void Convert_Button_Click(object sender, RoutedEventArgs e)
         {
             //処理中に実行させない
             if (Working_Flag)
+            {
+                Stop();
+                Convert_Button.Content = "END PROCESSING...";
                 return;
+            }
+
+            Subwin.CheckMemory(out long deficiencyMemory, out bool checkValue, Image_ListView.SelectedItems, DegreeOfParallelism, cnvOption.Size);
+            //メモリチェック
+            if (!checkValue)
+            {
+                MessageBoxResult result = MessageBox.Show("物理メモリが " + ((float)deficiencyMemory / 1024).ToString("F2") + " GB " + "不足しています\r\nストレージを使用して続行しますか？",
+                "警告", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation, MessageBoxResult.Cancel);
+
+                if (result == MessageBoxResult.Cancel)
+                    return;
+            }
 
             Working_Flag = true;
+            Convert_Button.Content = "STOP";
+
             Clear_info();
 
             if (Subwin.Visibility == Visibility.Hidden)
@@ -381,10 +404,12 @@ namespace PlayAroundwithImages2
                 selected_TextB.Visibility = Visibility.Visible;
                 Progress(outputFileNames.Count, selected.Count, "PROCESSING\r\n");
 
-                await selected.ParallelForEachAsync(async item =>
+                using (this.tokenSource = new CancellationTokenSource())
+                {
+                    await selected.ParallelForEachAsync(async item =>
                 {
 
-                    var Result = await process_Image.Convert(item.Image_path, cnvOption);
+                    var Result = await process_Image.Convert(item.Image_path, cnvOption, tokenSource.Token);
                     outputFileNames.Add(Result);
                     this.Dispatcher.Invoke((Action)(() =>
                     {
@@ -394,10 +419,14 @@ namespace PlayAroundwithImages2
                     }));
 
                 }, maxDegreeOfParallelism: DegreeOfParallelism);
-
+                }
                 selected.Clear();
             }
-            catch(AggregateException ex)
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (AggregateException ex)
             {
                 Console.WriteLine(ex.StackTrace);
                 Console.WriteLine(ex.Message);
@@ -407,29 +436,47 @@ namespace PlayAroundwithImages2
                     Console.WriteLine(ex.GetType());
                     if (ex.GetType() == typeof(Dasync.Collections.ParallelForEachException))
                     {
+                        selected_TextB.Visibility = Visibility.Visible;
                         selected_TextB.Text = "変換エラー\r\n";
                         selected_TextB.Text += "詳細 : " + innnerExc.Message;
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 if (ex.GetType() == typeof(MyException))
                 {
                     selected_TextB.Visibility = Visibility.Visible;
                     selected_TextB.Text = "最低一つ以上のファイルを\r\n選択してください";
                 }
+                Console.WriteLine(ex.Message);
+                
             }
             finally
             {
                 Working_Flag = false;
+                Convert_Button.Content = "CONVERT & COPY";
             }
 
             try
             {
-                Clipboard.SetFileDropList(outputFileNames);
+                if (outputFileNames.Count > 1)
+                    Clipboard.SetFileDropList(outputFileNames);
+                else
+                {               
+                    var filePath = outputFileNames[0];
+                    //DataObjectオブジェクトを作成し、FileDrop形式のデータを追加する
+                    DataObject data = new DataObject(DataFormats.FileDrop, new string[] { filePath });
+                    //Bitmap形式のデータを追加する
+                    Bitmap bmp = new Bitmap(filePath);
+                    data.SetData(DataFormats.Bitmap, bmp);
+                    //クリップボードに貼り付ける
+                    Clipboard.SetDataObject(data, true);
+                    //後始末
+                    bmp.Dispose();
+                }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 if (ex.GetType() == typeof(ArgumentException) && outputFileNames.Count != 0)
@@ -450,14 +497,13 @@ namespace PlayAroundwithImages2
 
         private void limit_filesize_tb_TextChanged(object sender, TextChangedEventArgs e)
         {
-            SetSliderFromText(Slider1, limit_filesize_tb);
+            SetSliderFromText(Slider1, limit_filesize_tb, Slider1.Maximum);
             Subwin.ComboBox_extension.SelectedIndex = 5;
         }
 
         private void limit_longside_tb_TextChanged(object sender, TextChangedEventArgs e)
         {
-            SetSliderFromText(Slider2,limit_longside_tb);
-            Subwin.tf_checkbox.IsChecked = false;
+            SetSliderFromText(Slider2, limit_longside_tb, Slider2.Maximum);
         }
 
         /// <summary>
@@ -465,11 +511,13 @@ namespace PlayAroundwithImages2
         /// </summary>
         /// <param name=""></param>
         /// <param name=""></param>
-        private void SetSliderFromText (Slider slider, TextBox textBox)
+        private void SetSliderFromText (Slider slider, TextBox textBox, double limit)
         {
             try
             {
-                slider.Value = double.Parse(textBox.Text);
+                var value = double.Parse(textBox.Text);
+                if (limit >= value)
+                    slider.Value = value;
                 Set_Option();
                 if (Subwin.Visibility == Visibility.Visible)
                     Subwin.SendData = cnvOption;
@@ -554,17 +602,6 @@ namespace PlayAroundwithImages2
                 }
             }            
         }
-
-        private void CheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-                Image_ListView.SelectionMode = SelectionMode.Multiple;
-        }
-
-        private void Multiple_ChkBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            Image_ListView.SelectionMode = SelectionMode.Extended;
-        }
-
 
         //Window間データ受け渡し
         private Process_Image.ConvertOptions receiveData;
@@ -680,6 +717,27 @@ namespace PlayAroundwithImages2
         private void limit_filesize_tb_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = !new Regex("[0-9]||[.]").IsMatch(e.Text);
+        }
+
+        //変換中止
+        private void Stop()
+        {
+            if (tokenSource == null) { return; }
+
+            selected_TextB.Text = "Stop of the processing \r\nPlease wait a moment";
+            tokenSource.Cancel();
+        }
+
+        private void ToggleSwitch_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (Multiple_toggle.IsOn)
+            {
+                Image_ListView.SelectionMode = SelectionMode.Extended;
+            }
+            else
+            {
+                Image_ListView.SelectionMode = SelectionMode.Multiple;
+            }
         }
     }
 }
