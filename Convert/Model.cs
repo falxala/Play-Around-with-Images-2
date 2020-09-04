@@ -23,6 +23,7 @@ namespace PlayAroundwithImages2
             public string ColorSpace { get; set; }
             public string Icc { get; set; }
             public string Format { get; set; }
+            public bool Create_thumunail { get; set; }
         }
 
     }

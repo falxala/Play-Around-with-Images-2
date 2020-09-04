@@ -18,6 +18,7 @@ using System.IO;
 using Dasync.Collections;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Reactive.Bindings;
 
 namespace PlayAroundwithImages2
 {
@@ -37,7 +38,7 @@ namespace PlayAroundwithImages2
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Image_ListView.ItemsSource = drop_Images; // コレクションをListBoxにバインドする。
+            Image_ListView.ItemsSource = drop_Images; // コレクションをListBoxにバインドする
             DataContext= cnvOption;
 
             selected_TextB.Visibility = Visibility.Hidden;
@@ -48,8 +49,11 @@ namespace PlayAroundwithImages2
             cnvOption.Format = ImageMagick.MagickFormat.Jpeg;
 
             cnvOption.SaveDirectory = System.Environment.CurrentDirectory + "\\outputs";
-            cnvOption.Transform = true;
+            cnvOption.Transform = false;
         }
+
+        //一時保存パス
+        string TempPath = System.Environment.CurrentDirectory + "\\_TEMP_paiclip";
 
         readonly int CpuCount = Environment.ProcessorCount;
         //同時変換数
@@ -76,108 +80,202 @@ namespace PlayAroundwithImages2
             }
         }
 
-        private void Image_ListView_Drop(object sender, DragEventArgs e)
+        public struct PasteData
+        {
+            public IDataObject data { get; set; }
+            public string path { get; set; }
+            public string url { get; set; }
+        }
+
+            private void Image_ListView_Drop(object sender, DragEventArgs e)
         {
             try
             {
-                ListviewDropPaste(e.Data);
+                PasteData pasteData = new PasteData();
+                if (e.Data.GetDataPresent("UniformResourceLocator"))
+                    throw new Exception("URL非対応");
+                pasteData.data = e.Data;
+                ListviewDropPaste(pasteData);
+
             }
-            catch { }
+            catch  { }
         }
 
         /// <summary>
         /// 処理中
         /// </summary>
         bool Working_Flag = false;
-        private async void ListviewDropPaste(IDataObject data)
+        private async void ListviewDropPaste(PasteData pasteData)
         {
             Working_Flag = true;
             Clear_info();
             dropHere_Text.Visibility = Visibility.Hidden;
+
+            List<string> files = new List<string>();
+
+
             try
             {
-                List<string> files = new List<string>();
 
-                //ドロップアイテム全てのパスを取得
-                string[] dropItemPath = (string[])data.GetData(DataFormats.FileDrop, false);
-
-                //ドロップアイテム個々のパスを取得
-                foreach (string dropItem in dropItemPath)
+                if (pasteData.path != null)
+                    files.Add(pasteData.path);
+                else
                 {
-                    //ドロップがディレクトリの場合
-                    if (System.IO.Directory.Exists(dropItem))
+
+                    //ドロップアイテム全てのパスを取得
+                    string[] dropItemPath = (string[])pasteData.data.GetData(DataFormats.FileDrop, false);
+
+                    //ドロップアイテム個々のパスを取得
+                    foreach (string dropItem in dropItemPath)
                     {
-                        //フォルダ内のファイル名を取得|サブフォルダ内も全て検索
-                        files.AddRange(System.IO.Directory.GetFiles(@dropItem, "*", System.IO.SearchOption.AllDirectories));
+
+                        //ドロップがディレクトリの場合
+                        if (System.IO.Directory.Exists(dropItem))
+                        {
+                            //フォルダ内のファイル名を取得|サブフォルダ内も全て検索
+                            files.AddRange(System.IO.Directory.GetFiles(@dropItem, "*", System.IO.SearchOption.AllDirectories));
 
 
-                    }
-                    //ドロップがディレクトリ以外
-                    else
-                    {
-                        files.Add(System.IO.Path.GetFullPath(dropItem));
+                        }
+                        //ドロップがディレクトリ以外
+                        else
+                        {
+                            files.Add(System.IO.Path.GetFullPath(dropItem));
+                        }
+
                     }
                 }
 
+                //縮小表示
+                if (files.Count >= 10 && Image_ListView.Items.Count == 0)
+                {
+                    Tslider.Value = 125;
+                }
+                if (files.Count >= 25 && Image_ListView.Items.Count == 0)
+                {
+                    Tslider.Value = 100;
+                }
+                if (files.Count >= 100 && Image_ListView.Items.Count == 0)
+                {
+                    Tslider.Value = 50;
+                }
+
+                //ファイル数制限
+                if (files.Count >= 2048)
+                {
+                    selected_TextB.Text = "file count limit";
+                    throw new Exception("file count limit");
+                }
+                Convert_Button.IsEnabled = false;
+                int errorCount = 0;
                 await Task.Run(() =>
                     {
-                        Data_reading(files.ToArray());
+                        errorCount = Data_reading(files.ToArray());
                     });
-                selected_TextB.Text =  "読み込み完了";
+                Convert_Button.IsEnabled = true;
+                selected_TextB.Text = "読み込み完了";
+                if (errorCount != 0)
+                {
+                    selected_TextB.Text += "\r\n<" + errorCount + "個の非対応ファイル"+ ">";
+                }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                Console.WriteLine(ex.InnerException.ToString());
-
-                selected_TextB.Text = "非対応ファイルが含まれています";
+                //Console.WriteLine(ex.InnerException.ToString());
 
                 selected_TextB.Visibility = Visibility.Visible;
                 if (typeof(ImageMagick.MagickMissingDelegateErrorException) == ex.GetType())
                 {
                 }
-                if (Image_ListView.Items.Count <= 0)
-                {
-                    dropHere_Text.Visibility = Visibility.Visible;
-                }
             }
             finally
             {
                 Working_Flag = false;
+                await Task.Delay(100);
+                if (Image_ListView.Items.Count == 0)
+                {
+                    dropHere_Text.Visibility = Visibility.Visible;
+                }
             }
         }
+
+        bool disable_thumbnail = false;
+
+        public IReactiveProperty<BitmapImage> noimage { get; } = new ReactiveProperty<BitmapImage>(new BitmapImage(new Uri("pack://application:,,,/PlayAroundwithImages2;component/Resources/noimage.png")));
 
         /// <summary>
         /// 配列のファイルを読み込む
         /// </summary>
         /// <param name="files">ファイルパス</param>
-        void Data_reading(string[] files)
+        int Data_reading(string[] files)
         {
+
+            string[] details = new string[9];
+            BitmapImage bitmap = null;
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                bitmap = noimage.Value;
+            });
+
             int Count = 0;
+            int Error = 0;
             Process_Image process_Image = new Process_Image();
             ParallelOptions options = new ParallelOptions();
             options.MaxDegreeOfParallelism = DegreeOfParallelism;
+            Console.WriteLine(DegreeOfParallelism);
             Parallel.For(0, files.Length, options, i =>
              {
                  try
                  {
-                     string file = files[i];
-                     var details = process_Image.GetDetail(file);
-                     Model.drop_Image drop_Image = new Model.drop_Image();
-                     drop_Image.Image_path = file;
-                     drop_Image.File_name = System.IO.Path.GetFileName(file);
-                     drop_Image.thumbnail = process_Image.Create_thumbnail(file);
-                     FileInfo file_size = new FileInfo(file);
-                     drop_Image.ColorSpace = details[1];
-                     drop_Image.Icc = details[8];
-                     drop_Image.File_size = file_size.Length;
-                     drop_Image.Image_size = new System.Drawing.Size(int.Parse(details[2]), int.Parse(details[3]));
-                     drop_Image.Format = details[4];
-                     drop_Images.Add(drop_Image);
-                     Count++;
+                     ///tryで応急処置
+                     ///あとで直すこと！！！
+                     //例外が発生すると最後まで画像が読み込まれない
+                     try
+                     {
+                         string file = files[i];
+
+
+                         //許可されている拡張子以外は読み込まない
+                         bool check = false;
+                         foreach (string name in Enum.GetNames(typeof(permission.Extension)))
+                         {
+                             if (String.Compare(System.IO.Path.GetExtension(file), "." + name, true) == 0)
+                             {
+                                 check = true;
+                             }
+                         }
+                         if( check == false)
+                             throw new Exception();
+                         
+                         details = process_Image.GetDetail(file);
+                         
+                         Model.drop_Image drop_Image = new Model.drop_Image();
+                         drop_Image.Image_path = file;
+                         drop_Image.File_name = System.IO.Path.GetFileName(file);
+                         if (disable_thumbnail == false)
+                         {
+                             drop_Image.thumbnail = Process_Image.Create_thumbnail(file);
+                             drop_Image.Create_thumunail = true;
+                         }
+                         else
+                         {
+                             drop_Image.thumbnail = bitmap;
+                             drop_Image.Create_thumunail = false;
+                         }
+                         FileInfo file_size = new FileInfo(file);
+                         drop_Image.ColorSpace = details[1];
+                         drop_Image.Icc = details[8];
+                         drop_Image.File_size = file_size.Length;
+                         drop_Image.Image_size = new System.Drawing.Size(int.Parse(details[2]), int.Parse(details[3]));
+                         drop_Image.Format = details[4];
+                         drop_Images.Add(drop_Image);
+                         Count++;
+                     }
+                     catch { Error++; }
                  }
-                 catch (Exception ex)
+                 catch
                  {
-                     Console.WriteLine(ex.Message);
+                     //Console.WriteLine(ex.Message);
 
                      if (Image_ListView.Items.Count <= 0)
                      {
@@ -197,6 +295,11 @@ namespace PlayAroundwithImages2
 
              });
 
+            if (Error > 0)
+            {
+                return Error;
+            }
+            return 0;
 
         }
 
@@ -225,43 +328,54 @@ namespace PlayAroundwithImages2
         }
 
         private void buttonDel_Click(object sender, RoutedEventArgs e)
-        { 
-            if (drop_Images.Count < 1) return; // コレクションの数が0の場合は何もしない。
-
-            if (Image_ListView.SelectedItems.Count == Image_ListView.Items.Count)
+        {
+            try
             {
-                drop_Images.Clear();
-                Image_ListView.ClearValue(ListView.ItemsSourceProperty);
-                Image_ListView.ItemsSource = drop_Images;
-                dropHere_Text.Visibility = Visibility.Visible;
-                return;
+                if (drop_Images.Count < 1) return; // コレクションの数が0の場合は何もしない。
+
+                if (Image_ListView.SelectedItems.Count == Image_ListView.Items.Count)
+                {
+                    drop_Images.Clear();
+                    Image_ListView.ClearValue(ListView.ItemsSourceProperty);
+                    Image_ListView.ItemsSource = drop_Images;
+                    dropHere_Text.Visibility = Visibility.Visible;
+                    return;
+                }
+
+                // ListBoxで選択されたアイテムを、別のコレクションにコピーする。
+                Collection<Model.drop_Image> selected = new Collection<Model.drop_Image>();
+                foreach (Model.drop_Image i in Image_ListView.SelectedItems)
+                {
+                    selected.Add(i);
+                }
+
+                Clear_info();
+
+                // 元のコレクションから、選択されたアイテムと同じアイテムを削除する。
+
+                foreach (Model.drop_Image item in selected)
+                {
+                    drop_Images.Remove(item);
+                }
+
+                if (Image_ListView.Items.Count <= 0)
+                {
+                    dropHere_Text.Visibility = Visibility.Visible;
+                }
+            }
+            catch { }
+            finally
+            {
+                GC();
             }
 
-            // ListBoxで選択されたアイテムを、別のコレクションにコピーする。
-            Collection<Model.drop_Image> selected = new Collection<Model.drop_Image>();
-            foreach (Model.drop_Image i in Image_ListView.SelectedItems)
-            {
-                selected.Add(i);
-            }
+        }
 
-            Clear_info();
-
-            // 元のコレクションから、選択されたアイテムと同じアイテムを削除する。
-
-            foreach (Model.drop_Image item in selected)
-            {
-                drop_Images.Remove(item);
-            }
-
-            if (Image_ListView.Items.Count <= 0)
-            {
-                dropHere_Text.Visibility = Visibility.Visible;
-            }
-
+        void GC()
+        {
             System.GC.Collect(); // アクセス不可能なオブジェクトを除去
             System.GC.WaitForPendingFinalizers(); // ファイナライゼーションが終わるまでスレッド待機
             System.GC.Collect(); // ファイナライズされたばかりのオブジェクトに関連するメモリを開放
-
         }
 
         void Clear_info()
@@ -300,30 +414,38 @@ namespace PlayAroundwithImages2
                     selected_TextB.Text = Image_ListView.SelectedItems.Count + " selected";
                     return;
                 }
-                else if (Image_ListView.SelectedItems.Count <= 0)
+                else if (Image_ListView.SelectedItems.Count == 0)
                 {
                     Clear_info();
                     return;
                 }
-
-                foreach (Model.drop_Image i in Image_ListView.SelectedItems)
+                int w, h, gcd;
+                foreach (Model.drop_Image selected_item in Image_ListView.SelectedItems)
                 {
-                    int w = i.Image_size.Width;
-                    int h = i.Image_size.Height;
-                    int gcd = Gcd(w, h);
+                    w = selected_item.Image_size.Width;
+                    h = selected_item.Image_size.Height;
+                    gcd = Gcd(w, h);
                     selected_TextB.Visibility = Visibility.Hidden;
-                    preview_image.Source = i.thumbnail;
-                    path_textB.Text = "[Path]\r\n" + i.Image_path;
+
+                    if (selected_item.Create_thumunail == false)
+                    {
+                        selected_item.thumbnail = Process_Image.Create_thumbnail(selected_item.Image_path);
+                        selected_item.Create_thumunail = true;
+                        Image_ListView.Items.Refresh();
+                    }
+                    preview_image.Source = selected_item.thumbnail;
+
+                    path_textB.Text = "[Path]\r\n" + selected_item.Image_path;
                     Detail_textB.Text = "[Details]\r\n" + w + "*" + h;
-                    Detail_textB.Text += " | " + w/gcd + " : " + h / gcd;
-                    Detail_textB.Text += "  |  " + ((float)i.File_size / 1024 / 1024).ToString("F2") + " [MB]\r\n";
-                    Detail_textB.Text += "Format : " + i.Format + " | " + "ColorSpace : " + i.ColorSpace + "\r\n";
-                    Detail_textB.Text += "ICC : " + i.Icc;
+                    Detail_textB.Text += " | " + w / gcd + " : " + h / gcd;
+                    Detail_textB.Text += "  |  " + ((float)selected_item.File_size / 1024 / 1024).ToString("F2") + " [MB]\r\n";
+                    Detail_textB.Text += "Format : " + selected_item.Format + " | " + "ColorSpace : " + selected_item.ColorSpace + "\r\n";
+                    Detail_textB.Text += "ICC : " + selected_item.Icc;
                 }
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                //Console.WriteLine(ex.Message);
             }
         }
 
@@ -354,6 +476,7 @@ namespace PlayAroundwithImages2
         private CancellationTokenSource tokenSource = null;
         private async void Convert_Button_Click(object sender, RoutedEventArgs e)
         {
+
             //処理中に実行させない
             if (Working_Flag)
             {
@@ -408,8 +531,7 @@ namespace PlayAroundwithImages2
                 {
                     await selected.ParallelForEachAsync(async item =>
                 {
-
-                    var Result = await process_Image.Convert(item.Image_path, cnvOption, tokenSource.Token);
+                    var Result = await process_Image.Convert(item, cnvOption, tokenSource.Token);
                     outputFileNames.Add(Result);
                     this.Dispatcher.Invoke((Action)(() =>
                     {
@@ -456,10 +578,13 @@ namespace PlayAroundwithImages2
             {
                 Working_Flag = false;
                 Convert_Button.Content = "CONVERT & COPY";
+                await Task.Delay(2000);
+                selected_TextB.Text = "";
             }
 
             try
             {
+                Clipboard.Clear();
                 if (outputFileNames.Count > 1)
                     Clipboard.SetFileDropList(outputFileNames);
                 else
@@ -498,12 +623,21 @@ namespace PlayAroundwithImages2
         private void limit_filesize_tb_TextChanged(object sender, TextChangedEventArgs e)
         {
             SetSliderFromText(Slider1, limit_filesize_tb, Slider1.Maximum);
+            
+            //JPEGを選択
             Subwin.ComboBox_extension.SelectedIndex = 5;
         }
 
         private void limit_longside_tb_TextChanged(object sender, TextChangedEventArgs e)
         {
             SetSliderFromText(Slider2, limit_longside_tb, Slider2.Maximum);
+            Subwin.tf_checkbox.IsChecked = false;
+            
+            //longsideが0ならNONEに
+            if(cnvOption.Size.Width == 0)
+            {
+                limit_longside_tb.Text = "Original";
+            }
         }
 
         /// <summary>
@@ -550,10 +684,54 @@ namespace PlayAroundwithImages2
 
         private void CopyFromClipboard()
         {
-            if(Clipboard.ContainsFileDropList())
-                ListviewDropPaste(Clipboard.GetDataObject());
+            PasteData pasteData = new PasteData();
+            if (Clipboard.ContainsFileDropList())
+            {
+                pasteData.data = Clipboard.GetDataObject();
+                ListviewDropPaste(pasteData);
+            }
+            //クリップボードの画像を取り込む
+            else if (Clipboard.ContainsImage())
+            {
+                //クリップボードにあるデータの取得
+                BitmapSource img = Clipboard.GetImage();
+                if (img != null)
+                {
+
+                    if (!Directory.Exists(TempPath))
+                    {
+                        DirectoryInfo di = new DirectoryInfo(TempPath);
+                        di.Create();
+                    }
+
+                    string filePath = CreateName(TempPath + "\\clip") + ".png";
+                    //ファイルに保存
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        BitmapEncoder encoder = new PngBitmapEncoder();
+                        encoder.Frames.Add(BitmapFrame.Create(img));
+                        encoder.Save(fileStream);
+                    }
+
+                    pasteData.path = filePath;
+                    ListviewDropPaste(pasteData);
+
+                }
+            }
         }
-           
+
+        //連番ファイル名を作成
+        public static string CreateName(string path)
+        {
+            int i = 1;
+            var newPath = path;
+            while (File.Exists(newPath+ ".png"))
+            {
+                newPath = $"{path} ({i++})";
+            }
+            return newPath;
+        }
+
         private void OnDel(object sender, ExecutedRoutedEventArgs e)
         {
             buttonDel_Click(null,null);
@@ -629,7 +807,7 @@ namespace PlayAroundwithImages2
                 if (a.Visibility == Visibility.Visible)
                 {
                     a.Visibility = Visibility.Hidden;
-                    SettingWindow_Button.Content = ">>";
+                    //SettingWindow_Button.Content = ">>";
                     return;
                 }
                 else
@@ -637,14 +815,14 @@ namespace PlayAroundwithImages2
                     Set_Option();
                 }
 
-                SettingWindow_Button.Content = "<<";
+                //SettingWindow_Button.Content = "<<";
                 a.Visibility = Visibility.Visible;
                 Subwin.SendData = cnvOption;                
             }
             else
             {
                 Subwin.SendData = cnvOption;
-                SettingWindow_Button.Content = "<<";
+                //SettingWindow_Button.Content = "<<";
                 Subwin.Owner = this;
                 Subwin.Mainwin = this;
                 Subwin.Show();
@@ -681,7 +859,8 @@ namespace PlayAroundwithImages2
         private void Set_Option()
         {
             cnvOption.Filesize = Double.Parse(limit_filesize_tb.Text);
-            cnvOption.Size = new System.Drawing.Size(Int32.Parse(limit_longside_tb.Text), Int32.Parse(limit_longside_tb.Text));
+            if (limit_longside_tb.Text != "Original")
+                cnvOption.Size = new System.Drawing.Size(Int32.Parse(limit_longside_tb.Text), Int32.Parse(limit_longside_tb.Text));
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -698,6 +877,10 @@ namespace PlayAroundwithImages2
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            System.IO.DirectoryInfo tempdi = new System.IO.DirectoryInfo(TempPath);
+            if (tempdi.Exists)
+                tempdi.Delete(true);
+
             //表示されていないインスタンスを表示し閉じる
             var notShown = Application.Current.Windows.OfType<SubWindow>().SingleOrDefault(w => true);
             if (notShown != null)
@@ -706,6 +889,7 @@ namespace PlayAroundwithImages2
                 Subwin.Mainwin = this;
                 notShown.Hide();
             }
+
         }
 
         private void limit_longside_tb_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -739,5 +923,77 @@ namespace PlayAroundwithImages2
                 Image_ListView.SelectionMode = SelectionMode.Multiple;
             }
         }
+
+        private void Image_ListView_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if(Image_ListView.SelectedItems.Count == 1)
+            {
+
+                foreach (Model.drop_Image i in Image_ListView.SelectedItems)
+                {
+                    System.Diagnostics.Process p = System.Diagnostics.Process.Start(i.Image_path);
+                }
+            }
+        }
+
+        private async void Tslider_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            await Task.Delay(5);
+            Tslider.Value = 200;
+        }
+
+        private void Slider2_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if(e.Delta > 0)
+            {
+                Slider2.Value++;
+            }
+            else if(e.Delta < 0)
+            {
+                Slider2.Value--;
+            }
+            
+        }
+
+        private void Slider1_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                Slider1.Value++;
+            }
+            else if (e.Delta < 0)
+            {
+                Slider1.Value--;
+            }
+        }
+
+        private void Image_ListView_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if ((Keyboard.Modifiers & ModifierKeys.Control) != ModifierKeys.None)
+            {
+                if(e.Delta > 0)
+                {
+                    //ルートより少し小さい値を入れる
+                    //丸め込み有効
+                    Tslider.Value = Math.Round(((Tslider.Value * 1.38) / 100), 1) * 100;
+                }
+                else if(e.Delta < 0)
+                {
+                    Tslider.Value = Math.Round(((Tslider.Value / 1.38) / 100), 1) * 100;
+                }
+                
+            }
+        }
+
+        private void context_thumbnail_Checked(object sender, RoutedEventArgs e)
+        {
+            disable_thumbnail = true;
+        }
+
+        private void context_thumbnail_Unchecked(object sender, RoutedEventArgs e)
+        {
+            disable_thumbnail = false;
+        }
+
     }
 }

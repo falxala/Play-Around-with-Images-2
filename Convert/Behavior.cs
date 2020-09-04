@@ -12,18 +12,21 @@ namespace Experiment.Wpf.Behaviors
     /// </summary>
     public class TextBlockToolTipBehavior : Behavior<TextBlock>
     {
+        [System.Obsolete]
         protected override void OnAttached()
         {
             base.OnAttached();
             this.AssociatedObject.SizeChanged += AssociatedObject_SizeChanged;
         }
 
+        [System.Obsolete]
         protected override void OnDetaching()
         {
             this.AssociatedObject.SizeChanged -= AssociatedObject_SizeChanged;
             base.OnDetaching();
         }
 
+        [System.Obsolete]
         private void AssociatedObject_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             var text = (TextBlock)sender;

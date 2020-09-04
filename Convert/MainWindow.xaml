@@ -7,7 +7,7 @@
         xmlns:b="clr-namespace:Experiment.Wpf.Behaviors"
         xmlns:local="clr-namespace:PlayAroundwithImages2"
         xmlns:WpfControlLibrary="clr-namespace:WpfControlLibrary;assembly=ToggleSwitch" x:Class="PlayAroundwithImages2.MainWindow"
-        mc:Ignorable="d" Height="600" Width="750" MinWidth="750" Loaded="Window_Loaded" MinHeight="600" Background="#FF464646" Title="Play Around with Images 2" LocationChanged="Window_LocationChanged" SizeChanged="Window_SizeChanged" Closing="Window_Closing" Icon="Resources/icon.Ico">
+        mc:Ignorable="d" Height="580" Width="800" MinWidth="650" Loaded="Window_Loaded" MinHeight="600" Background="#FF464646" Title="Play Around with Images 2" LocationChanged="Window_LocationChanged" SizeChanged="Window_SizeChanged" Closing="Window_Closing" Icon="Resources/icon.Ico">
 
     <Window.Resources>
         <!-- 通常時のボタンの色 -->
@@ -51,34 +51,69 @@
         <CommandBinding Command="SelectAll"  Executed="OnCtrlA"/>
     </Window.CommandBindings>
 
+
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="274"/>
+            <ColumnDefinition Width="100*" MinWidth="350"/>
+            <ColumnDefinition Width="Auto" MinWidth="7"/>
+            <ColumnDefinition Width="45*" MinWidth="250"/>
         </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <Button x:Name="buttonDel" Style="{StaticResource HoverButtonStyle}" Content="Delete" Margin="0,5,5,0" VerticalAlignment="Top" Click="buttonDel_Click" HorizontalAlignment="Right" Width="76" Foreground="White" Height="20"/>
-        <Border BorderBrush="Black" BorderThickness="1" Height="194" Margin="0,5,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="259" Grid.Column="1">
-            <Image x:Name="preview_image"/>
+        <Slider x:Name="Slider1" Margin="11,0,5,131" ValueChanged="Slider_ValueChanged" FontSize="14" Grid.Column="2" Height="22" VerticalAlignment="Bottom" PreviewMouseWheel="Slider1_PreviewMouseWheel"/>
+        <Label Content="Limit File Size (JPEG)" Margin="6,0,0,157" FontSize="14" VerticalContentAlignment="Stretch" Grid.Column="2" Height="32" VerticalAlignment="Bottom" Foreground="White" HorizontalAlignment="Left" Width="164"/>
+        <Label Content="MB" Margin="0,0,5,160" FontSize="14" HorizontalContentAlignment="Center" HorizontalAlignment="Right" Width="40" Grid.Column="2" Height="28" VerticalAlignment="Bottom" Foreground="White"/>
+        <Label Content="Long Sides Pixel" Margin="6,0,0,94" FontSize="14" VerticalContentAlignment="Stretch" Grid.Column="2" Height="32" VerticalAlignment="Bottom" Foreground="White" HorizontalAlignment="Left" Width="114"/>
+        <Label Content="px" Margin="0,0,5,97" FontSize="14" HorizontalContentAlignment="Center" HorizontalAlignment="Right" Width="40" Grid.Column="2" Height="28" VerticalAlignment="Bottom" Foreground="White"/>
+        <Slider x:Name="Slider2" Margin="11,0,5,72" ValueChanged="Slider2_ValueChanged" FontSize="14" Maximum="8192" SmallChange="1" Grid.Column="2" Height="22" VerticalAlignment="Bottom" PreviewMouseWheel="Slider2_PreviewMouseWheel" Foreground="Transparent" Background="#00000000"/>
+        <TextBox x:Name="limit_filesize_tb" Margin="0,0,44,161" TextWrapping="Wrap" Text="5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" TextChanged="limit_filesize_tb_TextChanged" Grid.Column="2" PreviewTextInput="limit_filesize_tb_PreviewTextInput" Height="27" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="50"/>
+        <TextBox x:Name="limit_longside_tb" Margin="0,0,45,98" TextWrapping="Wrap" Text="2048" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" HorizontalAlignment="Right" Width="75" TextChanged="limit_longside_tb_TextChanged" Grid.Column="2" PreviewTextInput="limit_longside_tb_PreviewTextInput" Height="27" VerticalAlignment="Bottom"/>
+
+
+        <Rectangle Margin="10,0,5,7" Height="25" VerticalAlignment="Bottom" Fill="#FF646464" Stroke="#FF464646"/>
+        <Button x:Name="buttonDel" Style="{StaticResource HoverButtonStyle}" Content="Delete" Margin="0,5,6,0" VerticalAlignment="Top" Click="buttonDel_Click" HorizontalAlignment="Right" Width="67" Foreground="White" Height="20"/>
+        <Border Grid.Column="2" BorderBrush="Black" BorderThickness="0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="199*" MinHeight="100"/>
+                    <RowDefinition Height="auto" MinHeight="8"/>
+                    <RowDefinition Height="362*" MinHeight="350"/>
+                </Grid.RowDefinitions>
+
+                <GridSplitter HorizontalAlignment="Stretch" Margin="84,2" Grid.Row="1" Background="Gray"/>
+                <Border BorderBrush="Black" BorderThickness="1" Margin="5,3,4,0">
+                    <Image x:Name="preview_image" Margin="-1"/>
+                </Border>
+                <Border BorderBrush="Black" BorderThickness="1" Margin="5,3,4,0">
+                    <TextBlock x:Name="selected_TextB" TextWrapping="WrapWithOverflow" Text="TextBlock" FontSize="18" Margin="9,-1" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" LineStackingStrategy="BlockLineHeight" Foreground="White" ScrollViewer.CanContentScroll="True" Background="#FF464646"/>
+                </Border>
+                <Border BorderBrush="Black" BorderThickness="1" Height="81" Margin="5,0,3,0" VerticalAlignment="Top" Grid.Row="2">
+                    <TextBlock x:Name="Detail_textB" Margin="-1" TextWrapping="Wrap" FontSize="14" Foreground="White"><Run Text="["/><Run Text="Detail"/><Run Text="s]"/></TextBlock>
+                </Border>
+                <Border BorderBrush="Black" BorderThickness="1" Margin="5,86,3,196" Grid.Row="2">
+                    <TextBlock x:Name="path_textB" Margin="2,1" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" LineStackingStrategy="BlockLineHeight" FontSize="14" Foreground="White"><Run Text="["/><Run Text="Path"/><Run Text="]"/></TextBlock>
+                </Border>
+                <Rectangle x:Name="mask1" Stroke="Black" Margin="5,0,3,63" Fill="#7F000000" Grid.Row="2" Height="128" VerticalAlignment="Bottom" Visibility="Hidden">
+                    <Rectangle.OpacityMask>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="Black" Offset="0"/>
+                            <GradientStop Color="White" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+            </Grid>
         </Border>
-        <Button x:Name="Select_All_Button" Style="{StaticResource HoverButtonStyle}" Content="Select All" Margin="0,5,167,0" VerticalAlignment="Top" Click="Select_All_Button_Click" HorizontalAlignment="Right" Width="76" Foreground="White" Height="20"/>
-        <Button x:Name="Deselect_All_Button" Style="{StaticResource HoverButtonStyle}" Content="Clear Select" Margin="0,5,86,0" VerticalAlignment="Top" Click="Deselect_All_Button_Click" HorizontalAlignment="Right" Width="76" Foreground="White" Height="20"/>
-        <Slider x:Name="Slider1" Margin="0,0,10,134" ValueChanged="Slider_ValueChanged" FontSize="14" HorizontalAlignment="Right" Width="254" Grid.Column="1" Height="22" VerticalAlignment="Bottom"/>
-        <TextBox x:Name="limit_filesize_tb" Margin="174,0,0,161" TextWrapping="Wrap" Text="5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" HorizontalAlignment="Left" Width="50" TextChanged="limit_filesize_tb_TextChanged" Grid.Column="1" PreviewTextInput="limit_filesize_tb_PreviewTextInput" Height="27" VerticalAlignment="Bottom"/>
-        <Label Content="Limit File Size (JPEG)" Margin="5,0,0,160" FontSize="14" VerticalContentAlignment="Stretch" HorizontalAlignment="Left" Width="164" Grid.Column="1" Height="32" VerticalAlignment="Bottom" Foreground="White"/>
-        <Label Content="MB" Margin="0,0,10,160" FontSize="14" HorizontalContentAlignment="Center" HorizontalAlignment="Right" Width="40" Grid.Column="1" Height="28" VerticalAlignment="Bottom" Foreground="White"/>
-        <Button x:Name="Convert_Button" Style="{StaticResource HoverButtonStyle}" Content="CONVERT &amp; COPY" Margin="0,0,75,10" FontSize="18" Click="Convert_Button_Click" HorizontalAlignment="Right" Width="189" Height="51" VerticalAlignment="Bottom" Background="#FF999999" Foreground="White" BorderBrush="#FF382F2F" Grid.Column="1" ToolTip="変換を実行し結果をクリップボードにコピーします" ToolTipService.InitialShowDelay ="500"/>
-        <Slider x:Name="Slider2" Margin="0,0,10,75" ValueChanged="Slider2_ValueChanged" FontSize="14" HorizontalAlignment="Right" Width="254" Maximum="8192" SmallChange="1" Grid.Column="1" Height="22" VerticalAlignment="Bottom"/>
-        <TextBox x:Name="limit_longside_tb" Margin="0,0,50,101" TextWrapping="Wrap" Text="2048" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" HorizontalAlignment="Right" Width="75" TextChanged="limit_longside_tb_TextChanged" Grid.Column="1" PreviewTextInput="limit_longside_tb_PreviewTextInput" Height="27" VerticalAlignment="Bottom"/>
-        <Label Content="Long Sides Pixel" Margin="5,0,0,97" FontSize="14" VerticalContentAlignment="Stretch" HorizontalAlignment="Left" Width="113" Grid.Column="1" Height="32" VerticalAlignment="Bottom" Foreground="White"/>
-        <Label Content="px" Margin="0,0,10,101" FontSize="14" HorizontalContentAlignment="Center" HorizontalAlignment="Right" Width="40" Grid.Column="1" Height="28" VerticalAlignment="Bottom" Foreground="White"/>
-        <ListView x:Name="Image_ListView" ItemsSource="{Binding drop_Images}" Margin="10,32,5,10" DragEnter="Image_ListView_DragEnter" Drop="Image_ListView_Drop" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="Image_ListView_SelectionChanged" Foreground="White" BorderBrush="Black" Background="#FF636363" ScrollViewer.VerticalScrollBarVisibility="Auto">
+
+        <Button x:Name="Select_All_Button" Style="{StaticResource HoverButtonStyle}" Content="Select All" Margin="0,5,159,0" VerticalAlignment="Top" Click="Select_All_Button_Click" HorizontalAlignment="Right" Width="67" Foreground="White" Height="20"/>
+        <Button x:Name="Deselect_All_Button" Style="{StaticResource HoverButtonStyle}" Content="Clear Select" Margin="0,5,78,0" VerticalAlignment="Top" Click="Deselect_All_Button_Click" HorizontalAlignment="Right" Width="76" Foreground="White" Height="20" RenderTransformOrigin="0.816,0.65"/>
+        <Button x:Name="Convert_Button" Style="{StaticResource HoverButtonStyle}" Content="CONVERT &amp; COPY" Margin="6,0,70,7" FontSize="18" Click="Convert_Button_Click" Height="51" VerticalAlignment="Bottom" Background="#FF999999" Foreground="White" BorderBrush="#FF382F2F" Grid.Column="2" ToolTip="変換を実行し結果をクリップボードにコピーします" ToolTipService.InitialShowDelay ="500"/>
+
+        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Margin="1,245,1,221" Background="Gray"/>
+        <ListView x:Name="Image_ListView" ItemsSource="{Binding drop_Images}" Margin="10,32,5,38" DragEnter="Image_ListView_DragEnter" Drop="Image_ListView_Drop" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="Image_ListView_SelectionChanged" Foreground="White" BorderBrush="Black" Background="#FF646464" ScrollViewer.VerticalScrollBarVisibility="Auto" PreviewMouseDoubleClick="Image_ListView_PreviewMouseDoubleClick" PreviewMouseWheel="Image_ListView_PreviewMouseWheel" >
             <ListView.ContextMenu>
                 <ContextMenu>
                     <MenuItem x:Name="ListView_CntxtMenu" Header="Paste from clipboard" Click="ListView_CntxtMenu_paste_Click"/>
                     <MenuItem x:Name="ListView_CntxtMenu2" Header="Open selected item" Click="ListView_CntxtMenu_open_Click"/>
+                    <MenuItem x:Name="ListView_CntxtMenu3" IsCheckable="True" 
+                      Checked="context_thumbnail_Checked" Unchecked="context_thumbnail_Unchecked" Header="Dissable thumbnail"/>
                 </ContextMenu>
             </ListView.ContextMenu>
             <ListView.ItemsPanel>
@@ -88,36 +123,34 @@
             </ListView.ItemsPanel>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Grid Width="200" Height="200" Margin="0,0,0,30">
+                    <Grid  Width="{Binding Value, ElementName=Tslider}" Height="{Binding Value, ElementName=Tslider}" Margin="0,0,0,30">
                         <Image Source="{Binding thumbnail}"/>
                         <TextBlock Text="{Binding File_name}" VerticalAlignment="Bottom" Margin="0,0,0,-25"/>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <TextBlock x:Name="dropHere_Text" Margin="10,266,10,241" TextWrapping="Wrap" Text="Drop files here" FontSize="36" FontFamily="Dubai Medium" Foreground="#FFCFCFCF" DragEnter="Image_ListView_DragEnter" Drop="Image_ListView_Drop" AllowDrop="True" Height="62" Width="658" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center">
+        
+        <TextBlock x:Name="dropHere_Text" Margin="10,262,10,244" TextWrapping="Wrap" Text="Drop files here" FontSize="36" FontFamily="Dubai Medium" Foreground="#FFCFCFCF" DragEnter="Image_ListView_DragEnter" Drop="Image_ListView_Drop" AllowDrop="True" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock.ContextMenu>
                 <ContextMenu>
                     <MenuItem  Header="Paste from clipboard" Click="ListView_CntxtMenu_paste_Click"/>
                 </ContextMenu>
             </TextBlock.ContextMenu>
         </TextBlock>
-        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Margin="5,286,0,200" Width="259" Grid.Column="1">
-            <TextBlock x:Name="path_textB" Margin="2,1" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" LineStackingStrategy="BlockLineHeight" FontSize="14" Foreground="White"><Run Text="["/><Run Text="Path"/><Run Text="]"/></TextBlock>
-        </Border>
-        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="77" Margin="5,204,0,0" VerticalAlignment="Top" Width="259" Grid.Column="1">
-            <TextBlock x:Name="Detail_textB" Margin="2,-1" TextWrapping="Wrap" FontSize="14" Foreground="White"><Run Text="["/><Run Text="Detail"/><Run Text="s]"/></TextBlock>
-        </Border>
-        <Button x:Name="SettingWindow_Button" Style="{StaticResource HoverButtonStyle}" Content="&gt;&gt;" Margin="0,0,10,10" FontSize="18" HorizontalAlignment="Right" Width="60" Height="51" VerticalAlignment="Bottom" Background="#FF8F8F8F" Foreground="White" BorderBrush="#FF404040" Grid.Column="1" Click="SettingWindow_Button_Click">
+        <Button x:Name="SettingWindow_Button" Style="{StaticResource HoverButtonStyle}" Margin="0,0,5,7" FontSize="18" Height="51" VerticalAlignment="Bottom" Foreground="White" BorderBrush="#FF404040" Grid.Column="2" Click="SettingWindow_Button_Click" HorizontalAlignment="Right" Width="60" Background="{x:Null}">
             <ToolTipService.ToolTip>
                 <ToolTip Content="変換設定を開く"/>
             </ToolTipService.ToolTip>
+            <Image Source="Resources/3737.png" Height="28" Width="28" />
         </Button>
-        <Border BorderBrush="Black" BorderThickness="1" Height="194" Margin="0,5,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="259" Grid.Column="1">
-            <TextBlock x:Name="selected_TextB" TextWrapping="WrapWithOverflow" Text="TextBlock" FontSize="18" Margin="9,-1" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" LineStackingStrategy="BlockLineHeight" Foreground="White" ScrollViewer.CanContentScroll="True"/>
-        </Border>
         <WpfControlLibrary:ToggleSwitch x:Name="Multiple_toggle" HorizontalAlignment="Left" Height="22" Margin="10,5,0,0" VerticalAlignment="Top" Width="45" PreviewMouseDown="ToggleSwitch_PreviewMouseDown" Duration="0.1" CircleBorderColor="White" CircleBackgroundColor="#FF464646" TrackBackgroundOnColor="#FFFFA63B"/>
-        <Label Content="Multiple" HorizontalAlignment="Left" Margin="60,0,0,0" VerticalAlignment="Top" Foreground="White" FontWeight="Bold" FontSize="14"/>
+        <Label Content="Multiple" HorizontalAlignment="Left" Margin="60,0,0,0" VerticalAlignment="Top" Foreground="White" FontWeight="Bold" FontSize="14" Height="29" Width="63"/>
+        <Slider x:Name="Tslider" HorizontalAlignment="Left" Margin="10,0,0,10" Width="200" Minimum="50" Maximum="512" Height="18" VerticalAlignment="Bottom" Value="200" SmallChange="1" PreviewMouseDoubleClick="Tslider_PreviewMouseDoubleClick"/>
+        <Label Content="{Binding Value, ElementName=Tslider}" ContentStringFormat="{}{0:N0} px" HorizontalAlignment="Left" Margin="215,0,0,8" Background="#00000000" Foreground="White" Height="26" VerticalAlignment="Bottom" FontSize="14" Width="51"/>
+        <Label Content="{Binding Items.Count, ElementName=Image_ListView}" ContentStringFormat="{}{0:N0} items" Margin="0,0,6,8" Background="#00000000" Foreground="White" Height="26" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="100" HorizontalContentAlignment="Right" FontSize="14"/>
+
+
     </Grid>
 
 </Window>

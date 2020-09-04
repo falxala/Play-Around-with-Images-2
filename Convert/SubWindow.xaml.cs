@@ -14,8 +14,14 @@ using System.Windows.Shapes;
 using System.Text.RegularExpressions;
 using System.Drawing;
 using System.Windows.Threading;
+using System.Net;
+using System.IO;
+using System.Net.Http;
 // Windows API Code Pack のダイアログの名前空間を using
 using Microsoft.WindowsAPICodePack.Dialogs;
+using Newtonsoft.Json;
+using System.Windows.Forms;
+using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace PlayAroundwithImages2
 {
@@ -45,7 +51,7 @@ namespace PlayAroundwithImages2
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //よく使う拡張子だけを抜き出す(enum参照)
-            var extLsit = new[] { 6, 15, 51, 72, 88, 103, 169, 183, 219, 237 };
+            var extLsit = new[] { 6, 17, 53, 74, 90, 105, 171, 185, 221, 239 };
 
             //OpenMPバージョン
             //var extLsit = new[] { 6, 15, 50, 72, 88, 103, 169, 183, 219, 237 };
@@ -178,7 +184,7 @@ namespace PlayAroundwithImages2
                 //LiquidRescale有効時のメモリ使用量は不明　推測
                 Estimatedmemory = (product_all * 2 * 4 / 1024 / 1024 + ((long)convetedSize.Width * (long)convetedSize.Height * 2 * 4 / 1024 / 1024) * 4 * (long)count);
             else
-                Estimatedmemory = product_all * 2 * 4 / 1024 / 1024 * 2;
+                Estimatedmemory = product_all * 2 * 4 / 1024 / 1024 * 2 +((long)convetedSize.Width * (long)convetedSize.Height * 2 * 4 / 1024 / 1024) * 2 * (long)count;
             //Q16の場合キャッシュは2バイトなので*2
             Info_TextBox.Text = "最大使用メモリ : " + Estimatedmemory + "MB";
             Info_TextBox.Text += "\r\n FreeMemory : " + FreePhysicalMemory;
@@ -206,17 +212,6 @@ namespace PlayAroundwithImages2
             {
 
             }
-        }
-
-        private void Window_LocationChanged(object sender, EventArgs e)
-        {
-
-            
-        }
-
-        private void Window_MouseMove(object sender, MouseEventArgs e)
-        {
-
         }
 
         private void CheckBox_Click(object sender, RoutedEventArgs e)
@@ -337,6 +332,7 @@ namespace PlayAroundwithImages2
             Sub_CnvOption.Transform = true;
             Width_TextBox.IsEnabled = true;
             Height_TextBox.IsEnabled = true;
+            Mainwin.limit_longside_tb.IsEnabled = false;
             try
             {
                 LiquidRescale_toggle.IsEnabled = true;
@@ -344,7 +340,6 @@ namespace PlayAroundwithImages2
                 LiquidRescale_toggle.TrackBackgroundOnColor = System.Windows.Media.Color.FromArgb(C.A, C.R, C.G, C.B);
                 LiquidRescale_toggle.IsOn = !LiquidRescale_toggle.IsOn;
                 LiquidRescale_toggle.IsOn = !LiquidRescale_toggle.IsOn;
-                Mainwin.limit_longside_tb.IsEnabled = true;
             }
             catch { }
             SetMainCnvOption();
@@ -355,6 +350,7 @@ namespace PlayAroundwithImages2
             Sub_CnvOption.Transform = false;
             Width_TextBox.IsEnabled = false;
             Height_TextBox.IsEnabled = false;
+            Mainwin.limit_longside_tb.IsEnabled = true;
             try
             {
                 LiquidRescale_toggle.IsEnabled = false;
@@ -362,7 +358,6 @@ namespace PlayAroundwithImages2
                 LiquidRescale_toggle.TrackBackgroundOnColor = System.Windows.Media.Color.FromArgb(C.A, C.R, C.G, C.B);
                 LiquidRescale_toggle.IsOn = !LiquidRescale_toggle.IsOn;
                 LiquidRescale_toggle.IsOn = !LiquidRescale_toggle.IsOn;
-                Mainwin.limit_longside_tb.IsEnabled = false;
             }
             catch { }
             SetMainCnvOption();
@@ -473,6 +468,104 @@ namespace PlayAroundwithImages2
                 Rotate_Slider.Value++;
             else if (e.Delta < 0)
                 Rotate_Slider.Value--;
+        }
+
+        private void passthrough_toggle_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Sub_CnvOption.Passthrough = !passthrough_toggle.IsOn;
+            if (Sub_CnvOption.Passthrough == true)
+            {
+                Mainwin.mask1.Visibility = mask2.Visibility = mask3.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                Mainwin.mask1.Visibility = mask2.Visibility = mask3.Visibility = Visibility.Hidden;
+            }
+            SetMainCnvOption();
+        }
+
+        private void Disable_Control()
+        {
+
+        }
+
+
+
+        private async void CheckUpdate_Button_Click(object sender, RoutedEventArgs e)
+        {
+            List<string> downloadUriList = new List<string>();
+            List<string> body = new List<string>();
+            Mainwin.selected_TextB.Visibility = Visibility.Visible;
+            Mainwin.selected_TextB.Text = "アップデートの確認中...";
+            try
+            {
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                var client = new HttpClient();
+                client.DefaultRequestHeaders.Add(
+            "User-Agent",
+            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.2 (KHTML, like Gecko)");
+                client.Timeout = TimeSpan.FromSeconds(5);
+
+                var res = await client.GetAsync("https://api.github.com/repos/falxala/Play-Around-with-Images-2/releases");
+                var JsonText = await res.Content.ReadAsStringAsync();
+
+                List<Version> verlist = new List<Version>();
+
+                Version _version;
+                dynamic jsonDe = JsonConvert.DeserializeObject(JsonText);
+                foreach (var typeStr in jsonDe)
+                {
+                    try
+                    {
+                        _version = new Version(Regex.Replace((string)typeStr.tag_name, @"[^0-9^\.]", ""));
+                        verlist.Add(_version);
+                        body.Add((string)typeStr.body);
+                        downloadUriList.Add((string)typeStr.assets[0].browser_download_url);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+
+                int latest_index = verlist.IndexOf(verlist.Max());
+                var latest = verlist[latest_index];
+
+
+                System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+                System.Reflection.AssemblyName asmName = assembly.GetName();
+                System.Version version = asmName.Version;
+
+                Version version1 = new Version(version.ToString());
+                Console.WriteLine("cur" + version1 + "|" + latest); ;
+
+                if (version1.CompareTo(latest) >= 0)
+                {
+                    Mainwin.selected_TextB.Text = ("更新はありません");
+                    await Task.Delay(2000);
+                }
+                else
+                {
+                    string[] upInfo = {"tag","Describe","uri"};
+                    upInfo[0] = latest.ToString();
+                    upInfo[1] = body[latest_index];
+                    upInfo[2] = "https://github.com/falxala/Play-Around-with-Images-2/releases/tag/v" + latest;
+
+                    Update update = new Update(upInfo);
+                    update.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                    update.ShowDialog();
+                }
+            }
+            catch
+            {
+                Mainwin.selected_TextB.Text = ("更新の確認に失敗しました");
+                await Task.Delay(2000);
+            }
+            finally
+            {
+                Mainwin.selected_TextB.Visibility = Visibility.Hidden;
+                Mainwin.selected_TextB.Text = "";
+            }
         }
     }
 }

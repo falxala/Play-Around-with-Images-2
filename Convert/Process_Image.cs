@@ -16,9 +16,8 @@ namespace PlayAroundwithImages2
 {
     public class Process_Image
     {
-        public BitmapSource Create_thumbnail(string imagePath)
+        public static BitmapSource Create_thumbnail(string imagePath)
         {
-            Bitmap myBitmap;
             var myMagickSettings = new ImageMagick.MagickReadSettings();
 
             //PDF、EPS、AIのラスタライズ時の設定
@@ -30,21 +29,13 @@ namespace PlayAroundwithImages2
             myMagickSettings.ColorType = ImageMagick.ColorType.TrueColor;
 
             //必ずソースとなる「Jpeg画像」より、縮小予定のPixel数がが半分以下である事
-            myMagickSettings.SetDefine(ImageMagick.MagickFormat.Jpg, "size", "250x250");
-            using (var myMagick = new ImageMagick.MagickImage(imagePath,myMagickSettings))
+            myMagickSettings.SetDefine(ImageMagick.MagickFormat.Jpg, "size", "256x256");
+            using (var myMagick = new ImageMagick.MagickImage(imagePath, myMagickSettings))
             {
                 myMagick.Alpha(ImageMagick.AlphaOption.Remove);
                 myMagick.Strip();
-                myMagick.Thumbnail(250, 250);
-                myBitmap = myMagick.ToBitmap();
-            }
-
-            using (var ms = new System.IO.MemoryStream())
-            {
-                // MemoryStreamに書き出す
-                myBitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
-                // MemoryStreamをシーク
-                ms.Seek(0, System.IO.SeekOrigin.Begin);
+                myMagick.Thumbnail(256, 256);
+                MemoryStream ms = new MemoryStream(myMagick.ToByteArray(ImageMagick.MagickFormat.Bmp));
                 // MemoryStreamからBitmapFrameを作成
                 System.Windows.Media.Imaging.BitmapSource bitmapSource =
                     System.Windows.Media.Imaging.BitmapFrame.Create(
@@ -106,25 +97,42 @@ namespace PlayAroundwithImages2
             /// </summary>
             public string SaveDirectory { get; set; }
 
+            /// <summary>
+            /// 変換せずにコピー
+            /// </summary>
+            public bool Passthrough { get; set; }
+
         }
 
         /// <summary>
         /// 与えられたファイルを変換します
         /// </summary>
-        /// <param name="filepath"ファイルパス></param>
+        /// <param name="item"ファイルパス></param>
         /// <returns>出力ファイル名</returns>
-        public async Task<String> Convert(string filepath,ConvertOptions option, CancellationToken token)
+        public async Task<String> Convert(Model.drop_Image item, ConvertOptions option, CancellationToken token)
         {
+            token.ThrowIfCancellationRequested();
+
+            if (option.Passthrough == true)
+            {
+                FileInfo file = new FileInfo(item.Image_path);
+                string destinationPath = option.SaveDirectory + "\\" + System.IO.Path.GetFileName(item.Image_path);
+                Console.WriteLine(destinationPath);
+                file.CopyTo(destinationPath);
+                return (destinationPath);
+            }
+
             var Result = await Task.Run(() =>
             {
-                var myMagickSettings = new ImageMagick.JpegWriteDefines();
-                myMagickSettings.Extent = (int)(option.Filesize * 1024);
+                //使用不可
+                //var myMagickSettings = new ImageMagick.JpegWriteDefines();
+                //myMagickSettings.Extent = (int)(option.Filesize * 1024);
                 string outputPath = "";
                 string outputDir = option.SaveDirectory + "\\";
                 Directory.CreateDirectory(outputDir);
 
                 string output_Num = "Cnv_";
-                string output_name = System.IO.Path.GetFileNameWithoutExtension(filepath);
+                string output_name = System.IO.Path.GetFileNameWithoutExtension(item.Image_path);
 
                 //PDF、EPS、AIのラスタライズ時の設定
                 var myMagicReadkSettings = new ImageMagick.MagickReadSettings();
@@ -135,16 +143,51 @@ namespace PlayAroundwithImages2
                 //ラスタライズ時カラータイプ
                 myMagicReadkSettings.ColorType = ImageMagick.ColorType.TrueColor;
 
-                using (var myMagick = new ImageMagick.MagickImage(filepath,myMagicReadkSettings))
+
+                //ファイル名
+                outputPath = outputDir + output_Num + output_name + "." + option.Format.ToString();
+
+                int Count = 2;
+                if (!option.Overwrite)
+                    while (true)
+                    {
+                        if (!option.Overwrite && File.Exists(outputPath))
+                        {
+                            output_Num = "Cnv_" + Count + "_";
+                            outputPath = outputDir + output_Num + output_name + "." + option.Format.ToString();
+                            Count++;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                /*
+                if (String.Compare(Path.GetExtension(item.Image_path),".pdf",true) == 0)
                 {
-                    myMagick.Format = option.Format;
+
+                    using (var myMagicks = new ImageMagick.MagickImageCollection())
+                    {
+                        //「Gostscript」を使用してsRGBでラスタライズ
+                        myMagicks.Read(item.Image_path, myMagicReadkSettings);
+                        for (int i = 0; i < myMagicks.Count; i++)
+                        {
+                            //コレクションから「Magick画像」を1頁分取得
+                            ImageMagick.MagickImage myMagick = (ImageMagick.MagickImage)myMagicks[i];
+                            myMagick.Strip();//解像度変更を反映させる為「EXIF情報」削除
+                                             //解像度を再設定
+                            myMagick.Density = new ImageMagick.Density(myMagick.Density.X, myMagick.Density.Y);
+                            myMagick.Format = option.Format;
+
+                                                myMagick.Format = option.Format;
                     //myMagick.Quality = 10;
 
                     myMagick.BackgroundColor = Color.Transparent;
                     if (myMagick.Format == ImageMagick.MagickFormat.Jpeg)
                     {
-                        myMagick.Alpha(ImageMagick.AlphaOption.Remove);
                         myMagick.BackgroundColor = Color.White;
+                        myMagick.Alpha(ImageMagick.AlphaOption.Remove);
                     }
 
                     //回転
@@ -167,10 +210,6 @@ namespace PlayAroundwithImages2
                             var WidthPer = new ImageMagick.Percentage((double)option.Size.Width / myMagick.Width * 100);
                             var HeightPer = new ImageMagick.Percentage((double)option.Size.Height / myMagick.Height * 100);
                             myMagick.LiquidRescale(WidthPer, HeightPer);
-                        }
-                        else if (option.Size.Width == option.Size.Height)
-                        {
-                            myMagick.Resize(option.Size.Width, option.Size.Height);
                         }
                         else
                         {
@@ -195,29 +234,90 @@ namespace PlayAroundwithImages2
                             myMagick.RePage();
                         }
                     }
+                    else if (option.Size.Width == option.Size.Height && option.Size.Width != 0)
+                    {
+                        myMagick.Resize(option.Size.Width, option.Size.Height);
+                    }
 
-                    outputPath = outputDir + output_Num + output_name + "." + myMagick.Format.ToString();
 
-                    //「ファイル」へ書き出し  
-                    int Count = 2;
-                    if (!option.Overwrite)
-                        while (true)
-                        {
-                            if (!option.Overwrite && File.Exists(outputPath))
-                            {
-                                output_Num = "Cnv_" + Count + "_";
-                                outputPath = outputDir + output_Num + output_name + "." + myMagick.Format.ToString();
-                                Count++;
-                            }
-                            else
-                            {
-                                break;
-                            }
+                            token.ThrowIfCancellationRequested();
+
+                            myMagick.Write(string.Format(Path.GetDirectoryName(outputPath)+"\\"+
+                                Path.GetFileNameWithoutExtension(outputPath) + "{0}." + option.Format.ToString(), i + 1));
+
+                            token.ThrowIfCancellationRequested();
                         }
+
+                        return "";
+                    }
+                }
+                */
+
+                using (var myMagick = new ImageMagick.MagickImage(item.Image_path, myMagicReadkSettings))
+                {
+                    myMagick.Format = option.Format;
+                    //myMagick.Quality = 10;
+
+                    myMagick.BackgroundColor = new ImageMagick.MagickColor(0,0,0,0);
+                    if (myMagick.Format == ImageMagick.MagickFormat.Jpeg)
+                    {
+                        myMagick.BackgroundColor = new ImageMagick.MagickColor(255,255,255);
+                        myMagick.Alpha(ImageMagick.AlphaOption.Remove);
+                    }
+
+                    //回転
+                    if (option.Rotate != 0)
+                    {
+                        myMagick.Rotate(option.Rotate);
+
+                    }
+
+                    //反転
+                    if (option.Mirror)
+                        myMagick.Flop();
+
+                    //リサイズ・変形
+                    if (option.Transform)
+                    {
+                        if (option.LiquidRescale)
+                        {
+                            //自然なリサイズを試行
+                            var WidthPer = new ImageMagick.Percentage((double)option.Size.Width / myMagick.Width * 100);
+                            var HeightPer = new ImageMagick.Percentage((double)option.Size.Height / myMagick.Height * 100);
+                            myMagick.LiquidRescale(WidthPer, HeightPer);
+                        }
+                        else
+                        {
+                            var param = new double[]
+                            {
+                            0,0,                                //入力_左上座標
+                            0,0,                                //出力_左上座標
+                            0,myMagick.Height,                  //入力_左下座標
+                            0,option.Size.Height,               //出力_左下座標
+                            myMagick.Width,myMagick.Height,     //入力_右下座標
+                            option.Size.Width,option.Size.Height,               //出力_右下座標
+                            myMagick.Width,0,                   //入力_右上座標
+                            option.Size.Width,0                         //出力_右上座標
+                            };
+                            //自由変形
+                            //指定したサイズにフィットするようにカンバスサイズを変形する設定
+                            ImageMagick.DistortSettings distortSettings = new ImageMagick.DistortSettings();
+                            distortSettings.Bestfit = true;
+                            distortSettings.Viewport = new ImageMagick.MagickGeometry(option.Size.Width, option.Size.Height);
+                            myMagick.Distort(ImageMagick.DistortMethod.BilinearForward, distortSettings, param);
+                            myMagick.Crop(option.Size.Width, option.Size.Height);
+                            myMagick.RePage();
+                        }
+                    }
+                    else if (option.Size.Width == option.Size.Height && option.Size.Width != 0)
+                    {
+                        myMagick.Resize(option.Size.Width, option.Size.Height);
+                    }
 
                     token.ThrowIfCancellationRequested();
 
-                    myMagick.Write(outputPath, myMagickSettings);
+                    //「ファイル」へ書き出し  
+                    myMagick.Write(outputPath);
 
                     token.ThrowIfCancellationRequested();
 
@@ -248,9 +348,11 @@ namespace PlayAroundwithImages2
             strs[7] = (myMagickInfo.Density.Units.ToString());
             strs[8] = (myMagickInfo.Compression.ToString());
 
+            /*
             var myMagickSettings = new ImageMagick.MagickReadSettings();
 
             //jpeg読み込み設定
+
             myMagickSettings.SetDefine(ImageMagick.MagickFormat.Jpg, "size", "1x1");
             using (var myMagick = new ImageMagick.MagickImage(filepath,myMagickSettings))
             {
@@ -265,7 +367,8 @@ namespace PlayAroundwithImages2
                 {
                     strs[8] = ("NULL");
                 }
-            }
+            }*/
+
             return strs;
         }
     }
