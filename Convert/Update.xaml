@@ -5,13 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PlayAroundwithImages2"
         mc:Ignorable="d"
-        Title="Update" Height="250" Width="350" WindowStyle="None" AllowsTransparency="True"
-        MouseLeftButtonDown="Window_MouseLeftButtonDown">
-    <Grid>
+        Title="Update" Height="360" Width="500"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown" WindowStyle="None" ResizeMode="NoResize">
+
+    <Grid Background="White">
+        <DockPanel Margin="65,74,223,50" Background="White"/>
+
         <Button Content="更新する" HorizontalAlignment="Right" Margin="0,0,108,10" Width="91" Click="Button_Click" Height="27" VerticalAlignment="Bottom" FontSize="14"/>
         <Button Content="キャンセル" Margin="0,0,10,10" Click="Button_Click_1" Height="27" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="93" FontSize="14"/>
-        <TextBox x:Name="text" Margin="10,43,10,42" TextWrapping="Wrap" Text="TextBox" FontSize="14"/>
-        <Rectangle Fill="Gray" Height="32" VerticalAlignment="Top"/>
+        <Rectangle Fill="#FF404040" Height="32" VerticalAlignment="Top"/>
+        <TextBlock x:Name="title" HorizontalAlignment="Left" Margin="10,5,0,0" TextWrapping="WrapWithOverflow" Text="UPDATE" VerticalAlignment="Top" Foreground="White" FontSize="16" FontFamily="Yu Gothic UI Semibold" Width="182" Height="22"/>
+        <WebBrowser x:Name="browser" Margin="10,37,10,42" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.HorizontalScrollBarVisibility="Hidden"/>
 
     </Grid>
 </Window>

@@ -23,6 +23,7 @@ namespace PlayAroundwithImages2
             tif,
             pdf,
             heic,
+            svg,
         }
     }
 }

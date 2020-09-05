@@ -333,15 +333,6 @@ namespace PlayAroundwithImages2
             Width_TextBox.IsEnabled = true;
             Height_TextBox.IsEnabled = true;
             Mainwin.limit_longside_tb.IsEnabled = false;
-            try
-            {
-                LiquidRescale_toggle.IsEnabled = true;
-                var C = ColorTranslator.FromHtml("#FF319C3F");
-                LiquidRescale_toggle.TrackBackgroundOnColor = System.Windows.Media.Color.FromArgb(C.A, C.R, C.G, C.B);
-                LiquidRescale_toggle.IsOn = !LiquidRescale_toggle.IsOn;
-                LiquidRescale_toggle.IsOn = !LiquidRescale_toggle.IsOn;
-            }
-            catch { }
             SetMainCnvOption();
         }
 
@@ -351,15 +342,6 @@ namespace PlayAroundwithImages2
             Width_TextBox.IsEnabled = false;
             Height_TextBox.IsEnabled = false;
             Mainwin.limit_longside_tb.IsEnabled = true;
-            try
-            {
-                LiquidRescale_toggle.IsEnabled = false;
-                var C = ColorTranslator.FromHtml("#FF88A88C");
-                LiquidRescale_toggle.TrackBackgroundOnColor = System.Windows.Media.Color.FromArgb(C.A, C.R, C.G, C.B);
-                LiquidRescale_toggle.IsOn = !LiquidRescale_toggle.IsOn;
-                LiquidRescale_toggle.IsOn = !LiquidRescale_toggle.IsOn;
-            }
-            catch { }
             SetMainCnvOption();
         }
 
@@ -385,12 +367,6 @@ namespace PlayAroundwithImages2
         private void OpenFolder_Click(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Process.Start("EXPLORER.EXE", Sub_CnvOption.SaveDirectory);
-        }
-
-        private void LiquidRescale_toggle_PreviewMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            Sub_CnvOption.LiquidRescale = !LiquidRescale_toggle.IsOn;
-            SetMainCnvOption();
         }
 
         //冗長な書き方　後でリファクタリング
@@ -475,11 +451,13 @@ namespace PlayAroundwithImages2
             Sub_CnvOption.Passthrough = !passthrough_toggle.IsOn;
             if (Sub_CnvOption.Passthrough == true)
             {
-                Mainwin.mask1.Visibility = mask2.Visibility = mask3.Visibility = Visibility.Visible;
+                Mainwin.mask1.Visibility = mask2.Visibility = Visibility.Visible;
+                Mainwin.Convert_Button.Content = "COPY";
             }
             else
             {
-                Mainwin.mask1.Visibility = mask2.Visibility = mask3.Visibility = Visibility.Hidden;
+                Mainwin.mask1.Visibility = mask2.Visibility = Visibility.Hidden;
+                Mainwin.Convert_Button.Content = "CONVERT";
             }
             SetMainCnvOption();
         }
@@ -531,13 +509,27 @@ namespace PlayAroundwithImages2
                 int latest_index = verlist.IndexOf(verlist.Max());
                 var latest = verlist[latest_index];
 
+                //ソート前のインデックスリスト
+                var sorted = verlist
+                .Select((x, i) => new KeyValuePair<Version, int>(x, i))
+                .OrderBy(x => x.Key)
+                .ToList();
+                List<int> idx = sorted.Select(x => x.Value).ToList();
 
                 System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
                 System.Reflection.AssemblyName asmName = assembly.GetName();
                 System.Version version = asmName.Version;
 
                 Version version1 = new Version(version.ToString());
-                Console.WriteLine("cur" + version1 + "|" + latest); ;
+                Info_TextBox.Text = "cur" + version1 + " | last" + latest;
+                Console.WriteLine("cur" + version1 + "|last" + latest);
+
+                string merge = "";
+
+                for (int i = idx.Count-1; i >= 0; i--)
+                {
+                    merge += body[idx[i]];
+                }
 
                 if (version1.CompareTo(latest) >= 0)
                 {
@@ -548,7 +540,7 @@ namespace PlayAroundwithImages2
                 {
                     string[] upInfo = {"tag","Describe","uri"};
                     upInfo[0] = latest.ToString();
-                    upInfo[1] = body[latest_index];
+                    upInfo[1] = merge;
                     upInfo[2] = "https://github.com/falxala/Play-Around-with-Images-2/releases/tag/v" + latest;
 
                     Update update = new Update(upInfo);

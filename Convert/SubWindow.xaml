@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PlayAroundwithImages2"
         xmlns:ToggleSwitch="clr-namespace:WpfControlLibrary;assembly=ToggleSwitch" x:Class="PlayAroundwithImages2.SubWindow"
         mc:Ignorable="d"
-        Title="SubWindow" Height="600" Width="312" Loaded="Window_Loaded" Closing="Window_Closing" Background="#FF464646" MinWidth="312" MinHeight="600" ShowInTaskbar="False" Icon="Resources/icon.Ico">
+        Title="Option" Height="600" Width="228" Loaded="Window_Loaded" Closing="Window_Closing" Background="#FF464646" MinWidth="280" MinHeight="600" ShowInTaskbar="False" Icon="Resources/icon.Ico">
 
     <Window.Resources>
         <!-- 通常時のボタンの色 -->
@@ -48,19 +48,27 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Border BorderBrush="Black" BorderThickness="1" Height="100" Margin="10,150,10,0" VerticalAlignment="Top">
-            <Slider x:Name="Rotate_Slider" Margin="9,34,9,0" Maximum="180" Minimum="-180" ValueChanged="Rotate_Slider_ValueChanged" PreviewMouseDoubleClick="Rotate_Slider_PreviewMouseDoubleClick" PreviewMouseWheel="Rotate_Slider_PreviewMouseWheel" Height="29" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Rotate" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White" Width="56" Margin="18,116,0,0" RenderTransformOrigin="0.369,0.319"/>
+
+
+        <Border BorderBrush="Black" BorderThickness="1" Height="42" Margin="10,230,10,0" VerticalAlignment="Top"/>
+
+
+        <Border BorderBrush="Black" BorderThickness="1" Height="213" Margin="10,12,10,0" VerticalAlignment="Top">
+            <Slider x:Name="Rotate_Slider" Margin="30,142,9,0" Maximum="180" Minimum="-180" ValueChanged="Rotate_Slider_ValueChanged" PreviewMouseDoubleClick="Rotate_Slider_PreviewMouseDoubleClick" PreviewMouseWheel="Rotate_Slider_PreviewMouseWheel" Height="28" VerticalAlignment="Top"/>
         </Border>
-        <Border BorderBrush="Black" BorderThickness="1" Height="126" Margin="10,12,10,0" VerticalAlignment="Top"/>
+
+        <Polyline Points="135,60 135,44 155,44"
+            Stroke="white" StrokeThickness="2"
+            StrokeDashArray="0.5 0.5"  />
+
+        <Polyline Points="135,83 135,97 155,97"
+            Stroke="white" StrokeThickness="2"
+            StrokeDashArray="0.5 0.5"  />
 
 
-        <Border BorderBrush="Black" BorderThickness="1" Height="126" Margin="10,302,10,0" VerticalAlignment="Top"/>
-
-
-        <Button x:Name="Select_folder"  Margin="0,341,18,0" VerticalAlignment="Top" Click="Button_Click" Height="23" HorizontalAlignment="Right" Width="28" Background="White">
-            <Image Source="Resources/Folder.png" />
-        </Button>
-        <ComboBox x:Name="ComboBox_extension" VerticalAlignment="Top" Margin="80,395,18,0" SelectionChanged="ComboBox_extension_SelectionChanged" FontSize="14">
+        <Border BorderBrush="Black" BorderThickness="1" Height="96" Margin="10,277,10,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="ComboBox_extension" VerticalAlignment="Top" Margin="80,238,18,0" SelectionChanged="ComboBox_extension_SelectionChanged" FontSize="14">
             <ComboBox.Background>
                 <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                     <GradientStop Color="#FFF0F0F0" Offset="0"/>
@@ -68,9 +76,9 @@
                 </LinearGradientBrush>
             </ComboBox.Background>
         </ComboBox>
-        <TextBox x:Name="Width_TextBox" HorizontalAlignment="Left" Height="22" Margin="60,43,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="60" FontSize="14" TextChanged="Width_TextBox_TextChanged" PreviewTextInput="Width_TextBox_PreviewTextInput" HorizontalContentAlignment="Center"/>
-        <TextBox x:Name="Height_TextBox" Height="22" Margin="200,43,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="60" FontSize="14" TextChanged="Height_TextBox_TextChanged" PreviewTextInput="Height_TextBox_PreviewTextInput" HorizontalContentAlignment="Center"/>
-        <CheckBox x:Name="Dock_checkbox" Content="Dock" HorizontalAlignment="Left" Margin="10,0,0,10" Click="CheckBox_Click" RenderTransformOrigin="0.5,0.5" Height="15" VerticalAlignment="Bottom" Foreground="White">
+        <TextBox x:Name="Width_TextBox" HorizontalAlignment="Left" Height="22" Margin="156,42,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="53" FontSize="14" TextChanged="Width_TextBox_TextChanged" PreviewTextInput="Width_TextBox_PreviewTextInput" HorizontalContentAlignment="Center"/>
+        <TextBox x:Name="Height_TextBox" Height="22" Margin="156,77,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="53" FontSize="14" TextChanged="Height_TextBox_TextChanged" PreviewTextInput="Height_TextBox_PreviewTextInput" HorizontalContentAlignment="Center"/>
+        <CheckBox x:Name="Dock_checkbox" Content="Dock" HorizontalAlignment="Left" Margin="14,0,0,10" Click="CheckBox_Click" RenderTransformOrigin="0.5,0.5" Height="15" VerticalAlignment="Bottom" Foreground="White" FontFamily="Yu Gothic Medium">
             <CheckBox.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform ScaleX="1.2" ScaleY="1.2"/>
@@ -80,16 +88,22 @@
                 </TransformGroup>
             </CheckBox.RenderTransform>
         </CheckBox>
-        <TextBlock Margin="18,398,0,0" TextWrapping="Wrap" Text="Format" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="62" Foreground="White" FontSize="14"/>
-        <TextBlock HorizontalAlignment="Left" Margin="18,44,0,0" TextWrapping="Wrap" Text="Width" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White"/>
-        <TextBlock HorizontalAlignment="Left" Margin="153,44,0,0" TextWrapping="Wrap" Text="Height" VerticalAlignment="Top" FontSize="14" Height="23" RenderTransformOrigin="0.553,0.174" Foreground="White"/>
-        <Button x:Name="ChainButton"  HorizontalAlignment="Left" Margin="147,72,0,0" VerticalAlignment="Top" Width="24" Click="ChainButton_Click" Height="24" BorderBrush="{x:Null}" Foreground="{x:Null}" Background="#FFE5E5E5">
-            <Image Source="Resources/UnChain.png" />
+        <TextBlock Margin="16,241,0,0" TextWrapping="Wrap" Text="Format" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="62" Foreground="White" FontSize="14" FontFamily="Yu Gothic Medium"/>
+        <TextBlock HorizontalAlignment="Left" Margin="18,43,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium"><Run Text="W"/><Run Text="idth"/></TextBlock>
+        <TextBlock HorizontalAlignment="Left" Margin="18,77,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="14" Height="23" RenderTransformOrigin="0.553,0.174" Foreground="White" FontFamily="Yu Gothic Medium"><Run Text="H"/><Run Text="eight"/><LineBreak/><Run/></TextBlock>
+        <Button x:Name="ChainButton"  HorizontalAlignment="Left" Margin="116,58,0,0" VerticalAlignment="Top" Width="37" Click="ChainButton_Click" Height="27" BorderBrush="{x:Null}" Foreground="{x:Null}" Background="{x:Null}" RenderTransformOrigin="0.5,0.5">
+            <Button.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="-90"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Button.RenderTransform>
+            <Image Source="Resources/UnChain.png" Height="23" />
         </Button>
-        <Polyline Points="0,0 0,15 55,15" Stroke="White" StrokeThickness="2" StrokeDashArray="1" Margin="87,70,0,0" HorizontalAlignment="Left" Width="59" Height="19" VerticalAlignment="Top"  />
-        <Polyline Points="55,0 55,15 0,15" Stroke="White" StrokeThickness="2" StrokeDashArray="1" Margin="175,70,0,0" HorizontalAlignment="Left" Width="62" Height="18" VerticalAlignment="Top"  />
-        <TextBlock HorizontalAlignment="Left" Margin="120,46,0,0" TextWrapping="Wrap" Text="[px]" VerticalAlignment="Top" Foreground="White"/>
-        <TextBlock HorizontalAlignment="Left" Margin="260,46,0,0" TextWrapping="Wrap" Text="[px]" VerticalAlignment="Top" Foreground="White"/>
+        <TextBlock HorizontalAlignment="Left" Margin="222,43,0,0" TextWrapping="Wrap" Text="[px]" VerticalAlignment="Top" Foreground="White" FontFamily="Yu Gothic Medium" FontSize="14"/>
+        <TextBlock HorizontalAlignment="Left" Margin="222,77,0,0" TextWrapping="Wrap" Text="[px]" VerticalAlignment="Top" Foreground="White" FontFamily="Yu Gothic Medium" FontSize="14"/>
         <CheckBox x:Name="tf_checkbox" Content="Transform (priority)" HorizontalAlignment="Left" Margin="16,18,0,0" VerticalAlignment="Top" Width="160" Height="19" RenderTransformOrigin="0,0" Unchecked="tf_checkbox_Unchecked" Checked="tf_checkbox_Checked" Background="White" Foreground="White" Padding="4,-1,0,0">
             <CheckBox.RenderTransform>
                 <TransformGroup>
@@ -100,37 +114,39 @@
                 </TransformGroup>
             </CheckBox.RenderTransform>
         </CheckBox>
-        <TextBox x:Name="selectDirTextBox" Height="23" Margin="18,341,51,0" Text="TextBox" VerticalAlignment="Top" FontSize="14" MaxLines="1" TextChanged="selectDirTextBox_TextChanged"/>
-        <CheckBox x:Name="ow_checkbox" Content="Overwrite if same name" HorizontalAlignment="Left" Margin="17,371,0,0" VerticalAlignment="Top" Width="160" RenderTransformOrigin="0,0" Click="ow_checkbox_Click" Background="White" Foreground="White">
-            <CheckBox.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform ScaleX="1.2" ScaleY="1.2"/>
-                    <SkewTransform/>
-                    <RotateTransform/>
-                    <TranslateTransform/>
-                </TransformGroup>
-            </CheckBox.RenderTransform>
-        </CheckBox>
-        <TextBlock Margin="18,309,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="122" FontSize="14" Foreground="White"><Run Text="Output"/><Run Text="s"/><Run Text=" "/><Run Text="Directory"/></TextBlock>
-        <TextBox x:Name="Info_TextBox" Margin="10,492,10,37" TextWrapping="Wrap" Background="#FF575757" Foreground="#FF0AE6BE"/>
-        <Label Content="info" HorizontalAlignment="Left" Margin="10,463,0,0" VerticalAlignment="Top" Foreground="#FF0AE6BE" FontSize="14"/>
-        <Button x:Name="OpenFolder" Style="{StaticResource HoverButtonStyle}" Content="Open" Margin="0,308,18,0" Click="OpenFolder_Click" Foreground="White" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" HorizontalAlignment="Right" Width="98" Height="23" VerticalAlignment="Top" BorderBrush="White"/>
-        <Border BorderThickness="1" Height="36" Margin="10,102,10,0" VerticalAlignment="Top" Background="#FF595959"/>
+        <TextBox x:Name="Info_TextBox" Margin="10,486,10,38" TextWrapping="Wrap" Background="#FF575757" Foreground="#FF0AE6BE"/>
+        <Label Content="info" HorizontalAlignment="Left" Margin="10,460,0,0" VerticalAlignment="Top" Foreground="#FF0AE6BE" FontSize="14" FontFamily="Yu Gothic Medium"/>
+        <Grid Margin="16,286,19,0" Height="78" VerticalAlignment="Top">
 
 
-        <ToggleSwitch:ToggleSwitch x:Name="LiquidRescale_toggle" Height="24" Margin="0,108,22,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" PreviewMouseDown="LiquidRescale_toggle_PreviewMouseDown" HorizontalAlignment="Right" Width="40"/>
-        <TextBlock HorizontalAlignment="Left" Margin="18,108,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="24" FontSize="14" Foreground="White"><Run Text="Liquid"/><Run Text=" "/><Run Text="Rescale"/><Run Text=" "/><Run Text="("/><Run Text="v"/><Run Text="ery "/><Run Text="s"/><Run Text="low)"/></TextBlock>
-        <TextBlock HorizontalAlignment="Left" Margin="18,159,0,0" TextWrapping="Wrap" Text="Rotate" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White" Width="56"/>
-        <TextBlock HorizontalAlignment="Left" Margin="18,218,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White" Width="56"><Run Text="M"/><Run Text="irror"/></TextBlock>
-        <ToggleSwitch:ToggleSwitch x:Name="Mirror_toggle" Height="24" Margin="0,218,22,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" PreviewMouseDown="Mirror_toggle_PreviewMouseDown" HorizontalAlignment="Right" Width="40"/>
-        <TextBox x:Name="Rotate_TextBox" Height="22" Margin="200,158,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="47" FontSize="14" TextChanged="Rotate_TextBox_TextChanged" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" PreviewTextInput="Rotate_TextBox_PreviewTextInput"/>
-        <TextBlock HorizontalAlignment="Left" Margin="252,159,0,0" TextWrapping="Wrap" Text="deg" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White" Width="28"/>
-        <Border BorderBrush="Black" BorderThickness="1" Height="42" Margin="10,255,10,0" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Margin="18,265,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White" Width="91"><Run Text="P"/><Run Text="assthrough"/></TextBlock>
-        <ToggleSwitch:ToggleSwitch x:Name="passthrough_toggle" Height="24" Margin="0,265,22,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" HorizontalAlignment="Right" Width="40" PreviewMouseDown="passthrough_toggle_PreviewMouseDown"/>
-        <Button x:Name="CheckUpdate_Button" Style="{StaticResource HoverButtonStyle}" Content="Check Update" Margin="11,435,0,0" Foreground="White" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" BorderBrush="White" Click="CheckUpdate_Button_Click" Height="23" VerticalAlignment="Top" HorizontalAlignment="Left" Width="98"/>
-        <Rectangle x:Name="mask2" Fill="#7F000000" Height="236" Margin="10,12,10,0" Stroke="Black" VerticalAlignment="Top" Visibility="Hidden"/>
-        <Rectangle x:Name="mask3" Fill="#7F000000" Height="59" Margin="10,369,10,0" Stroke="Black" VerticalAlignment="Top" Visibility="Hidden"/>
+            <Button x:Name="Select_folder"  Margin="0,33,0,0" VerticalAlignment="Top" Click="Button_Click" Height="23" HorizontalAlignment="Right" Width="28" Background="White">
+                <Image Source="Resources/Folder.png" />
+            </Button>
+            <TextBox x:Name="selectDirTextBox" Height="23" Margin="1,33,33,0" Text="TextBox" VerticalAlignment="Top" FontSize="14" MaxLines="1" TextChanged="selectDirTextBox_TextChanged" FontFamily="Yu Gothic Medium"/>
+            <CheckBox x:Name="ow_checkbox" Content="Overwrite if same name" HorizontalAlignment="Left" Margin="0,63,0,0" VerticalAlignment="Top" Width="160" RenderTransformOrigin="0,0" Click="ow_checkbox_Click" Background="White" Foreground="White" FontFamily="Yu Gothic Medium">
+                <CheckBox.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleX="1.2" ScaleY="1.2"/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </CheckBox.RenderTransform>
+            </CheckBox>
+            <TextBlock Margin="1,1,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="122" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium"><Run Text="Output"/><Run Text="s"/><Run Text=" "/><Run Text="Directory"/></TextBlock>
+            <Button x:Name="OpenFolder" Style="{StaticResource HoverButtonStyle}" Content="Open" Click="OpenFolder_Click" Foreground="White" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" HorizontalAlignment="Right" Width="98" Height="23" VerticalAlignment="Top" BorderBrush="White" FontFamily="Yu Gothic Medium"/>
+        </Grid>
+        <TextBlock HorizontalAlignment="Left" Margin="18,192,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White" Width="56" FontFamily="Yu Gothic Medium"><Run Text="M"/><Run Text="irror"/></TextBlock>
+        <ToggleSwitch:ToggleSwitch x:Name="Mirror_toggle" Height="24" Margin="0,191,22,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" PreviewMouseDown="Mirror_toggle_PreviewMouseDown" HorizontalAlignment="Right" Width="40"/>
+        <TextBox x:Name="Rotate_TextBox" Height="22" Margin="156,114,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="53" FontSize="14" TextChanged="Rotate_TextBox_TextChanged" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" PreviewTextInput="Rotate_TextBox_PreviewTextInput"/>
+        <TextBlock HorizontalAlignment="Left" Margin="214,116,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium"><Run Text="["/><Run Text="deg"/><Run Text="]"/></TextBlock>
+        <Border BorderBrush="Black" BorderThickness="1" Height="42" Margin="10,378,10,0" VerticalAlignment="Top"/>
+        <Grid Margin="21,387,19,0" Height="24" VerticalAlignment="Top">
+            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White" Width="91" Margin="-2,1,0,0" FontFamily="Yu Gothic Medium"><Run Text="P"/><Run Text="assthrough"/></TextBlock>
+            <ToggleSwitch:ToggleSwitch x:Name="passthrough_toggle" Height="24" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" HorizontalAlignment="Right" Width="40" PreviewMouseDown="passthrough_toggle_PreviewMouseDown"/>
+        </Grid>
+        <Button x:Name="CheckUpdate_Button" Style="{StaticResource HoverButtonStyle}" Content="Check Update" Margin="10.667,429.002,0,0" Foreground="White" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" BorderBrush="White" Click="CheckUpdate_Button_Click" Height="25" VerticalAlignment="Top" HorizontalAlignment="Left" Width="110" FontFamily="Yu Gothic Medium"/>
+        <Rectangle x:Name="mask2" Fill="#7F000000" Height="260" Margin="10,12,10,0" Stroke="Black" VerticalAlignment="Top" Visibility="Hidden"/>
 
 
     </Grid>

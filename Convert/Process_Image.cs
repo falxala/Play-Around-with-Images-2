@@ -32,7 +32,7 @@ namespace PlayAroundwithImages2
             myMagickSettings.SetDefine(ImageMagick.MagickFormat.Jpg, "size", "256x256");
             using (var myMagick = new ImageMagick.MagickImage(imagePath, myMagickSettings))
             {
-                myMagick.Alpha(ImageMagick.AlphaOption.Remove);
+                //myMagick.Alpha(ImageMagick.AlphaOption.Remove);
                 myMagick.Strip();
                 myMagick.Thumbnail(256, 256);
                 MemoryStream ms = new MemoryStream(myMagick.ToByteArray(ImageMagick.MagickFormat.Bmp));
@@ -258,10 +258,10 @@ namespace PlayAroundwithImages2
                     myMagick.Format = option.Format;
                     //myMagick.Quality = 10;
 
-                    myMagick.BackgroundColor = new ImageMagick.MagickColor(0,0,0,0);
+                    myMagick.BackgroundColor = new ImageMagick.MagickColor("transparent");
                     if (myMagick.Format == ImageMagick.MagickFormat.Jpeg)
                     {
-                        myMagick.BackgroundColor = new ImageMagick.MagickColor(255,255,255);
+                        myMagick.BackgroundColor = new ImageMagick.MagickColor("white");
                         myMagick.Alpha(ImageMagick.AlphaOption.Remove);
                     }
 

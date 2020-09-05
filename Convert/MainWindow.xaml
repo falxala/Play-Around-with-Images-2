@@ -6,10 +6,11 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:b="clr-namespace:Experiment.Wpf.Behaviors"
         xmlns:local="clr-namespace:PlayAroundwithImages2"
-        xmlns:WpfControlLibrary="clr-namespace:WpfControlLibrary;assembly=ToggleSwitch" x:Class="PlayAroundwithImages2.MainWindow"
+        xmlns:WpfControlLibrary="clr-namespace:WpfControlLibrary;assembly=ToggleSwitch" xmlns:Converters="clr-namespace:PlayAroundwithImages2.Converters" x:Name="window" x:Class="PlayAroundwithImages2.MainWindow"
         mc:Ignorable="d" Height="580" Width="800" MinWidth="650" Loaded="Window_Loaded" MinHeight="600" Background="#FF464646" Title="Play Around with Images 2" LocationChanged="Window_LocationChanged" SizeChanged="Window_SizeChanged" Closing="Window_Closing" Icon="Resources/icon.Ico">
 
     <Window.Resources>
+        <Converters:RotateConverter x:Key="RotateConverter"/>
         <!-- 通常時のボタンの色 -->
         <SolidColorBrush x:Key="NormalButtonBrush" Color="#FF7A7A7A"/>
         <!-- 通常時のボタンの背景色 -->
@@ -40,6 +41,32 @@
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TransparentImageBox" TargetType="{x:Type Border}">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <DrawingBrush Viewport="0,0,16,16" TileMode="Tile" ViewportUnits="Absolute">
+                        <DrawingBrush.Drawing>
+                            <DrawingGroup>
+                                <GeometryDrawing Brush="#bababa">
+                                    <GeometryDrawing.Geometry>
+                                        <RectangleGeometry Rect="0,0,100,100"  />
+                                    </GeometryDrawing.Geometry>
+                                </GeometryDrawing>
+                                <GeometryDrawing Brush="#ffffff">
+                                    <GeometryDrawing.Geometry>
+                                        <GeometryGroup RenderOptions.EdgeMode="Aliased">
+                                            <RectangleGeometry Rect="0,0,50,50" />
+                                            <RectangleGeometry Rect="50,50,50,50" />
+                                        </GeometryGroup>
+                                    </GeometryDrawing.Geometry>
+                                </GeometryDrawing>
+                            </DrawingGroup>
+                        </DrawingBrush.Drawing>
+                    </DrawingBrush>
                 </Setter.Value>
             </Setter>
         </Style>
@@ -75,21 +102,33 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="199*" MinHeight="100"/>
                     <RowDefinition Height="auto" MinHeight="8"/>
-                    <RowDefinition Height="362*" MinHeight="350"/>
+                    <RowDefinition Height="362*" MinHeight="275"/>
                 </Grid.RowDefinitions>
 
-                <GridSplitter HorizontalAlignment="Stretch" Margin="84,2" Grid.Row="1" Background="Gray"/>
-                <Border BorderBrush="Black" BorderThickness="1" Margin="5,3,4,0">
-                    <Image x:Name="preview_image" Margin="-1"/>
+                <GridSplitter HorizontalAlignment="Stretch" Margin="84,2" Grid.Row="1" Background="#CCFFFFFF"/>
+
+                <Border BorderBrush="Black" BorderThickness="1" Margin="5,3,4,0" ClipToBounds="True" Style="{StaticResource TransparentImageBox}">
+                    <Image x:Name="preview_image" Margin="-1" RenderTransformOrigin="0.5,0.5">
+                        <Image.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="{Binding Scale_X.Value}" ScaleY="{Binding Scale_Y.Value}"/>
+                                <SkewTransform/>
+                                <RotateTransform  Angle="{Binding Rotate.Value}"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </Image.RenderTransform>
+                    </Image>
                 </Border>
-                <Border BorderBrush="Black" BorderThickness="1" Margin="5,3,4,0">
-                    <TextBlock x:Name="selected_TextB" TextWrapping="WrapWithOverflow" Text="TextBlock" FontSize="18" Margin="9,-1" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" LineStackingStrategy="BlockLineHeight" Foreground="White" ScrollViewer.CanContentScroll="True" Background="#FF464646"/>
+                <Border x:Name="preview_boder" BorderBrush="Black" BorderThickness="1" Margin="5,3,4,0">
+                    <Grid x:Name="text_grid" Background="#FF464646">
+                        <TextBlock x:Name="selected_TextB" TextWrapping="WrapWithOverflow" FontSize="18" Margin="9,-1" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" LineStackingStrategy="BlockLineHeight" Foreground="White" ScrollViewer.CanContentScroll="True" Background="#FF464646"/>
+                    </Grid>
                 </Border>
                 <Border BorderBrush="Black" BorderThickness="1" Height="81" Margin="5,0,3,0" VerticalAlignment="Top" Grid.Row="2">
-                    <TextBlock x:Name="Detail_textB" Margin="-1" TextWrapping="Wrap" FontSize="14" Foreground="White"><Run Text="["/><Run Text="Detail"/><Run Text="s]"/></TextBlock>
+                    <TextBlock x:Name="Detail_textB" Margin="1" TextWrapping="Wrap" FontSize="14" Foreground="White"><Run Text="["/><Run Text="Detail"/><Run Text="s]"/></TextBlock>
                 </Border>
                 <Border BorderBrush="Black" BorderThickness="1" Margin="5,86,3,196" Grid.Row="2">
-                    <TextBlock x:Name="path_textB" Margin="2,1" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" LineStackingStrategy="BlockLineHeight" FontSize="14" Foreground="White"><Run Text="["/><Run Text="Path"/><Run Text="]"/></TextBlock>
+                    <TextBlock x:Name="path_textB" Margin="1" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" LineStackingStrategy="BlockLineHeight" FontSize="14" Foreground="White"><Run Text="["/><Run Text="Path"/><Run Text="]"/></TextBlock>
                 </Border>
                 <Rectangle x:Name="mask1" Stroke="Black" Margin="5,0,3,63" Fill="#7F000000" Grid.Row="2" Height="128" VerticalAlignment="Bottom" Visibility="Hidden">
                     <Rectangle.OpacityMask>
@@ -104,13 +143,14 @@
 
         <Button x:Name="Select_All_Button" Style="{StaticResource HoverButtonStyle}" Content="Select All" Margin="0,5,159,0" VerticalAlignment="Top" Click="Select_All_Button_Click" HorizontalAlignment="Right" Width="67" Foreground="White" Height="20"/>
         <Button x:Name="Deselect_All_Button" Style="{StaticResource HoverButtonStyle}" Content="Clear Select" Margin="0,5,78,0" VerticalAlignment="Top" Click="Deselect_All_Button_Click" HorizontalAlignment="Right" Width="76" Foreground="White" Height="20" RenderTransformOrigin="0.816,0.65"/>
-        <Button x:Name="Convert_Button" Style="{StaticResource HoverButtonStyle}" Content="CONVERT &amp; COPY" Margin="6,0,70,7" FontSize="18" Click="Convert_Button_Click" Height="51" VerticalAlignment="Bottom" Background="#FF999999" Foreground="White" BorderBrush="#FF382F2F" Grid.Column="2" ToolTip="変換を実行し結果をクリップボードにコピーします" ToolTipService.InitialShowDelay ="500"/>
+        <Button x:Name="Convert_Button" Style="{StaticResource HoverButtonStyle}" Content="CONVERT" Margin="6,0,70,7" FontSize="20" Click="Convert_Button_Click" Height="45" VerticalAlignment="Bottom" Background="#FF999999" Foreground="White" BorderBrush="#FF382F2F" Grid.Column="2" ToolTip="処理を実行します" ToolTipService.InitialShowDelay ="500" FontFamily="Dubai" BorderThickness="1" RenderTransformOrigin="0.5,0.5" TextOptions.TextHintingMode="Fixed"/>
 
-        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Margin="1,245,1,221" Background="Gray"/>
+        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Margin="1,232,1,221" Background="#B2FFFFFF"/>
         <ListView x:Name="Image_ListView" ItemsSource="{Binding drop_Images}" Margin="10,32,5,38" DragEnter="Image_ListView_DragEnter" Drop="Image_ListView_Drop" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="Image_ListView_SelectionChanged" Foreground="White" BorderBrush="Black" Background="#FF646464" ScrollViewer.VerticalScrollBarVisibility="Auto" PreviewMouseDoubleClick="Image_ListView_PreviewMouseDoubleClick" PreviewMouseWheel="Image_ListView_PreviewMouseWheel" >
             <ListView.ContextMenu>
                 <ContextMenu>
-                    <MenuItem x:Name="ListView_CntxtMenu" Header="Paste from clipboard" Click="ListView_CntxtMenu_paste_Click"/>
+                    <MenuItem x:Name="ListView_CntxtMenu0" Header="Add file" Click="_AddFile"/>
+                    <MenuItem x:Name="ListView_CntxtMenu1" Header="Paste from clipboard" Click="ListView_CntxtMenu_paste_Click"/>
                     <MenuItem x:Name="ListView_CntxtMenu2" Header="Open selected item" Click="ListView_CntxtMenu_open_Click"/>
                     <MenuItem x:Name="ListView_CntxtMenu3" IsCheckable="True" 
                       Checked="context_thumbnail_Checked" Unchecked="context_thumbnail_Unchecked" Header="Dissable thumbnail"/>
@@ -130,15 +170,19 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        
-        <TextBlock x:Name="dropHere_Text" Margin="10,262,10,244" TextWrapping="Wrap" Text="Drop files here" FontSize="36" FontFamily="Dubai Medium" Foreground="#FFCFCFCF" DragEnter="Image_ListView_DragEnter" Drop="Image_ListView_Drop" AllowDrop="True" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock.ContextMenu>
-                <ContextMenu>
-                    <MenuItem  Header="Paste from clipboard" Click="ListView_CntxtMenu_paste_Click"/>
-                </ContextMenu>
-            </TextBlock.ContextMenu>
-        </TextBlock>
-        <Button x:Name="SettingWindow_Button" Style="{StaticResource HoverButtonStyle}" Margin="0,0,5,7" FontSize="18" Height="51" VerticalAlignment="Bottom" Foreground="White" BorderBrush="#FF404040" Grid.Column="2" Click="SettingWindow_Button_Click" HorizontalAlignment="Right" Width="60" Background="{x:Null}">
+
+        <ContentControl MouseDoubleClick="ContentControl_MouseDoubleClick">
+            <Grid x:Name="drop_grid" Background="#00000000" Margin="10,33,5,39" DragEnter="Image_ListView_DragEnter" Drop="Image_ListView_Drop" AllowDrop="True">
+                <Grid.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem  Header="Add file" Click="_AddFile"/>
+                        <MenuItem  Header="Paste from clipboard" Click="ListView_CntxtMenu_paste_Click"/>
+                    </ContextMenu>
+                </Grid.ContextMenu>
+                <TextBlock x:Name="dropHere_Text" LineHeight="40" Margin="10,203,10,164" FontSize="36" FontFamily="Dubai Medium" Foreground="#FFCFCFCF" DragEnter="Image_ListView_DragEnter" Drop="Image_ListView_Drop" AllowDrop="True" TextAlignment="Center" Width="500" Height="130" TextWrapping="WrapWithOverflow" LineStackingStrategy="BlockLineHeight" HorizontalAlignment="Center" VerticalAlignment="Center"><Run Text="Drop file"/><Run Text="s"/><Run Text=" here"/><LineBreak/><Run Text="or"/><Run/><LineBreak/><Run Text="Click"/><Run Text=" "/><Run Text="to"/><Run Text=" "/><Run Text="add"/></TextBlock>
+            </Grid>
+        </ContentControl>
+        <Button x:Name="SettingWindow_Button" Style="{StaticResource HoverButtonStyle}" Margin="0,0,5,7" FontSize="18" Height="45" VerticalAlignment="Bottom" Foreground="White" BorderBrush="#FF404040" Grid.Column="2" Click="SettingWindow_Button_Click" HorizontalAlignment="Right" Width="60" Background="{x:Null}">
             <ToolTipService.ToolTip>
                 <ToolTip Content="変換設定を開く"/>
             </ToolTipService.ToolTip>

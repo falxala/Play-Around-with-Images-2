@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Reflection;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
@@ -20,12 +21,18 @@ namespace PlayAroundwithImages2
     public partial class Update : Window
     {
         string[] upinfo;
+
         public Update(string[] info)
         {
             InitializeComponent();
+            var axIWebBrowser2 = typeof(WebBrowser).GetProperty("AxIWebBrowser2", BindingFlags.Instance | BindingFlags.NonPublic);
+            var comObj = axIWebBrowser2.GetValue(browser, null);
+            comObj.GetType().InvokeMember("Silent", BindingFlags.SetProperty, null, comObj, new object[] { true });
+
             upinfo = info;
-            text.Text = "UPDATE" + info[0]+"\r\n\r\n";
-            text.Text += info[1];
+            title.Text += upinfo[0];
+            var a = "<html><meta http-equiv='Content-Type' content='text/html;charset=UTF-8'><head></head><body>" + Markdig.Markdown.ToHtml(upinfo[1]) + " </ body ></ html>";
+            browser.NavigateToString(a);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
