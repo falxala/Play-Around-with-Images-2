@@ -22,15 +22,19 @@ namespace PlayAroundwithImages2
     {
         string[] upinfo;
 
-        public Update(string[] info)
+        public Update(string[] info, bool update_flag)
         {
             InitializeComponent();
+            Up_button.IsEnabled = update_flag;
             var axIWebBrowser2 = typeof(WebBrowser).GetProperty("AxIWebBrowser2", BindingFlags.Instance | BindingFlags.NonPublic);
             var comObj = axIWebBrowser2.GetValue(browser, null);
             comObj.GetType().InvokeMember("Silent", BindingFlags.SetProperty, null, comObj, new object[] { true });
 
             upinfo = info;
-            title.Text += upinfo[0];
+
+            title.Text = "Release Notes";
+            if (update_flag)
+                title.Text += upinfo[0];
             var a = "<html><meta http-equiv='Content-Type' content='text/html;charset=UTF-8'><head></head><body>" + Markdig.Markdown.ToHtml(upinfo[1]) + " </ body ></ html>";
             browser.NavigateToString(a);
         }

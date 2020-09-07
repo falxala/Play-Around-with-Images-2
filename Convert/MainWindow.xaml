@@ -146,16 +146,17 @@
         <Button x:Name="Convert_Button" Style="{StaticResource HoverButtonStyle}" Content="CONVERT" Margin="6,0,70,7" FontSize="20" Click="Convert_Button_Click" Height="45" VerticalAlignment="Bottom" Background="#FF999999" Foreground="White" BorderBrush="#FF382F2F" Grid.Column="2" ToolTip="処理を実行します" ToolTipService.InitialShowDelay ="500" FontFamily="Dubai" BorderThickness="1" RenderTransformOrigin="0.5,0.5" TextOptions.TextHintingMode="Fixed"/>
 
         <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Margin="1,232,1,221" Background="#B2FFFFFF"/>
-        <ListView x:Name="Image_ListView" ItemsSource="{Binding drop_Images}" Margin="10,32,5,38" DragEnter="Image_ListView_DragEnter" Drop="Image_ListView_Drop" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="Image_ListView_SelectionChanged" Foreground="White" BorderBrush="Black" Background="#FF646464" ScrollViewer.VerticalScrollBarVisibility="Auto" PreviewMouseDoubleClick="Image_ListView_PreviewMouseDoubleClick" PreviewMouseWheel="Image_ListView_PreviewMouseWheel" >
-            <ListView.ContextMenu>
+        <Grid>
+            <Grid.ContextMenu>
                 <ContextMenu>
-                    <MenuItem x:Name="ListView_CntxtMenu0" Header="Add file" Click="_AddFile"/>
-                    <MenuItem x:Name="ListView_CntxtMenu1" Header="Paste from clipboard" Click="ListView_CntxtMenu_paste_Click"/>
-                    <MenuItem x:Name="ListView_CntxtMenu2" Header="Open selected item" Click="ListView_CntxtMenu_open_Click"/>
-                    <MenuItem x:Name="ListView_CntxtMenu3" IsCheckable="True" 
+                    <MenuItem  Header="Add file" Click="_AddFile"/>
+                    <MenuItem  Header="Paste from clipboard" Click="ListView_CntxtMenu_paste_Click"/>
+                    <MenuItem  IsCheckable="True" 
                       Checked="context_thumbnail_Checked" Unchecked="context_thumbnail_Unchecked" Header="Dissable thumbnail"/>
                 </ContextMenu>
-            </ListView.ContextMenu>
+            </Grid.ContextMenu>
+            <ListView x:Name="Image_ListView" ItemsSource="{Binding drop_Images}" Margin="10,32,5,38" DragEnter="Image_ListView_DragEnter" Drop="Image_ListView_Drop" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="Image_ListView_SelectionChanged" Foreground="White" BorderBrush="Black" Background="#FF646464" ScrollViewer.VerticalScrollBarVisibility="Auto" PreviewMouseDoubleClick="Image_ListView_PreviewMouseDoubleClick" PreviewMouseWheel="Image_ListView_PreviewMouseWheel" >
+
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel/>
@@ -173,15 +174,10 @@
 
         <ContentControl MouseDoubleClick="ContentControl_MouseDoubleClick">
             <Grid x:Name="drop_grid" Background="#00000000" Margin="10,33,5,39" DragEnter="Image_ListView_DragEnter" Drop="Image_ListView_Drop" AllowDrop="True">
-                <Grid.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem  Header="Add file" Click="_AddFile"/>
-                        <MenuItem  Header="Paste from clipboard" Click="ListView_CntxtMenu_paste_Click"/>
-                    </ContextMenu>
-                </Grid.ContextMenu>
-                <TextBlock x:Name="dropHere_Text" LineHeight="40" Margin="10,203,10,164" FontSize="36" FontFamily="Dubai Medium" Foreground="#FFCFCFCF" DragEnter="Image_ListView_DragEnter" Drop="Image_ListView_Drop" AllowDrop="True" TextAlignment="Center" Width="500" Height="130" TextWrapping="WrapWithOverflow" LineStackingStrategy="BlockLineHeight" HorizontalAlignment="Center" VerticalAlignment="Center"><Run Text="Drop file"/><Run Text="s"/><Run Text=" here"/><LineBreak/><Run Text="or"/><Run/><LineBreak/><Run Text="Click"/><Run Text=" "/><Run Text="to"/><Run Text=" "/><Run Text="add"/></TextBlock>
+                <TextBlock x:Name="dropHere_Text" LineHeight="40" Margin="10,203,10,164" FontSize="36" FontFamily="Dubai Medium" Foreground="#FFCFCFCF" AllowDrop="True" TextAlignment="Center" Width="500" Height="130" TextWrapping="WrapWithOverflow" LineStackingStrategy="BlockLineHeight" HorizontalAlignment="Center" VerticalAlignment="Center"><Run Text="Drop file"/><Run Text="s"/><Run Text=" here"/><LineBreak/><Run Text="or"/><Run/><LineBreak/><Run Text="Click"/><Run Text=" "/><Run Text="to"/><Run Text=" "/><Run Text="add"/></TextBlock>
             </Grid>
         </ContentControl>
+    </Grid>
         <Button x:Name="SettingWindow_Button" Style="{StaticResource HoverButtonStyle}" Margin="0,0,5,7" FontSize="18" Height="45" VerticalAlignment="Bottom" Foreground="White" BorderBrush="#FF404040" Grid.Column="2" Click="SettingWindow_Button_Click" HorizontalAlignment="Right" Width="60" Background="{x:Null}">
             <ToolTipService.ToolTip>
                 <ToolTip Content="変換設定を開く"/>

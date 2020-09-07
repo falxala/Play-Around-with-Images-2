@@ -38,6 +38,8 @@ namespace PlayAroundwithImages2
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            ImageMagick.OpenCL.IsEnabled = true;
+
             Image_ListView.ItemsSource = drop_Images; // コレクションをListBoxにバインドする
             //preview_image.DataContext = Subwin.Rotate_Slider;
 
@@ -412,7 +414,7 @@ namespace PlayAroundwithImages2
             Image_ListView.SelectedIndex = -1;
             Clear_info();
         }
-        private void Image_ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        internal void Image_ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //処理中なら何もしない
             if (Working_Flag == true)
@@ -904,9 +906,17 @@ namespace PlayAroundwithImages2
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            //スクリーンショットの一時フォルダを削除する
             System.IO.DirectoryInfo tempdi = new System.IO.DirectoryInfo(TempPath);
             if (tempdi.Exists)
                 tempdi.Delete(true);
+
+            //削除されなかったmagicktempファイルを削除する
+            string[] magick_TEMP = Directory.GetFiles(Path.GetTempPath(), @"magick*");
+            foreach(var item in magick_TEMP)
+            {
+                System.IO.File.Delete(item);
+            }
 
             //表示されていないインスタンスを表示し閉じる
             var notShown = Application.Current.Windows.OfType<SubWindow>().SingleOrDefault(w => true);

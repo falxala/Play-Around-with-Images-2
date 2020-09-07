@@ -11,7 +11,7 @@
     <Grid Background="White">
         <DockPanel Margin="65,74,223,50" Background="White"/>
 
-        <Button Content="更新する" HorizontalAlignment="Right" Margin="0,0,108,10" Width="91" Click="Button_Click" Height="27" VerticalAlignment="Bottom" FontSize="14"/>
+        <Button x:Name="Up_button" Content="更新する" HorizontalAlignment="Right" Margin="0,0,108,10" Width="91" Click="Button_Click" Height="27" VerticalAlignment="Bottom" FontSize="14"/>
         <Button Content="キャンセル" Margin="0,0,10,10" Click="Button_Click_1" Height="27" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="93" FontSize="14"/>
         <Rectangle Fill="#FF404040" Height="32" VerticalAlignment="Top"/>
         <TextBlock x:Name="title" HorizontalAlignment="Left" Margin="10,5,0,0" TextWrapping="WrapWithOverflow" Text="UPDATE" VerticalAlignment="Top" Foreground="White" FontSize="16" FontFamily="Yu Gothic UI Semibold" Width="182" Height="22"/>

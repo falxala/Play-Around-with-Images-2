@@ -20,8 +20,7 @@ using System.Net.Http;
 // Windows API Code Pack のダイアログの名前空間を using
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Newtonsoft.Json;
-using System.Windows.Forms;
-using MessageBox = System.Windows.Forms.MessageBox;
+using Path = System.IO.Path;
 
 namespace PlayAroundwithImages2
 {
@@ -51,10 +50,7 @@ namespace PlayAroundwithImages2
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //よく使う拡張子だけを抜き出す(enum参照)
-            var extLsit = new[] { 6, 17, 53, 74, 90, 105, 171, 185, 221, 239 };
-
-            //OpenMPバージョン
-            //var extLsit = new[] { 6, 15, 50, 72, 88, 103, 169, 183, 219, 237 };
+            var extLsit = new[] { 6, 17, 53, 74, 90, 106, 171, 177, 185, 220, 239 };
 
             //コンボボックスに拡張子名と値をセット
             foreach (var Value in Enum.GetValues(typeof(ImageMagick.MagickFormat)))
@@ -68,6 +64,15 @@ namespace PlayAroundwithImages2
                     }
                 }
             }
+
+            //GPUをコンボボックスにセット
+            ComboBox_GPU.Items.Add("Disable");
+            foreach (var item in ImageMagick.OpenCL.Devices)
+            {
+                ComboBox_GPU.Items.Add(item.Name);
+            }
+            ComboBox_GPU.SelectedIndex = ImageMagick.OpenCL.Devices.Count();
+
             ComboBox_extension.DisplayMemberPath = "ItemDisp";
             ComboBox_extension.SelectedIndex = 5;
             if (Mainwin.subDockFlag == false)
@@ -473,7 +478,7 @@ namespace PlayAroundwithImages2
         {
             List<string> downloadUriList = new List<string>();
             List<string> body = new List<string>();
-            Mainwin.selected_TextB.Visibility = Visibility.Visible;
+            Mainwin.text_grid.Visibility  = Mainwin.selected_TextB.Visibility = Visibility.Visible;
             Mainwin.selected_TextB.Text = "アップデートの確認中...";
             try
             {
@@ -531,19 +536,22 @@ namespace PlayAroundwithImages2
                     merge += body[idx[i]];
                 }
 
+                string[] upInfo = { "tag", "Describe", "uri" };
+                upInfo[0] = latest.ToString();
+                upInfo[1] = merge;
+                upInfo[2] = "https://github.com/falxala/Play-Around-with-Images-2/releases/tag/v" + latest;
+
                 if (version1.CompareTo(latest) >= 0)
                 {
                     Mainwin.selected_TextB.Text = ("更新はありません");
+                    Update update = new Update(upInfo, false);
+                    update.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                    update.ShowDialog();
                     await Task.Delay(2000);
                 }
                 else
                 {
-                    string[] upInfo = {"tag","Describe","uri"};
-                    upInfo[0] = latest.ToString();
-                    upInfo[1] = merge;
-                    upInfo[2] = "https://github.com/falxala/Play-Around-with-Images-2/releases/tag/v" + latest;
-
-                    Update update = new Update(upInfo);
+                    Update update = new Update(upInfo, true);
                     update.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                     update.ShowDialog();
                 }
@@ -555,8 +563,27 @@ namespace PlayAroundwithImages2
             }
             finally
             {
-                Mainwin.selected_TextB.Visibility = Visibility.Hidden;
-                Mainwin.selected_TextB.Text = "";
+                if (Mainwin.Image_ListView.SelectedItems.Count <= 0)
+                    Mainwin.text_grid.Visibility = Visibility.Hidden;
+                Mainwin.Image_ListView_SelectionChanged(null,null);
+            }
+        }
+
+        private void OpenLocalTEMP(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("EXPLORER.EXE", Path.GetTempPath());
+        }
+
+        private void ComboBox_GPU_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Info_TextBox.Text = "";
+            foreach (var item in ImageMagick.OpenCL.Devices)
+            {
+                if (item.Name == ComboBox_GPU.SelectedItem.ToString())
+                    item.IsEnabled = true;
+                else
+                    item.IsEnabled = false;
+                Info_TextBox.Text += "OpenCL Device : " + item.Name + " = " + item.IsEnabled + "\r\n";
             }
         }
     }

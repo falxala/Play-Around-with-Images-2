@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Threading;
+using System.Text.RegularExpressions;
 using Color = System.Drawing.Color;
 
 namespace PlayAroundwithImages2
@@ -124,28 +125,29 @@ namespace PlayAroundwithImages2
 
             var Result = await Task.Run(() =>
             {
-                //使用不可
-                //var myMagickSettings = new ImageMagick.JpegWriteDefines();
-                //myMagickSettings.Extent = (int)(option.Filesize * 1024);
-                string outputPath = "";
-                string outputDir = option.SaveDirectory + "\\";
-                Directory.CreateDirectory(outputDir);
+            var myMagickSettings = new ImageMagick.Formats.Jpeg.JpegWriteDefines();
+                myMagickSettings.Extent = (int)(option.Filesize * 1024);
+            string outputPath = "";
+            string outputDir = option.SaveDirectory + "\\";
+            Directory.CreateDirectory(outputDir);
 
-                string output_Num = "Cnv_";
-                string output_name = System.IO.Path.GetFileNameWithoutExtension(item.Image_path);
+            string output_Num = "Cnv_";
+            string output_name = System.IO.Path.GetFileNameWithoutExtension(item.Image_path);
 
-                //PDF、EPS、AIのラスタライズ時の設定
-                var myMagicReadkSettings = new ImageMagick.MagickReadSettings();
-                //ラスタライズ時ICCプロファイル
-                myMagicReadkSettings.ColorSpace = ImageMagick.ColorSpace.sRGB;
-                //ラスタライズ時解像度
-                myMagicReadkSettings.Density = new ImageMagick.Density(350);
-                //ラスタライズ時カラータイプ
-                myMagicReadkSettings.ColorType = ImageMagick.ColorType.TrueColor;
+            //PDF、EPS、AIのラスタライズ時の設定
+            var myMagicReadkSettings = new ImageMagick.MagickReadSettings();
+            //ラスタライズ時ICCプロファイル
+            myMagicReadkSettings.ColorSpace = ImageMagick.ColorSpace.sRGB;
+            //ラスタライズ時解像度
+            myMagicReadkSettings.Density = new ImageMagick.Density(350);
+            //ラスタライズ時カラータイプ
+            myMagicReadkSettings.ColorType = ImageMagick.ColorType.TrueColor;
 
 
-                //ファイル名
-                outputPath = outputDir + output_Num + output_name + "." + option.Format.ToString();
+            //ファイル名
+            string f = Regex.Replace(option.Format.ToString().ToLowerInvariant(), "[^a-z]+", string.Empty);
+
+            outputPath = outputDir + output_Num + output_name + "." + f;
 
                 int Count = 2;
                 if (!option.Overwrite)
@@ -154,7 +156,7 @@ namespace PlayAroundwithImages2
                         if (!option.Overwrite && File.Exists(outputPath))
                         {
                             output_Num = "Cnv_" + Count + "_";
-                            outputPath = outputDir + output_Num + output_name + "." + option.Format.ToString();
+                            outputPath = outputDir + output_Num + output_name + "." + f;
                             Count++;
                         }
                         else
@@ -259,7 +261,7 @@ namespace PlayAroundwithImages2
                     //myMagick.Quality = 10;
 
                     myMagick.BackgroundColor = new ImageMagick.MagickColor("transparent");
-                    if (myMagick.Format == ImageMagick.MagickFormat.Jpeg)
+                    if (myMagick.Format == ImageMagick.MagickFormat.Jpg)
                     {
                         myMagick.BackgroundColor = new ImageMagick.MagickColor("white");
                         myMagick.Alpha(ImageMagick.AlphaOption.Remove);
@@ -317,7 +319,7 @@ namespace PlayAroundwithImages2
                     token.ThrowIfCancellationRequested();
 
                     //「ファイル」へ書き出し  
-                    myMagick.Write(outputPath);
+                    myMagick.Write(outputPath, myMagickSettings);
 
                     token.ThrowIfCancellationRequested();
 
