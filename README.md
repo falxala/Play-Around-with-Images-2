@@ -1,4 +1,4 @@
-# Play_Around_with_Images_2
+# Play Around with Images 2
  Image conversion software
  
 #### It supports the following functions
