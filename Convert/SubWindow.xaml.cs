@@ -29,9 +29,13 @@ namespace PlayAroundwithImages2
     /// </summary>
     public partial class SubWindow : Window
     {
+        public System.Timers.Timer Timer = new System.Timers.Timer();
         public SubWindow()
         {
-            InitializeComponent();
+            InitializeComponent();  
+            Timer.Elapsed += new System.Timers.ElapsedEventHandler(Timer_Elapsed);
+            Timer.Interval = 100; 
+            Timer.AutoReset = true;
         }
 
         public class ItemSet
@@ -41,7 +45,7 @@ namespace PlayAroundwithImages2
             public object ItemValue { get; set; }
 
             // プロパティをコンストラクタでセット
-            public ItemSet(int v , String s)
+            public ItemSet(int v, String s)
             {
                 ItemDisp = s;
                 ItemValue = v;
@@ -50,7 +54,7 @@ namespace PlayAroundwithImages2
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //よく使う拡張子だけを抜き出す(enum参照)
-            var extLsit = new[] { 6, 17, 53, 74, 90, 106, 171, 177, 185, 220, 239 };
+            var extLsit = new[] { 6, 17, 53, 74, 90, 106, 172, 178, 186, 221, 240 };
 
             //コンボボックスに拡張子名と値をセット
             foreach (var Value in Enum.GetValues(typeof(ImageMagick.MagickFormat)))
@@ -73,6 +77,12 @@ namespace PlayAroundwithImages2
             }
             ComboBox_GPU.SelectedIndex = ImageMagick.OpenCL.Devices.Count();
 
+            for (int i = 1; i <= Mainwin.CpuCount * 2; i++)
+            {
+                ComboBox_CPU.Items.Add(i);
+                ComboBox_CPU.SelectedIndex = Mainwin.DegreeOfParallelism - 1;
+            }
+
             ComboBox_extension.DisplayMemberPath = "ItemDisp";
             ComboBox_extension.SelectedIndex = 5;
             if (Mainwin.subDockFlag == false)
@@ -82,9 +92,16 @@ namespace PlayAroundwithImages2
 
             Type t = Sub_CnvOption.GetType();
 
-
+            check_Resources();
             //Info_TextBox.Text = Sub_CnvOption.Transform.ToString();
 
+        }
+
+        private void check_Resources()
+        {
+            ResourcesThreadTxt.Text = ImageMagick.ResourceLimits.Thread.ToString() + " (AUTO)";
+            ResourcesDiskTxt.Text = ((double)ImageMagick.ResourceLimits.Disk / 1024 / 1024 / 1024).ToString("0.0") + ("GB (AUTO)");
+            ResourcesMemTxt.Text = ((double)ImageMagick.ResourceLimits.Memory / 1024 / 1024 / 1024).ToString("0.0") + ("GB (AUTO)");
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -106,7 +123,8 @@ namespace PlayAroundwithImages2
             // 選択形式をフォルダースタイルにする IsFolderPicker プロパティを設定
             dialog.IsFolderPicker = true;
 
-            dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+            //dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+            dialog.InitialDirectory = Sub_CnvOption.SaveDirectory;
 
             // ダイアログを表示
             if (dialog.ShowDialog(Mainwin) == CommonFileDialogResult.Ok)
@@ -183,13 +201,13 @@ namespace PlayAroundwithImages2
             mc.Dispose();
             //推定メモリ(MB)
             long Estimatedmemory = 0;
-            if (Sub_CnvOption.Transform == true && Sub_CnvOption.LiquidRescale ==false)
+            if (Sub_CnvOption.Transform == true && Sub_CnvOption.LiquidRescale == false)
                 Estimatedmemory = (product_all * 2 * 4 / 1024 / 1024 + ((long)convetedSize.Width * (long)convetedSize.Height * 2 * 4 / 1024 / 1024) * 2 * (long)count);
             else if (Sub_CnvOption.LiquidRescale)
                 //LiquidRescale有効時のメモリ使用量は不明　推測
                 Estimatedmemory = (product_all * 2 * 4 / 1024 / 1024 + ((long)convetedSize.Width * (long)convetedSize.Height * 2 * 4 / 1024 / 1024) * 4 * (long)count);
             else
-                Estimatedmemory = product_all * 2 * 4 / 1024 / 1024 * 2 +((long)convetedSize.Width * (long)convetedSize.Height * 2 * 4 / 1024 / 1024) * 2 * (long)count;
+                Estimatedmemory = product_all * 2 * 4 / 1024 / 1024 * 2 + ((long)convetedSize.Width * (long)convetedSize.Height * 2 * 4 / 1024 / 1024) * 2 * (long)count;
             //Q16の場合キャッシュは2バイトなので*2
             Info_TextBox.Text = "最大使用メモリ : " + Estimatedmemory + "MB";
             Info_TextBox.Text += "\r\n FreeMemory : " + FreePhysicalMemory;
@@ -198,7 +216,7 @@ namespace PlayAroundwithImages2
             deficiencyMemory = Estimatedmemory - FreePhysicalMemory;
 
             //物理メモリが推定メモリを超過した場合falseを返す
-            if (FreePhysicalMemory< Estimatedmemory)
+            if (FreePhysicalMemory < Estimatedmemory)
             {
                 checkValue = false;
             }
@@ -221,7 +239,7 @@ namespace PlayAroundwithImages2
 
         private void CheckBox_Click(object sender, RoutedEventArgs e)
         {
-            if(Dock_checkbox.IsChecked == true)
+            if (Dock_checkbox.IsChecked == true)
             {
                 Mainwin.subDockFlag = true;
             }
@@ -427,6 +445,7 @@ namespace PlayAroundwithImages2
 
         private void Rotate_Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
+            Mainwin.Center();
             Sub_CnvOption.Rotate = (int)Rotate_Slider.Value;
             Rotate_TextBox.Text = Sub_CnvOption.Rotate.ToString();
         }
@@ -478,7 +497,7 @@ namespace PlayAroundwithImages2
         {
             List<string> downloadUriList = new List<string>();
             List<string> body = new List<string>();
-            Mainwin.text_grid.Visibility  = Mainwin.selected_TextB.Visibility = Visibility.Visible;
+            Mainwin.text_grid.Visibility = Mainwin.selected_TextB.Visibility = Visibility.Visible;
             Mainwin.selected_TextB.Text = "アップデートの確認中...";
             try
             {
@@ -531,7 +550,7 @@ namespace PlayAroundwithImages2
 
                 string merge = "";
 
-                for (int i = idx.Count-1; i >= 0; i--)
+                for (int i = idx.Count - 1; i >= 0; i--)
                 {
                     merge += body[idx[i]];
                 }
@@ -565,7 +584,7 @@ namespace PlayAroundwithImages2
             {
                 if (Mainwin.Image_ListView.SelectedItems.Count <= 0)
                     Mainwin.text_grid.Visibility = Visibility.Hidden;
-                Mainwin.Image_ListView_SelectionChanged(null,null);
+                Mainwin.Image_ListView_SelectionChanged(null, null);
             }
         }
 
@@ -585,6 +604,140 @@ namespace PlayAroundwithImages2
                     item.IsEnabled = false;
                 Info_TextBox.Text += "OpenCL Device : " + item.Name + " = " + item.IsEnabled + "\r\n";
             }
+        }
+
+        private void ComboBox_CPU_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Mainwin.DegreeOfParallelism = ComboBox_CPU.SelectedIndex + 1;
+        }
+
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            check_Resources();
+        }
+
+        private void GrayScale_toggle_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Sub_CnvOption.GrayScale = !GrayScale_toggle.IsOn;
+            SetMainCnvOption();
+            Mainwin.Image_ListView_SelectionChanged(null, null);
+        }
+
+        int waitTime = 5;
+        private void gamma_TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            Timer.Start();
+            try
+            {
+                if (timerCount < waitTime)
+                    timerCount = 0;
+
+                Sub_CnvOption.Gamma = double.Parse(gamma_TextBox.Text);
+                SetMainCnvOption();
+            }
+            catch
+            {
+            }
+        }
+
+        private void gamma_TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !new Regex("[0-9.]").IsMatch(e.Text);
+            try
+            {
+                if (e.Text == "+")
+                {
+                    var Temp = Sub_CnvOption.Gamma;
+                    if (Temp < 10)
+                        Temp += 0.1;
+                    Sub_CnvOption.Gamma = Temp;
+
+                    gamma_TextBox.Text = Sub_CnvOption.Gamma.ToString();
+                    return;
+                }
+                if (e.Text == "-")
+                {
+                    var Temp = Sub_CnvOption.Gamma;
+                    if (Temp > 0)
+                        Temp -= 0.1;
+                    Sub_CnvOption.Gamma = Temp;
+
+                    gamma_TextBox.Text = Sub_CnvOption.Gamma.ToString();
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private void gamma_TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                gamma_TextBox.Text = Sub_CnvOption.Gamma.ToString();
+            }
+        }
+
+        private void gamma_TextBox_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            Sub_CnvOption.Gamma = 1.0;
+            gamma_TextBox.Text = Sub_CnvOption.Gamma.ToString("0.0");
+            this.IsEnabled = false;
+            this.IsEnabled = true;
+        }
+
+        private void gamma_TextBox_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Delta > 0)
+                Sub_CnvOption.Gamma += 0.1;
+            if (e.Delta < 0)
+                Sub_CnvOption.Gamma -= 0.1;
+
+            if (Sub_CnvOption.Gamma > 10 && e.Delta > 0)
+                Sub_CnvOption.Gamma = 10;
+            if (Sub_CnvOption.Gamma < 0 && e.Delta < 0)
+                Sub_CnvOption.Gamma = 0;
+
+            gamma_TextBox.Text = Sub_CnvOption.Gamma.ToString("0.0");
+
+        }
+
+        private void gamma_gray_changed()
+        {
+            Mainwin.Image_ListView_SelectionChanged(null, null);
+        }
+        int timerCount = 0;
+
+        private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            Timer.Stop();
+            Timer.Elapsed -= Timer_Elapsed;
+            timerCount++;
+            Console.WriteLine(timerCount);
+            if (timerCount > waitTime)
+            {
+                timerCount = 0;
+                Timer.Elapsed += new System.Timers.ElapsedEventHandler(Timer_Elapsed);
+                UI_change();
+                return;
+            }
+            Timer.Elapsed += new System.Timers.ElapsedEventHandler(Timer_Elapsed);
+            Timer.Start();
+        }
+
+        private void UI_change()
+        {
+            if (this.Dispatcher.CheckAccess())
+            {
+                Dispatcher.Invoke(new Action(UI_change));
+                return;
+            }
+            this.Dispatcher.Invoke(() =>
+            {
+                gamma_gray_changed();
+            });
         }
     }
 }

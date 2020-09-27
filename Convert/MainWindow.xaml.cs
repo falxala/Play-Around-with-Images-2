@@ -15,6 +15,9 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using Reactive.Bindings;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using System.Runtime.InteropServices;
+using System.Windows.Interop;
+
 
 
 namespace PlayAroundwithImages2
@@ -27,18 +30,25 @@ namespace PlayAroundwithImages2
     {
 
         public ObservableCollection<Model.drop_Image> drop_Images = new ObservableCollection<Model.drop_Image>(); // コレクションのインスタンスを作る。
-
         ViewModel preview_model = new ViewModel();
+
+        ClipboardMonitor monitor;
 
         public MainWindow()
         {
             InitializeComponent();
             BindingOperations.EnableCollectionSynchronization(this.drop_Images, new object());
         }
-
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            Get_MemorySize();
+            ImageMagick.ResourceLimits.Memory = FreePhysicalMemory;
             ImageMagick.OpenCL.IsEnabled = true;
+            Console.WriteLine(ImageMagick.ResourceLimits.Memory);
+            Console.WriteLine(ImageMagick.ResourceLimits.Disk);
+            //ディスク使用は1GBに制限
+            ImageMagick.ResourceLimits.Disk = 1*1024*1024*1024;
+            Console.WriteLine(ImageMagick.ResourceLimits.Disk);
 
             Image_ListView.ItemsSource = drop_Images; // コレクションをListBoxにバインドする
             //preview_image.DataContext = Subwin.Rotate_Slider;
@@ -53,16 +63,63 @@ namespace PlayAroundwithImages2
             window.KeyDown += HandleKeyPress;
             selected_TextB.Text = "";
             MaxDegreeOfParallelism(70.0);
-            cnvOption.Format = ImageMagick.MagickFormat.Jpeg;
 
+            //変換オプション初期化
+            cnvOption.Format = ImageMagick.MagickFormat.Jpeg;
+            cnvOption.Gamma = 1.0;
             cnvOption.SaveDirectory = System.Environment.CurrentDirectory + "\\outputs";
             cnvOption.Transform = false;
+
+            monitor = new ClipboardMonitor(new WindowInteropHelper(this).Handle);
+            monitor.ChangeClipboard += ClipboardMonitor_changed;
+            monitor.Start();
+
+            preview_model.RenderTransformOrigin_.Value = new System.Windows.Point(0.5, 0.5);
+        }
+
+
+        public ulong TotalVisibleMemorySize = 0;
+        public ulong FreePhysicalMemory = 0;
+        /// <summary>
+        /// 空きメモリサイズを取得
+        /// </summary>
+        public void Get_MemorySize()
+        {
+            System.Management.ManagementClass mc = new System.Management.ManagementClass("Win32_OperatingSystem");
+            System.Management.ManagementObjectCollection moc = mc.GetInstances();
+            foreach (System.Management.ManagementObject mo in moc)
+            {
+                //合計物理メモリ
+                //Console.WriteLine("合計物理メモリ:{0}KB", mo["TotalVisibleMemorySize"]);
+                TotalVisibleMemorySize = ulong.Parse(mo["TotalVisibleMemorySize"].ToString()) * 1024;
+                //利用可能な物理メモリ
+                //Console.WriteLine("利用可能物理メモリ:{0}KB", mo["FreePhysicalMemory"]);
+                FreePhysicalMemory = ulong.Parse(mo["FreePhysicalMemory"].ToString()) * 1024;
+                //合計仮想メモリ
+                //Console.WriteLine("合計仮想メモリ:{0}KB", mo["TotalVirtualMemorySize"]);
+                //利用可能な仮想メモリ
+                //Console.WriteLine("利用可能仮想メモリ:{0}KB", mo["FreeVirtualMemory"]);
+                mo.Dispose();
+            }
+
+            moc.Dispose();
+            mc.Dispose();
+        }
+
+        /// <summary>
+        /// クリップボードの内容に変更があれば発生
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ClipboardMonitor_changed(object sender, EventArgs e)
+        {
+            CopyFromClipboard(true);
         }
 
         //一時保存パス
         string TempPath = System.Environment.CurrentDirectory + "\\_TEMP_paiclip";
 
-        readonly int CpuCount = Environment.ProcessorCount;
+        public readonly int CpuCount = Environment.ProcessorCount;
         //同時変換数
         public int DegreeOfParallelism = 1;
 
@@ -151,7 +208,7 @@ namespace PlayAroundwithImages2
                 }
                 if (files.Count >= 100 && Image_ListView.Items.Count == 0)
                 {
-                    Tslider.Value = 50;
+                    Tslider.Value = 30;
                 }
 
                 //ファイル数制限
@@ -164,7 +221,14 @@ namespace PlayAroundwithImages2
                 int errorCount = 0;
                 await Task.Run(() =>
                 {
-                    errorCount = Data_reading(files.ToArray());
+                    errorCount = Data_reading(new string[] { files[0]});
+                    //なぜかIndexOutOfRangeExceptionが発生するので気休めのdelay
+                    Task.Delay(100);
+                    if (files.Count > 1)
+                    {
+                        files.RemoveAt(0);
+                        errorCount += Data_reading(files.ToArray());
+                    }
                 });
                 Convert_Button.IsEnabled = true;
                 selected_TextB.Text = "読み込み完了";
@@ -185,7 +249,7 @@ namespace PlayAroundwithImages2
             finally
             {
                 Working_Flag = false;
-                await Task.Delay(100);
+                await Task.Delay(1000);
                 if (Image_ListView.Items.Count == 0)
                 {
                     drop_grid.Visibility = Visibility.Visible;
@@ -283,6 +347,7 @@ namespace PlayAroundwithImages2
                          drop_Image.File_size = file_size.Length;
                          drop_Image.Image_size = new System.Drawing.Size(int.Parse(details[2]), int.Parse(details[3]));
                          drop_Image.Format = details[4];
+                         drop_Image.Gamma = float.Parse(details[9]);
                          drop_Images.Add(drop_Image);
                          Count++;
                      }
@@ -448,7 +513,43 @@ namespace PlayAroundwithImages2
                         selected_item.Create_thumunail = true;
                         Image_ListView.Items.Refresh();
                     }
-                    preview_image.Source = selected_item.thumbnail;
+
+
+                    BitmapImage bitmap = new BitmapImage();
+                    if (preview_original)
+                    {
+                        string size = selected_item.Image_size.Width.ToString() + "x" + selected_item.Image_size.Height.ToString();
+                        var myMagickSettings = new ImageMagick.MagickReadSettings();
+                        myMagickSettings.SetDefine(ImageMagick.MagickFormat.Jpg, "size", size);
+                        using (var myMagick = new ImageMagick.MagickImage(selected_item.Image_path))
+                            {
+                                if (cnvOption.GrayScale)
+                                    myMagick.Grayscale();
+                                myMagick.GammaCorrect(cnvOption.Gamma);
+                                MemoryStream ms = new MemoryStream(myMagick.ToByteArray(ImageMagick.MagickFormat.Jpe));
+                                // MemoryStreamからBitmapFrameを作成
+                                System.Windows.Media.Imaging.BitmapSource bitmapSource =
+                                    System.Windows.Media.Imaging.BitmapFrame.Create(
+                                        ms,
+                                        System.Windows.Media.Imaging.BitmapCreateOptions.None,
+                                        System.Windows.Media.Imaging.BitmapCacheOption.OnLoad
+                                    );
+                                preview_image.Source = bitmapSource;
+                            }
+                        /*
+                        try
+                        {
+                            bitmap.BeginInit();
+                            bitmap.UriSource = new Uri(selected_item.Image_path);
+                            bitmap.EndInit();
+                            preview_image.Source = bitmap;
+                        }
+                        catch
+                        {
+                        }*/
+                    }
+                    else
+                        preview_image.Source = selected_item.thumbnail;
                     
                     path_textB.Text = "[Path]\r\n" + selected_item.Image_path;
                     Detail_textB.Text = "[Details]\r\n" + w + "*" + h;
@@ -491,6 +592,11 @@ namespace PlayAroundwithImages2
         private CancellationTokenSource tokenSource = null;
         private async void Convert_Button_Click(object sender, RoutedEventArgs e)
         {
+            Get_MemorySize();
+            ImageMagick.ResourceLimits.Memory = FreePhysicalMemory;
+
+            //監視停止
+            monitor.Stop();
 
             //処理中に実行させない
             if (Working_Flag)
@@ -500,6 +606,9 @@ namespace PlayAroundwithImages2
                 return;
             }
 
+
+            //必要なさそう検討中
+            /*
             Subwin.CheckMemory(out long deficiencyMemory, out bool checkValue, Image_ListView.SelectedItems, DegreeOfParallelism, cnvOption.Size);
             //メモリチェック
             if (!checkValue)
@@ -509,7 +618,7 @@ namespace PlayAroundwithImages2
 
                 if (result == MessageBoxResult.Cancel)
                     return;
-            }
+            }*/
 
             Working_Flag = true;
             Convert_Button.Content = "STOP";
@@ -574,6 +683,7 @@ namespace PlayAroundwithImages2
                         selected_TextB.Visibility = text_grid.Visibility = Visibility.Visible;
                         selected_TextB.Text = "変換エラー\r\n";
                         selected_TextB.Text += "詳細 : " + innnerExc.Message;
+                        Subwin.Info_TextBox.Text = innnerExc.Message;
                     }
                 }
             }
@@ -596,39 +706,45 @@ namespace PlayAroundwithImages2
                     Convert_Button.Content = "CONVERT";
             }
 
-            try
-            {
-                Clipboard.Clear();
-                if (outputFileNames.Count > 1)
-                    Clipboard.SetFileDropList(outputFileNames);
-                else
-                {               
-                    var filePath = outputFileNames[0];
-                    //DataObjectオブジェクトを作成し、FileDrop形式のデータを追加する
-                    DataObject data = new DataObject(DataFormats.FileDrop, new string[] { filePath });
-                    //Bitmap形式のデータを追加する
-                    Bitmap bmp = new Bitmap(filePath);
-                    data.SetData(DataFormats.Bitmap, bmp);
-                    //クリップボードに貼り付ける
-                    Clipboard.SetDataObject(data, true);
-                    //後始末
-                    bmp.Dispose();
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                if (ex.GetType() == typeof(ArgumentException) && outputFileNames.Count != 0)
+            for (int retryCount = 0; retryCount < 3; retryCount++)
+                try
                 {
-                    selected_TextB.Text = "クリップボードへのコピーに失敗しました";
+                    Clipboard.Clear();
+                    if (outputFileNames.Count > 1 && outputFileNames.Count < 5)
+                        Clipboard.SetFileDropList(outputFileNames);
+                    else
+                    {
+                        var filePath = outputFileNames[0];
+                        //DataObjectオブジェクトを作成し、FileDrop形式のデータを追加する
+                        DataObject data = new DataObject(DataFormats.FileDrop, new string[] { filePath });
+                        //Bitmap形式のデータを追加する
+                        Bitmap bmp = new Bitmap(filePath);
+                        data.SetData(DataFormats.Bitmap, bmp);
+                        //クリップボードに貼り付ける
+                        Clipboard.SetDataObject(data, true);
+                        //後始末
+                        bmp.Dispose();
+                    }
+                    selected_TextB.Text = "クリップボードにコピーしました";
+                    break;
                 }
-            }
-            finally
-            {
-                await Task.Delay(2000);
-                selected_TextB.Text = "";
-                Image_ListView_SelectionChanged(null,null);
-            }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    if (ex.GetType() == typeof(ArgumentException) && outputFileNames.Count != 0)
+                    {
+                        selected_TextB.Text = "クリップボードへのコピーに失敗しました";
+                    }
+                }
+                finally
+                {
+                    //監視再開
+                    monitor.Start();
+
+                    await Task.Delay(2000);
+                    selected_TextB.Text = "";
+                    Image_ListView_SelectionChanged(null, null);
+                }
         }
 
         private void Slider2_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -694,18 +810,18 @@ namespace PlayAroundwithImages2
 
         private void ListView_CntxtMenu_paste_Click(object sender, RoutedEventArgs e)
         {
-            CopyFromClipboard();
+            CopyFromClipboard(false);
         }
 
         private void OnCtrlV(object sender, ExecutedRoutedEventArgs e)
         {
-            CopyFromClipboard();
+            CopyFromClipboard(false);
         }
 
-        private void CopyFromClipboard()
+        private void CopyFromClipboard(bool Imageonly)
         {
             PasteData pasteData = new PasteData();
-            if (Clipboard.ContainsFileDropList())
+            if (Clipboard.ContainsFileDropList() && Imageonly == false)
             {
                 pasteData.data = Clipboard.GetDataObject();
                 ListviewDropPaste(pasteData);
@@ -714,29 +830,41 @@ namespace PlayAroundwithImages2
             else if (Clipboard.ContainsImage())
             {
                 //クリップボードにあるデータの取得
-                BitmapSource img = Clipboard.GetImage();
-                if (img != null)
-                {
-
-                    if (!Directory.Exists(TempPath))
+                for (int retryCount = 0; retryCount < 5; retryCount++)
+                    try
                     {
-                        DirectoryInfo di = new DirectoryInfo(TempPath);
-                        di.Create();
+                        BitmapSource img = Clipboard.GetImage();
+                        if (img != null)
+                        {
+
+                            if (!Directory.Exists(TempPath))
+                            {
+                                DirectoryInfo di = new DirectoryInfo(TempPath);
+                                di.Create();
+                            }
+
+                            DateTime dt = DateTime.Now;
+                            string filePath = CreateName(TempPath + "\\Clipshots" + dt.ToString("yyyy-MM-dd HH.mm.ss")) + ".png";
+                            //ファイルに保存
+                            using (var fileStream = new FileStream(filePath, FileMode.Create))
+                            {
+                                BitmapEncoder encoder = new PngBitmapEncoder();
+                                encoder.Frames.Add(BitmapFrame.Create(img));
+                                encoder.Save(fileStream);
+                            }
+
+                            pasteData.path = filePath;
+                            ListviewDropPaste(pasteData);
+
+                        }
+                        break;
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
                     }
 
-                    string filePath = CreateName(TempPath + "\\clip") + ".png";
-                    //ファイルに保存
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        BitmapEncoder encoder = new PngBitmapEncoder();
-                        encoder.Frames.Add(BitmapFrame.Create(img));
-                        encoder.Save(fileStream);
-                    }
-
-                    pasteData.path = filePath;
-                    ListviewDropPaste(pasteData);
-
-                }
             }
         }
 
@@ -811,11 +939,13 @@ namespace PlayAroundwithImages2
                 cnvOption = value;
                 receiveData = value;
 
+                //プレビュー
                 preview_model.Rotate.Value = cnvOption.Rotate;
                 if (cnvOption.Mirror && 0 < preview_model.Scale_X.Value)
                     preview_model.Scale_X.Value = (double)preview_model.Scale_X.Value * -1;
                 else if (!cnvOption.Mirror && 0 > preview_model.Scale_X.Value)
                     preview_model.Scale_X.Value = (double)preview_model.Scale_X.Value * -1;
+
 
 
             }
@@ -906,6 +1036,10 @@ namespace PlayAroundwithImages2
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            //クリップボード監視停止
+            monitor.Stop();
+            monitor.Dispose();
+
             //スクリーンショットの一時フォルダを削除する
             System.IO.DirectoryInfo tempdi = new System.IO.DirectoryInfo(TempPath);
             if (tempdi.Exists)
@@ -937,7 +1071,7 @@ namespace PlayAroundwithImages2
 
         private void limit_filesize_tb_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            e.Handled = !new Regex("[0-9]||[.]").IsMatch(e.Text);
+            e.Handled = !new Regex("[0-9.]").IsMatch(e.Text);
         }
 
         //変換中止
@@ -976,7 +1110,7 @@ namespace PlayAroundwithImages2
         private async void Tslider_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             await Task.Delay(5);
-            Tslider.Value = 200;
+            Tslider.Value = 150;
         }
 
         private void Slider2_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
@@ -1070,5 +1204,125 @@ namespace PlayAroundwithImages2
             AddFile(false);
         }
 
+        private void Tslider_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                //ルートより少し小さい値を入れる
+                //丸め込み有効
+                Tslider.Value = Math.Round(((Tslider.Value * 1.38) / 100), 1) * 100;
+            }
+            else if (e.Delta < 0)
+            {
+                Tslider.Value = Math.Round(((Tslider.Value / 1.38) / 100), 1) * 100;
+            }
+        }
+
+        bool preview_original = false;
+        private void load_Originalimage_Checked(object sender, RoutedEventArgs e)
+        {
+            preview_original = true;
+            Image_ListView_SelectionChanged(null,null);
+
+        }
+
+        private void load_Originalimage_Unchecked(object sender, RoutedEventArgs e)
+        {
+            preview_original = false;
+            Image_ListView_SelectionChanged(null, null);
+        }
+
+        double zoomRatio = 1;
+        //double oldX = 0;
+        //double oldY = 0;
+        private void preview_image_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            //double centerX = e.MouseDevice.GetPosition(ImageControl).X / ImageControl.RenderSize.Width - (oldX/2);
+            //double centerY = e.MouseDevice.GetPosition(ImageControl).Y / ImageControl.RenderSize.Height - (oldY / 2);
+            //preview_model.RenderTransformOrigin_.Value = new System.Windows.Point(centerX, centerY);
+            
+            preview_model.RenderTransformOrigin_.Value = new System.Windows.Point(0.5, 0.5);
+
+            if (e.Delta > 0)
+            {
+                preview_model.Scale_X.Value = preview_model.Scale_X.Value * 1.2;
+                preview_model.Scale_Y.Value = preview_model.Scale_Y.Value * 1.2;
+                //zoomRatio = zoomRatio * 1.2;
+            }
+            if (e.Delta < 0)
+            {
+                preview_model.Scale_X.Value = preview_model.Scale_X.Value / 1.2;
+                preview_model.Scale_Y.Value = preview_model.Scale_Y.Value / 1.2;
+                zoomRatio = zoomRatio / 1.2;
+            }
+            //oldX = centerX - centerX / zoomRatio;
+            //oldY = centerY - centerY / zoomRatio;
+            //Console.WriteLine(zoomRatio + "|" + centerX + "|" + centerY + "|" +oldX);
+        }
+
+        async private void ImageControl_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            await Task.Delay(100);
+            if (preview_model.Scale_X.Value <= 0)
+                preview_model.Scale_X.Value = -1;
+            else
+                preview_model.Scale_X.Value = 1;
+            preview_model.Scale_Y.Value = 1;
+            offset_Y = offset_X = mousePoint.X = mousePoint.Y = 0;
+            preview_model.X.Value = preview_model.Y.Value = 0;
+            Center();
+            zoomRatio = 1;
+            //oldX = 0;
+            //oldY = 0;
+        }
+
+        public void Center()
+        {
+            preview_model.RenderTransformOrigin_.Value = new System.Windows.Point(0.5, 0.5);
+        }
+
+        double offset_X = 0;
+        double offset_Y = 0;
+        //マウスのクリック位置を記憶
+        private System.Windows.Point mousePoint;
+        private void ImageControl_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        { 
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                mousePoint.X = e.MouseDevice.GetPosition(this).X - offset_X;
+                mousePoint.Y = e.MouseDevice.GetPosition(this).Y - offset_Y;
+            }
+        }
+
+        private void ImageControl_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                if (zoomRatio <= 1)
+                {
+                    preview_model.X.Value = (e.MouseDevice.GetPosition(this).X - mousePoint.X);
+                    preview_model.Y.Value = (e.MouseDevice.GetPosition(this).Y - mousePoint.Y);
+                }
+                else
+                {
+                    preview_model.X.Value = (e.MouseDevice.GetPosition(this).X - mousePoint.X) / (zoomRatio * zoomRatio*2);
+                    preview_model.Y.Value = (e.MouseDevice.GetPosition(this).Y - mousePoint.Y) / (zoomRatio * zoomRatio*2);
+                }
+                //preview_model.Center_X.Value = -(e.MouseDevice.GetPosition(this).X - mousePoint.X) ;
+                //preview_model.Center_Y.Value = -(e.MouseDevice.GetPosition(this).Y - mousePoint.Y) ;
+                //Center();
+
+            }
+            if(e.LeftButton == MouseButtonState.Released)
+            {
+                offset_X = preview_model.X.Value;
+                offset_Y = preview_model.Y.Value;
+            }
+            //Console.WriteLine(preview_model.Center_X.Value +"|" + preview_model.Center_Y.Value);
+        }
+
+        private void window_ContentRendered(object sender, EventArgs e)
+        {
+        }
     }
 }

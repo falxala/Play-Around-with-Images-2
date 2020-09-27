@@ -7,7 +7,7 @@
         xmlns:b="clr-namespace:Experiment.Wpf.Behaviors"
         xmlns:local="clr-namespace:PlayAroundwithImages2"
         xmlns:WpfControlLibrary="clr-namespace:WpfControlLibrary;assembly=ToggleSwitch" xmlns:Converters="clr-namespace:PlayAroundwithImages2.Converters" x:Name="window" x:Class="PlayAroundwithImages2.MainWindow"
-        mc:Ignorable="d" Height="580" Width="800" MinWidth="650" Loaded="Window_Loaded" MinHeight="600" Background="#FF464646" Title="Play Around with Images 2" LocationChanged="Window_LocationChanged" SizeChanged="Window_SizeChanged" Closing="Window_Closing" Icon="Resources/icon.Ico">
+        mc:Ignorable="d" Height="580" Width="800" MinWidth="650" Loaded="Window_Loaded" MinHeight="600" Background="#FF464646" Title="Play Around with Images 2" LocationChanged="Window_LocationChanged" SizeChanged="Window_SizeChanged" Closing="Window_Closing" Icon="Resources/icon.Ico" ContentRendered="window_ContentRendered">
 
     <Window.Resources>
         <Converters:RotateConverter x:Key="RotateConverter"/>
@@ -85,14 +85,14 @@
             <ColumnDefinition Width="Auto" MinWidth="7"/>
             <ColumnDefinition Width="45*" MinWidth="250"/>
         </Grid.ColumnDefinitions>
-        <Slider x:Name="Slider1" Margin="11,0,5,131" ValueChanged="Slider_ValueChanged" FontSize="14" Grid.Column="2" Height="22" VerticalAlignment="Bottom" PreviewMouseWheel="Slider1_PreviewMouseWheel"/>
-        <Label Content="Limit File Size (JPEG)" Margin="6,0,0,157" FontSize="14" VerticalContentAlignment="Stretch" Grid.Column="2" Height="32" VerticalAlignment="Bottom" Foreground="White" HorizontalAlignment="Left" Width="164"/>
+        <Slider x:Name="Slider1" Margin="11,0,10,131" ValueChanged="Slider_ValueChanged" FontSize="14" Grid.Column="2" Height="22" VerticalAlignment="Bottom" PreviewMouseWheel="Slider1_PreviewMouseWheel"/>
+        <Label Content="Limit File Size (JPEG)" Margin="6,0,0,157" FontSize="14" VerticalContentAlignment="Stretch" Grid.Column="2" Height="32" VerticalAlignment="Bottom" Foreground="White" HorizontalAlignment="Left" Width="164" FontWeight="Bold"/>
         <Label Content="MB" Margin="0,0,5,160" FontSize="14" HorizontalContentAlignment="Center" HorizontalAlignment="Right" Width="40" Grid.Column="2" Height="28" VerticalAlignment="Bottom" Foreground="White"/>
-        <Label Content="Long Sides Pixel" Margin="6,0,0,94" FontSize="14" VerticalContentAlignment="Stretch" Grid.Column="2" Height="32" VerticalAlignment="Bottom" Foreground="White" HorizontalAlignment="Left" Width="114"/>
+        <Label Content="Long Sides Pixel" Margin="6,0,0,94" FontSize="14" VerticalContentAlignment="Stretch" Grid.Column="2" Height="32" VerticalAlignment="Bottom" Foreground="White" HorizontalAlignment="Left" Width="114" FontWeight="Bold"/>
         <Label Content="px" Margin="0,0,5,97" FontSize="14" HorizontalContentAlignment="Center" HorizontalAlignment="Right" Width="40" Grid.Column="2" Height="28" VerticalAlignment="Bottom" Foreground="White"/>
-        <Slider x:Name="Slider2" Margin="11,0,5,72" ValueChanged="Slider2_ValueChanged" FontSize="14" Maximum="8192" SmallChange="1" Grid.Column="2" Height="22" VerticalAlignment="Bottom" PreviewMouseWheel="Slider2_PreviewMouseWheel" Foreground="Transparent" Background="#00000000"/>
-        <TextBox x:Name="limit_filesize_tb" Margin="0,0,44,161" TextWrapping="Wrap" Text="5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" TextChanged="limit_filesize_tb_TextChanged" Grid.Column="2" PreviewTextInput="limit_filesize_tb_PreviewTextInput" Height="27" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="50"/>
-        <TextBox x:Name="limit_longside_tb" Margin="0,0,45,98" TextWrapping="Wrap" Text="2048" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" HorizontalAlignment="Right" Width="75" TextChanged="limit_longside_tb_TextChanged" Grid.Column="2" PreviewTextInput="limit_longside_tb_PreviewTextInput" Height="27" VerticalAlignment="Bottom"/>
+        <Slider x:Name="Slider2" Margin="11,0,10,72" ValueChanged="Slider2_ValueChanged" FontSize="14" Maximum="8192" SmallChange="1" Grid.Column="2" Height="22" VerticalAlignment="Bottom" PreviewMouseWheel="Slider2_PreviewMouseWheel" Foreground="Transparent" Background="#00000000"/>
+        <TextBox x:Name="limit_filesize_tb" Margin="0,0,44,161" TextWrapping="Wrap" Text="5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" TextChanged="limit_filesize_tb_TextChanged" Grid.Column="2" PreviewTextInput="limit_filesize_tb_PreviewTextInput" Height="27" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="50" Background="#FF646464" Foreground="White"/>
+        <TextBox x:Name="limit_longside_tb" Margin="0,0,45,98" TextWrapping="Wrap" Text="4096" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" HorizontalAlignment="Right" Width="75" TextChanged="limit_longside_tb_TextChanged" Grid.Column="2" PreviewTextInput="limit_longside_tb_PreviewTextInput" Height="27" VerticalAlignment="Bottom" Background="#FF646464" Foreground="White"/>
 
 
         <Rectangle Margin="10,0,5,7" Height="25" VerticalAlignment="Bottom" Fill="#FF646464" Stroke="#FF464646"/>
@@ -107,27 +107,35 @@
 
                 <GridSplitter HorizontalAlignment="Stretch" Margin="84,2" Grid.Row="1" Background="#CCFFFFFF"/>
 
-                <Border BorderBrush="Black" BorderThickness="1" Margin="5,3,4,0" ClipToBounds="True" Style="{StaticResource TransparentImageBox}">
-                    <Image x:Name="preview_image" Margin="-1" RenderTransformOrigin="0.5,0.5">
-                        <Image.RenderTransform>
-                            <TransformGroup>
-                                <ScaleTransform ScaleX="{Binding Scale_X.Value}" ScaleY="{Binding Scale_Y.Value}"/>
-                                <SkewTransform/>
-                                <RotateTransform  Angle="{Binding Rotate.Value}"/>
-                                <TranslateTransform/>
-                            </TransformGroup>
-                        </Image.RenderTransform>
-                    </Image>
-                </Border>
+                <ContentControl x:Name="ImageControl" MouseDoubleClick="ImageControl_MouseDoubleClick" PreviewMouseWheel="preview_image_PreviewMouseWheel" PreviewMouseDown="ImageControl_PreviewMouseDown" PreviewMouseMove="ImageControl_PreviewMouseMove">
+                    <Border BorderBrush="Black" BorderThickness="1" Margin="5,3,4,0" ClipToBounds="True" Style="{StaticResource TransparentImageBox}">
+                        <Border.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem x:Name="load_Originalimage"  IsCheckable="True" 
+                                  Header="オリジナル解像度で変換プレビュー" Checked="load_Originalimage_Checked" Unchecked="load_Originalimage_Unchecked"/>
+                            </ContextMenu>
+                        </Border.ContextMenu>
+                        <Image x:Name="preview_image" Margin="-1" RenderTransformOrigin="{Binding RenderTransformOrigin_.Value}">
+                            <Image.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform ScaleX="{Binding Scale_X.Value}" ScaleY="{Binding Scale_Y.Value}" CenterX="{Binding Center_X.Value}" CenterY="{Binding Center_Y.Value}"/>
+                                    <SkewTransform CenterX="{Binding Center_X.Value}" CenterY="{Binding Center_Y.Value}" />
+                                    <RotateTransform  Angle="{Binding Rotate.Value}" CenterX="{Binding Center_X.Value}" CenterY="{Binding Center_Y.Value}"/>
+                                    <TranslateTransform X="{Binding X.Value}" Y="{Binding Y.Value}" />
+                                </TransformGroup>
+                            </Image.RenderTransform>
+                        </Image>
+                    </Border>
+                </ContentControl>
                 <Border x:Name="preview_boder" BorderBrush="Black" BorderThickness="1" Margin="5,3,4,0">
                     <Grid x:Name="text_grid" Background="#FF464646">
                         <TextBlock x:Name="selected_TextB" TextWrapping="WrapWithOverflow" FontSize="18" Margin="9,-1" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" LineStackingStrategy="BlockLineHeight" Foreground="White" ScrollViewer.CanContentScroll="True" Background="#FF464646"/>
                     </Grid>
                 </Border>
-                <Border BorderBrush="Black" BorderThickness="1" Height="81" Margin="5,0,3,0" VerticalAlignment="Top" Grid.Row="2">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Margin="5,0,3,0" VerticalAlignment="Top" Grid.Row="2">
                     <TextBlock x:Name="Detail_textB" Margin="1" TextWrapping="Wrap" FontSize="14" Foreground="White"><Run Text="["/><Run Text="Detail"/><Run Text="s]"/></TextBlock>
                 </Border>
-                <Border BorderBrush="Black" BorderThickness="1" Margin="5,86,3,196" Grid.Row="2">
+                <Border BorderBrush="Black" BorderThickness="1" Margin="5,85,3,196" Grid.Row="2">
                     <TextBlock x:Name="path_textB" Margin="1" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" LineStackingStrategy="BlockLineHeight" FontSize="14" Foreground="White"><Run Text="["/><Run Text="Path"/><Run Text="]"/></TextBlock>
                 </Border>
                 <Rectangle x:Name="mask1" Stroke="Black" Margin="5,0,3,63" Fill="#7F000000" Grid.Row="2" Height="128" VerticalAlignment="Bottom" Visibility="Hidden">
@@ -143,7 +151,7 @@
 
         <Button x:Name="Select_All_Button" Style="{StaticResource HoverButtonStyle}" Content="Select All" Margin="0,5,159,0" VerticalAlignment="Top" Click="Select_All_Button_Click" HorizontalAlignment="Right" Width="67" Foreground="White" Height="20"/>
         <Button x:Name="Deselect_All_Button" Style="{StaticResource HoverButtonStyle}" Content="Clear Select" Margin="0,5,78,0" VerticalAlignment="Top" Click="Deselect_All_Button_Click" HorizontalAlignment="Right" Width="76" Foreground="White" Height="20" RenderTransformOrigin="0.816,0.65"/>
-        <Button x:Name="Convert_Button" Style="{StaticResource HoverButtonStyle}" Content="CONVERT" Margin="6,0,70,7" FontSize="20" Click="Convert_Button_Click" Height="45" VerticalAlignment="Bottom" Background="#FF999999" Foreground="White" BorderBrush="#FF382F2F" Grid.Column="2" ToolTip="処理を実行します" ToolTipService.InitialShowDelay ="500" FontFamily="Dubai" BorderThickness="1" RenderTransformOrigin="0.5,0.5" TextOptions.TextHintingMode="Fixed"/>
+        <Button x:Name="Convert_Button" Style="{StaticResource HoverButtonStyle}" Content="CONVERT" Margin="6,0,70,7" FontSize="20" Click="Convert_Button_Click" Height="45" VerticalAlignment="Bottom" Background="#FF999999" Foreground="White" BorderBrush="#FF382F2F" Grid.Column="2" ToolTip="処理を実行します" ToolTipService.InitialShowDelay ="500" BorderThickness="1" RenderTransformOrigin="0.5,0.5" TextOptions.TextHintingMode="Fixed" FontWeight="Bold"/>
 
         <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Margin="1,232,1,221" Background="#B2FFFFFF"/>
         <Grid>
@@ -151,6 +159,7 @@
                 <ContextMenu>
                     <MenuItem  Header="Add file" Click="_AddFile"/>
                     <MenuItem  Header="Paste from clipboard" Click="ListView_CntxtMenu_paste_Click"/>
+                    <MenuItem  Header="Open file directory" Click="ListView_CntxtMenu_open_Click"/>
                     <MenuItem  IsCheckable="True" 
                       Checked="context_thumbnail_Checked" Unchecked="context_thumbnail_Unchecked" Header="Dissable thumbnail"/>
                 </ContextMenu>
@@ -186,7 +195,7 @@
         </Button>
         <WpfControlLibrary:ToggleSwitch x:Name="Multiple_toggle" HorizontalAlignment="Left" Height="22" Margin="10,5,0,0" VerticalAlignment="Top" Width="45" PreviewMouseDown="ToggleSwitch_PreviewMouseDown" Duration="0.1" CircleBorderColor="White" CircleBackgroundColor="#FF464646" TrackBackgroundOnColor="#FFFFA63B"/>
         <Label Content="Multiple" HorizontalAlignment="Left" Margin="60,0,0,0" VerticalAlignment="Top" Foreground="White" FontWeight="Bold" FontSize="14" Height="29" Width="63"/>
-        <Slider x:Name="Tslider" HorizontalAlignment="Left" Margin="10,0,0,10" Width="200" Minimum="50" Maximum="512" Height="18" VerticalAlignment="Bottom" Value="200" SmallChange="1" PreviewMouseDoubleClick="Tslider_PreviewMouseDoubleClick"/>
+        <Slider x:Name="Tslider" HorizontalAlignment="Left" Margin="10,0,0,10" Width="200" Minimum="30" Maximum="500" Height="18" VerticalAlignment="Bottom" Value="150" SmallChange="1" PreviewMouseDoubleClick="Tslider_PreviewMouseDoubleClick" PreviewMouseWheel="Tslider_PreviewMouseWheel"/>
         <Label Content="{Binding Value, ElementName=Tslider}" ContentStringFormat="{}{0:N0} px" HorizontalAlignment="Left" Margin="215,0,0,8" Background="#00000000" Foreground="White" Height="26" VerticalAlignment="Bottom" FontSize="14" Width="51"/>
         <Label Content="{Binding Items.Count, ElementName=Image_ListView}" ContentStringFormat="{}{0:N0} items" Margin="0,0,6,8" Background="#00000000" Foreground="White" Height="26" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="100" HorizontalContentAlignment="Right" FontSize="14"/>
 

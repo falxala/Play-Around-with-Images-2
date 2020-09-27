@@ -25,18 +25,20 @@ namespace PlayAroundwithImages2
             //ラスタライズ時ICCプロファイル
             myMagickSettings.ColorSpace = ImageMagick.ColorSpace.sRGB;
             //ラスタライズ時解像度
-            myMagickSettings.Density = new ImageMagick.Density(96);
+            myMagickSettings.Density = new ImageMagick.Density(72);
             //ラスタライズ時カラータイプ
             myMagickSettings.ColorType = ImageMagick.ColorType.TrueColor;
 
-            //必ずソースとなる「Jpeg画像」より、縮小予定のPixel数がが半分以下である事
-            myMagickSettings.SetDefine(ImageMagick.MagickFormat.Jpg, "size", "256x256");
+            //必ずソースとなる「Jpeg画像」より、縮小予定のPixel数が半分以下である事
+            myMagickSettings.SetDefine(ImageMagick.MagickFormat.Jpg, "size", "255x255");
+
+
             using (var myMagick = new ImageMagick.MagickImage(imagePath, myMagickSettings))
             {
                 //myMagick.Alpha(ImageMagick.AlphaOption.Remove);
                 myMagick.Strip();
-                myMagick.Thumbnail(256, 256);
-                MemoryStream ms = new MemoryStream(myMagick.ToByteArray(ImageMagick.MagickFormat.Bmp));
+                myMagick.Thumbnail(255, 255);
+                MemoryStream ms = new MemoryStream(myMagick.ToByteArray(ImageMagick.MagickFormat.Jpg));
                 // MemoryStreamからBitmapFrameを作成
                 System.Windows.Media.Imaging.BitmapSource bitmapSource =
                     System.Windows.Media.Imaging.BitmapFrame.Create(
@@ -44,6 +46,7 @@ namespace PlayAroundwithImages2
                         System.Windows.Media.Imaging.BitmapCreateOptions.None,
                         System.Windows.Media.Imaging.BitmapCacheOption.OnLoad
                     );
+                ms.Dispose();
                 return bitmapSource;
             }
         }
@@ -102,6 +105,16 @@ namespace PlayAroundwithImages2
             /// 変換せずにコピー
             /// </summary>
             public bool Passthrough { get; set; }
+
+            /// <summary>
+            /// グレースケール
+            /// </summary>
+            public bool GrayScale { get; set; }
+
+            /// <summary>
+            /// ガンマ値
+            /// </summary>
+            public double Gamma { get; set; }
 
         }
 
@@ -267,16 +280,9 @@ namespace PlayAroundwithImages2
                         myMagick.Alpha(ImageMagick.AlphaOption.Remove);
                     }
 
-                    //回転
-                    if (option.Rotate != 0)
-                    {
-                        myMagick.Rotate(option.Rotate);
-
-                    }
-
-                    //反転
-                    if (option.Mirror)
-                        myMagick.Flop();
+                    //グレースケール
+                    if (option.GrayScale)
+                        myMagick.Grayscale();
 
                     //リサイズ・変形
                     if (option.Transform)
@@ -316,6 +322,21 @@ namespace PlayAroundwithImages2
                         myMagick.Resize(option.Size.Width, option.Size.Height);
                     }
 
+                    //回転
+                    if (option.Rotate != 0)
+                    {
+                        myMagick.Rotate(option.Rotate);
+
+                    }
+
+                    //反転
+                    if (option.Mirror)
+                        myMagick.Flop();
+
+
+                    myMagick.Level(new ImageMagick.Percentage(0.0), new ImageMagick.Percentage(100.0), (option.Gamma), ImageMagick.Channels.All);
+
+
                     token.ThrowIfCancellationRequested();
 
                     //「ファイル」へ書き出し  
@@ -339,7 +360,7 @@ namespace PlayAroundwithImages2
             //「画像情報」取得準備
             ImageMagick.MagickImageInfo myMagickInfo = new ImageMagick.MagickImageInfo(filepath);
             //「画像情報」取得
-            string[] strs = new string[9];
+            string[] strs = new string[10];
             strs[0] = (myMagickInfo.FileName);
             strs[1] = (myMagickInfo.ColorSpace.ToString());
             strs[2] = (myMagickInfo.Width.ToString());
@@ -350,13 +371,14 @@ namespace PlayAroundwithImages2
             strs[7] = (myMagickInfo.Density.Units.ToString());
             strs[8] = (myMagickInfo.Compression.ToString());
 
-            /*
-            var myMagickSettings = new ImageMagick.MagickReadSettings();
+
+            
+            //var myMagickSettings = new ImageMagick.MagickReadSettings();
 
             //jpeg読み込み設定
 
-            myMagickSettings.SetDefine(ImageMagick.MagickFormat.Jpg, "size", "1x1");
-            using (var myMagick = new ImageMagick.MagickImage(filepath,myMagickSettings))
+            //myMagickSettings.SetDefine(ImageMagick.MagickFormat.Jpg, "size", "1x1");
+            using (var myMagick = new ImageMagick.MagickImage(filepath))
             {
                 if (myMagick.GetColorProfile() != null)
                 {
@@ -369,7 +391,8 @@ namespace PlayAroundwithImages2
                 {
                     strs[8] = ("NULL");
                 }
-            }*/
+                strs[9] = myMagick.Gamma.ToString();
+            }
 
             return strs;
         }
