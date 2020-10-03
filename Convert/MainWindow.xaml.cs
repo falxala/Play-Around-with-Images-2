@@ -43,7 +43,7 @@ namespace PlayAroundwithImages2
         {
             Get_MemorySize();
             ImageMagick.ResourceLimits.Memory = FreePhysicalMemory;
-            ImageMagick.OpenCL.IsEnabled = true;
+            ImageMagick.OpenCL.IsEnabled = false;
             Console.WriteLine(ImageMagick.ResourceLimits.Memory);
             Console.WriteLine(ImageMagick.ResourceLimits.Disk);
             //ディスク使用は1GBに制限
@@ -69,12 +69,19 @@ namespace PlayAroundwithImages2
             cnvOption.Gamma = 1.0;
             cnvOption.SaveDirectory = System.Environment.CurrentDirectory + "\\outputs";
             cnvOption.Transform = false;
+            Slider1.Value = 5;
+            Slider2.Value = 2048;
 
             monitor = new ClipboardMonitor(new WindowInteropHelper(this).Handle);
             monitor.ChangeClipboard += ClipboardMonitor_changed;
             monitor.Start();
 
+            Subwin.SendData = cnvOption;
+            Subwin.Owner = this;
+            Subwin.Mainwin = this;
+
             preview_model.RenderTransformOrigin_.Value = new System.Windows.Point(0.5, 0.5);
+
         }
 
 
@@ -198,21 +205,21 @@ namespace PlayAroundwithImages2
 
 
                 //縮小表示
+                if (files.Count >= 0 && Image_ListView.Items.Count == 0)
+                {
+                    Tslider.Value = 110;
+                }
                 if (files.Count >= 10 && Image_ListView.Items.Count == 0)
                 {
-                    Tslider.Value = 125;
-                }
-                if (files.Count >= 25 && Image_ListView.Items.Count == 0)
-                {
-                    Tslider.Value = 100;
+                    Tslider.Value = 110;
                 }
                 if (files.Count >= 100 && Image_ListView.Items.Count == 0)
                 {
-                    Tslider.Value = 30;
+                    Tslider.Value = 40;
                 }
 
                 //ファイル数制限
-                if (files.Count >= 2048)
+                if (files.Count >= 4096)
                 {
                     selected_TextB.Text = "file count limit";
                     throw new Exception("file count limit");
@@ -347,7 +354,8 @@ namespace PlayAroundwithImages2
                          drop_Image.File_size = file_size.Length;
                          drop_Image.Image_size = new System.Drawing.Size(int.Parse(details[2]), int.Parse(details[3]));
                          drop_Image.Format = details[4];
-                         drop_Image.Gamma = float.Parse(details[9]);
+                         //drop_Image.Gamma = float.Parse(details[9]);
+                         //drop_Image.Bit = short.Parse(details[10]);
                          drop_Images.Add(drop_Image);
                          Count++;
                      }
@@ -368,9 +376,8 @@ namespace PlayAroundwithImages2
                      this.Dispatcher.Invoke((Action)(() =>
                      {
                          selected_TextB.Visibility = text_grid.Visibility = Visibility.Visible;
-                         Progress(Count, files.Length, "NOW LOADING\r\n");
+                         Progress(Count, files.Length + 1, "NOW LOADING\r\n");
                      }));
-
                  }
 
              });
@@ -514,49 +521,44 @@ namespace PlayAroundwithImages2
                         Image_ListView.Items.Refresh();
                     }
 
+                    preview_image.Source = selected_item.thumbnail;
 
-                    BitmapImage bitmap = new BitmapImage();
                     if (preview_original)
                     {
                         string size = selected_item.Image_size.Width.ToString() + "x" + selected_item.Image_size.Height.ToString();
                         var myMagickSettings = new ImageMagick.MagickReadSettings();
+                        myMagickSettings.ColorSpace = ImageMagick.ColorSpace.sRGB;
+                        myMagickSettings.Density = new ImageMagick.Density(72);
+                        myMagickSettings.ColorType = ImageMagick.ColorType.TrueColor;
                         myMagickSettings.SetDefine(ImageMagick.MagickFormat.Jpg, "size", size);
-                        using (var myMagick = new ImageMagick.MagickImage(selected_item.Image_path))
-                            {
-                                if (cnvOption.GrayScale)
-                                    myMagick.Grayscale();
+                        var source = new BitmapImage();
+                        using (var myMagick = new ImageMagick.MagickImage(selected_item.Image_path, myMagickSettings))
+                        {
+                            if (cnvOption.GrayScale)
+                                myMagick.Grayscale();
+                            if (cnvOption.Gamma != 1)
                                 myMagick.GammaCorrect(cnvOption.Gamma);
-                                MemoryStream ms = new MemoryStream(myMagick.ToByteArray(ImageMagick.MagickFormat.Jpe));
-                                // MemoryStreamからBitmapFrameを作成
-                                System.Windows.Media.Imaging.BitmapSource bitmapSource =
-                                    System.Windows.Media.Imaging.BitmapFrame.Create(
-                                        ms,
-                                        System.Windows.Media.Imaging.BitmapCreateOptions.None,
-                                        System.Windows.Media.Imaging.BitmapCacheOption.OnLoad
-                                    );
-                                preview_image.Source = bitmapSource;
+                            MemoryStream ms = new MemoryStream(myMagick.ToByteArray(ImageMagick.MagickFormat.Bmp));
+                            using (Stream stream = ms)
+                            {
+                                source.BeginInit();
+                                source.StreamSource = stream;
+                                source.CacheOption = BitmapCacheOption.OnLoad;
+                                source.EndInit();
+                                source.Freeze();
                             }
-                        /*
-                        try
-                        {
-                            bitmap.BeginInit();
-                            bitmap.UriSource = new Uri(selected_item.Image_path);
-                            bitmap.EndInit();
-                            preview_image.Source = bitmap;
                         }
-                        catch
-                        {
-                        }*/
+                        preview_image.Source = source;
                     }
-                    else
-                        preview_image.Source = selected_item.thumbnail;
+
                     
                     path_textB.Text = "[Path]\r\n" + selected_item.Image_path;
-                    Detail_textB.Text = "[Details]\r\n" + w + "*" + h;
-                    Detail_textB.Text += " | " + w / gcd + " : " + h / gcd;
+                    Detail_textB.Text = "[Details]\r\n";
+                    Detail_textB.Text += w + "*" + h + " | " + w / gcd + " : " + h / gcd;
                     Detail_textB.Text += "  |  " + ((float)selected_item.File_size / 1024 / 1024).ToString("F2") + " [MB]\r\n";
                     Detail_textB.Text += "Format : " + selected_item.Format + " | " + "ColorSpace : " + selected_item.ColorSpace + "\r\n";
                     Detail_textB.Text += "ICC : " + selected_item.Icc;
+                    //Detail_textB.Text += "\r\nBitDepth : " + selected_item.Bit;
                 }
             }
             catch(Exception ex)
@@ -578,6 +580,11 @@ namespace PlayAroundwithImages2
             double num = Slider1.Value;
             if (num <= 10)
                 limit_filesize_tb.Text = num.ToString("F2");
+
+            if (Slider1.Value == 0)
+            {
+                limit_filesize_tb.Text = "NONE";
+            }
         }
 
         public void Progress(int n,int Count,String addText)
@@ -757,9 +764,7 @@ namespace PlayAroundwithImages2
         }
 
         private void limit_filesize_tb_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            SetSliderFromText(Slider1, limit_filesize_tb, Slider1.Maximum);
-            
+        {            
             //JPEGを選択
             Subwin.ComboBox_extension.SelectedIndex = 5;
         }
@@ -966,7 +971,6 @@ namespace PlayAroundwithImages2
                 if (a.Visibility == Visibility.Visible)
                 {
                     a.Visibility = Visibility.Hidden;
-                    //SettingWindow_Button.Content = ">>";
                     return;
                 }
                 else
@@ -974,19 +978,14 @@ namespace PlayAroundwithImages2
                     Set_Option();
                 }
 
-                //SettingWindow_Button.Content = "<<";
                 a.Visibility = Visibility.Visible;
                 Subwin.SendData = cnvOption;                
             }
             else
             {
-                Subwin.SendData = cnvOption;
-                //SettingWindow_Button.Content = "<<";
-                Subwin.Owner = this;
-                Subwin.Mainwin = this;
                 Subwin.Show();
                 //Dock有効
-                Subwin.Dock_checkbox.IsChecked = true;
+                Subwin.Dock_toggle.IsOn = true;
             }
 
         }
@@ -1017,9 +1016,14 @@ namespace PlayAroundwithImages2
 
         private void Set_Option()
         {
-            cnvOption.Filesize = Double.Parse(limit_filesize_tb.Text);
-            if (limit_longside_tb.Text != "Original")
-                cnvOption.Size = new System.Drawing.Size(Int32.Parse(limit_longside_tb.Text), Int32.Parse(limit_longside_tb.Text));
+            try
+            {
+                cnvOption.Filesize = Double.Parse(limit_filesize_tb.Text);
+                if (limit_longside_tb.Text != "Original")
+                    cnvOption.Size = new System.Drawing.Size(Int32.Parse(limit_longside_tb.Text), Int32.Parse(limit_longside_tb.Text));
+
+            }
+            catch { }
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -1115,13 +1119,19 @@ namespace PlayAroundwithImages2
 
         private void Slider2_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if(e.Delta > 0)
+            if (Keyboard.IsKeyDown(Key.LeftAlt))
             {
-                Slider2.Value++;
+                if (e.Delta > 0) Slider2.Value++;
+                if (e.Delta < 0) Slider2.Value--;
             }
-            else if(e.Delta < 0)
+            else
+            if (e.Delta > 0)
             {
-                Slider2.Value--;
+                Slider2.Value = ((int)Slider2.Value / 512) * 512 + 512;
+            }
+            else if (e.Delta < 0)
+            {
+                Slider2.Value = ((int)Slider2.Value / 512) * 512 - 512;
             }
             
         }
@@ -1324,5 +1334,76 @@ namespace PlayAroundwithImages2
         private void window_ContentRendered(object sender, EventArgs e)
         {
         }
+
+        private void GridSplitter_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            row1.Height = new GridLength(200, GridUnitType.Star);
+            row2.Height = new GridLength(370, GridUnitType.Star);
+
+        }
+
+        private void GridSplitter_MouseDoubleClick_1(object sender, MouseButtonEventArgs e)
+        {
+            column1.Width = new GridLength(400, GridUnitType.Star);
+            column2.Width = new GridLength(272, GridUnitType.Star);
+        }
+
+        private void maximize_Click(object sender, RoutedEventArgs e)
+        {
+            row1.Height = new GridLength(100, GridUnitType.Star);
+            row2.Height = new GridLength(1, GridUnitType.Star);
+            column1.Width = new GridLength(1, GridUnitType.Star);
+            column2.Width = new GridLength(100, GridUnitType.Star);
+        }
+
+        private void layoutReset_Click(object sender, RoutedEventArgs e)
+        {
+            GridSplitter_MouseDoubleClick_1(null,null);
+            GridSplitter_MouseDoubleClick(null, null);
+        }
+
+        private void cahngemode_Button_Click(object sender, RoutedEventArgs e)
+        {
+            Subwin.Sub_CnvOption.Passthrough = Subwin.passthrough_toggle.IsOn = !Subwin.passthrough_toggle.IsOn;            
+            Subwin.toggleIsOn();
+        }
+
+        private void window_StateChanged(object sender, EventArgs e)
+        {
+            //if (this.WindowState == WindowState.Minimized)
+            //    this.ShowInTaskbar = false;
+        }
+
+        private void TaskbarIcon_TrayLeftMouseDown(object sender, RoutedEventArgs e)
+        {
+            this.ShowInTaskbar = true;
+            this.WindowState = WindowState.Normal;
+            this.Activate();
+            this.Topmost = true;
+            this.Topmost = false;
+        }
+
+        private void limit_filesize_tb_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter)
+            {
+                SetSliderFromText(Slider1, limit_filesize_tb, Slider1.Maximum);
+                limit_filesize_tb.Text = cnvOption.Filesize.ToString("0.00");
+                if (cnvOption.Filesize == 0)
+                {
+                    limit_filesize_tb.Text = "NONE";
+                }
+            }
+        }
+
+        private void limit_longside_tb_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter)
+            {
+                limit_longside_tb.Text = cnvOption.Size.Width.ToString("0");
+
+            }
+        }
+
     }
 }

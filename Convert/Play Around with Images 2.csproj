@@ -66,6 +66,9 @@
     <Reference Include="AsyncEnumerable, Version=4.0.2.0, Culture=neutral, PublicKeyToken=0426b068161bd1d1, processorArchitecture=MSIL">
       <HintPath>..\packages\AsyncEnumerator.4.0.2\lib\net45\AsyncEnumerable.dll</HintPath>
     </Reference>
+    <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Hardcodet.NotifyIcon.Wpf.1.0.8\lib\net451\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
+    </Reference>
     <Reference Include="Json.Net, Version=1.0.23.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Json.Net.1.0.23\lib\netstandard2.0\Json.Net.dll</HintPath>
     </Reference>
@@ -77,9 +80,6 @@
     </Reference>
     <Reference Include="Markdig, Version=0.21.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Markdig.0.21.1\lib\net452\Markdig.dll</HintPath>
-    </Reference>
-    <Reference Include="Markdown.Xaml">
-      <HintPath>D:\fortia\Desktop\Markdown.XAML-master\build\Markdown.Xaml\Debug\Markdown.Xaml.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.1\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
@@ -105,6 +105,7 @@
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationFramework.Aero2" />
     <Reference Include="ReactiveProperty, Version=7.4.1.0, Culture=neutral, PublicKeyToken=910d1732782c71cb, processorArchitecture=MSIL">
       <HintPath>..\packages\ReactiveProperty.7.4.1\lib\netstandard2.0\ReactiveProperty.dll</HintPath>
     </Reference>
@@ -257,6 +258,7 @@
     <Resource Include="Resources\icon.Ico" />
     <Resource Include="Resources\noimage.png" />
     <Resource Include="Resources\3737.png" />
+    <None Include="Resources\conditioner.ico" />
     <Content Include="ToggleSwitch.dll" />
   </ItemGroup>
   <ItemGroup>

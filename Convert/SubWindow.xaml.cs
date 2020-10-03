@@ -30,6 +30,8 @@ namespace PlayAroundwithImages2
     public partial class SubWindow : Window
     {
         public System.Timers.Timer Timer = new System.Timers.Timer();
+
+        System.Windows.Media.Brush ichimatsu;
         public SubWindow()
         {
             InitializeComponent();  
@@ -53,8 +55,16 @@ namespace PlayAroundwithImages2
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            ichimatsu = Mainwin.back_border.Background;
+
+            ComboBox_backgroundColor.Items.Add("Transparent");
+            ComboBox_backgroundColor.Items.Add("White");
+            ComboBox_backgroundColor.Items.Add("Black");
+            ComboBox_backgroundColor.SelectedIndex = 0;
+
+            var a = System.AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\');
             //よく使う拡張子だけを抜き出す(enum参照)
-            var extLsit = new[] { 6, 17, 53, 74, 90, 106, 172, 178, 186, 221, 240 };
+            var extLsit = new[] { 6, 17, 53, 74, 90, 105, 172, 177, 178, 186, 221, 223, 240 };
 
             //コンボボックスに拡張子名と値をセット
             foreach (var Value in Enum.GetValues(typeof(ImageMagick.MagickFormat)))
@@ -71,11 +81,17 @@ namespace PlayAroundwithImages2
 
             //GPUをコンボボックスにセット
             ComboBox_GPU.Items.Add("Disable");
-            foreach (var item in ImageMagick.OpenCL.Devices)
-            {
-                ComboBox_GPU.Items.Add(item.Name);
-            }
-            ComboBox_GPU.SelectedIndex = ImageMagick.OpenCL.Devices.Count();
+            ComboBox_GPU.SelectedIndex = 0;
+
+            //DPIをコンボボックスにセット
+            ComboBox_DPI.Items.Add(72);
+            ComboBox_DPI.Items.Add(144);
+            ComboBox_DPI.Items.Add(300);
+            ComboBox_DPI.Items.Add(350);
+            ComboBox_DPI.Items.Add(600);
+            ComboBox_DPI.Items.Add(1200);
+            ComboBox_DPI.SelectedIndex = 3;
+
 
             for (int i = 1; i <= Mainwin.CpuCount * 2; i++)
             {
@@ -86,7 +102,7 @@ namespace PlayAroundwithImages2
             ComboBox_extension.DisplayMemberPath = "ItemDisp";
             ComboBox_extension.SelectedIndex = 5;
             if (Mainwin.subDockFlag == false)
-                Dock_checkbox.IsChecked = true;
+                Dock_toggle.IsOn = true;
 
             selectDirTextBox.Text = Sub_CnvOption.SaveDirectory;
 
@@ -94,6 +110,8 @@ namespace PlayAroundwithImages2
 
             check_Resources();
             //Info_TextBox.Text = Sub_CnvOption.Transform.ToString();
+
+            Sub_CnvOption.Quality = 75;
 
         }
 
@@ -112,7 +130,7 @@ namespace PlayAroundwithImages2
 
 
         private Process_Image.ConvertOptions sendData;
-        private Process_Image.ConvertOptions Sub_CnvOption = new Process_Image.ConvertOptions();
+        internal Process_Image.ConvertOptions Sub_CnvOption = new Process_Image.ConvertOptions();
         public MainWindow Mainwin;
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -153,6 +171,11 @@ namespace PlayAroundwithImages2
         {
             ImageMagick.MagickFormat magickFormat = (ImageMagick.MagickFormat)((ItemSet)ComboBox_extension.SelectedItem).ItemValue;
             Sub_CnvOption.Format = magickFormat;
+            if (magickFormat != ImageMagick.MagickFormat.Jpeg)
+                Mainwin.mask1_.Visibility = Visibility.Visible;
+            else if (!Sub_CnvOption.Passthrough && !Sub_CnvOption.Passthrough)
+                Mainwin.mask1_.Visibility = Visibility.Hidden;
+
             SetMainCnvOption();
         }
 
@@ -239,14 +262,7 @@ namespace PlayAroundwithImages2
 
         private void CheckBox_Click(object sender, RoutedEventArgs e)
         {
-            if (Dock_checkbox.IsChecked == true)
-            {
-                Mainwin.subDockFlag = true;
-            }
-            else
-            {
-                Mainwin.subDockFlag = false;
-            }
+
         }
 
         bool Chainflag = false;
@@ -473,17 +489,7 @@ namespace PlayAroundwithImages2
         private void passthrough_toggle_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             Sub_CnvOption.Passthrough = !passthrough_toggle.IsOn;
-            if (Sub_CnvOption.Passthrough == true)
-            {
-                Mainwin.mask1.Visibility = mask2.Visibility = Visibility.Visible;
-                Mainwin.Convert_Button.Content = "COPY";
-            }
-            else
-            {
-                Mainwin.mask1.Visibility = mask2.Visibility = Visibility.Hidden;
-                Mainwin.Convert_Button.Content = "CONVERT";
-            }
-            SetMainCnvOption();
+            toggleIsOn();
         }
 
         private void Disable_Control()
@@ -588,22 +594,19 @@ namespace PlayAroundwithImages2
             }
         }
 
-        private void OpenLocalTEMP(object sender, RoutedEventArgs e)
-        {
-            System.Diagnostics.Process.Start("EXPLORER.EXE", Path.GetTempPath());
-        }
 
         private void ComboBox_GPU_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Info_TextBox.Text = "";
-            foreach (var item in ImageMagick.OpenCL.Devices)
-            {
-                if (item.Name == ComboBox_GPU.SelectedItem.ToString())
-                    item.IsEnabled = true;
-                else
-                    item.IsEnabled = false;
-                Info_TextBox.Text += "OpenCL Device : " + item.Name + " = " + item.IsEnabled + "\r\n";
-            }
+            if (GPUload)
+                foreach (var item in ImageMagick.OpenCL.Devices)
+                {
+                    if (item.Name == ComboBox_GPU.SelectedItem.ToString())
+                        item.IsEnabled = true;
+                    else
+                        item.IsEnabled = false;
+                    Info_TextBox.Text += "OpenCL Device : " + item.Name + " = " + item.IsEnabled + "\r\n";
+                }
         }
 
         private void ComboBox_CPU_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -715,7 +718,7 @@ namespace PlayAroundwithImages2
             Timer.Stop();
             Timer.Elapsed -= Timer_Elapsed;
             timerCount++;
-            Console.WriteLine(timerCount);
+            //Console.WriteLine(timerCount);
             if (timerCount > waitTime)
             {
                 timerCount = 0;
@@ -738,6 +741,183 @@ namespace PlayAroundwithImages2
             {
                 gamma_gray_changed();
             });
+        }
+
+        private void openLocalTemp_Button_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("EXPLORER.EXE", System.Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\ImageMagick"); 
+        }
+
+        public void toggleIsOn()
+        {
+            if (Sub_CnvOption.Passthrough == true)
+            {
+                Mainwin.mask1.Visibility = Mainwin.mask1_.Visibility = mask2.Visibility = Visibility.Visible;
+                Mainwin.Convert_Button.Content = "COPY";
+            }
+            else
+            {
+                Mainwin.mask1.Visibility = Mainwin.mask1_.Visibility = mask2.Visibility = Visibility.Hidden;
+                ComboBox_extension_SelectionChanged(null,null);
+                Mainwin.Convert_Button.Content = "CONVERT";
+            }
+            SetMainCnvOption();
+        }
+
+        private void NotScaleUp_toggle_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Sub_CnvOption.NotScaleUp = !NotScaleUp_toggle.IsOn;
+            SetMainCnvOption();
+        }
+
+        bool GPUload = false;
+        private async void ComboBox_GPU_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (!File.Exists(System.Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\ImageMagick\\ImagemagickOpenCLDeviceProfile.xml"))
+            {
+                Mainwin.selected_TextB.Visibility = Visibility.Visible;
+                Mainwin.text_grid.Visibility = Visibility.Visible;
+                Mainwin.selected_TextB.Text = "OpenCL\r\n初回ベンチマーク実行中";
+                await Task.Delay(10);
+            }
+            if (!GPUload)
+            {
+                foreach (var item in ImageMagick.OpenCL.Devices)
+                {
+                    ComboBox_GPU.Items.Add(item.Name);
+                }
+                GPUload = true;
+                await Task.Delay(10);
+                Mainwin.selected_TextB.Visibility = Visibility.Hidden;
+                await Task.Delay(10);
+                Mainwin.Image_ListView_SelectionChanged(null,null);
+            }
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            
+            Mainwin.back_border.Background = new SolidColorBrush(Colors.White);
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ComboBox_backgroundColor_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            switch (ComboBox_backgroundColor.SelectedIndex)
+            {
+                case 0:
+                    Mainwin.back_border.Background = ichimatsu;
+                    Sub_CnvOption.BackgroundColor = new ImageMagick.MagickColor("transparent");
+                    break;
+                case 1:
+                    Mainwin.back_border.Background = new SolidColorBrush(Colors.White);
+                    Sub_CnvOption.BackgroundColor = new ImageMagick.MagickColor("white");
+                    break;
+                case 2:
+                    Mainwin.back_border.Background = new SolidColorBrush(Colors.Black);
+                    Sub_CnvOption.BackgroundColor = new ImageMagick.MagickColor("black");
+                    break;
+            }
+            SetMainCnvOption();
+            
+        }
+
+        private void ComboBox_DPI_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Sub_CnvOption.DPI = (int)ComboBox_DPI.SelectedItem;
+            SetMainCnvOption();
+        }
+
+        private void Dock_toggle_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+                Mainwin.subDockFlag = !Dock_toggle.IsOn;
+        }
+
+        private void Window_StateChanged(object sender, EventArgs e)
+        {
+            if (this.WindowState == WindowState.Minimized)
+            {
+                this.WindowState = WindowState.Normal;
+                this.Hide();
+            }
+        }
+
+        private void Quality_TextBox_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            Quality_TextBox.Text = "75";
+            this.IsEnabled = false;
+            this.IsEnabled = true;
+        }
+
+        private void Quality_TextBox_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Delta > 0)
+                Sub_CnvOption.Quality += 1;
+            if (e.Delta < 0)
+                Sub_CnvOption.Quality -= 1;
+
+            if (Sub_CnvOption.Quality > 100 && e.Delta > 0)
+                Sub_CnvOption.Quality = 100;
+            if (Sub_CnvOption.Quality <= 1 && e.Delta < 0)
+                Sub_CnvOption.Quality = 1;
+
+            Quality_TextBox.Text = Sub_CnvOption.Quality.ToString();
+            SetMainCnvOption();
+        }
+
+        private void Quality_TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                Quality_TextBox.Text = Sub_CnvOption.Quality.ToString();
+            }
+        }
+
+        private void Quality_TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !new Regex("[0-9]").IsMatch(e.Text);
+            try
+            {
+                if (e.Text == "+")
+                {
+                    var Temp = Sub_CnvOption.Quality;
+                    if (Temp < 100)
+                        Temp ++;
+                    Sub_CnvOption.Quality = Temp;
+
+                    Quality_TextBox.Text = Sub_CnvOption.Quality.ToString();
+                    return;
+                }
+                if (e.Text == "-")
+                {
+                    var Temp = Sub_CnvOption.Quality;
+                    if (Temp > 1)
+                        Temp --;
+                    Sub_CnvOption.Quality = Temp;
+
+                    Quality_TextBox.Text = Sub_CnvOption.Quality.ToString();
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private void Quality_TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                if (int.Parse(Quality_TextBox.Text) >= 1 && int.Parse(Quality_TextBox.Text) <= 100)
+                    Sub_CnvOption.Quality = int.Parse(Quality_TextBox.Text);
+                SetMainCnvOption();
+            }
+            catch { }
         }
     }
 }

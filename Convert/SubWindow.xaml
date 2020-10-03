@@ -4,9 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PlayAroundwithImages2"
-        xmlns:ToggleSwitch="clr-namespace:WpfControlLibrary;assembly=ToggleSwitch" x:Class="PlayAroundwithImages2.SubWindow"
+        xmlns:ToggleSwitch="clr-namespace:WpfControlLibrary;assembly=ToggleSwitch" xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" x:Class="PlayAroundwithImages2.SubWindow"
         mc:Ignorable="d"
-        Title="Option" Height="600" Width="228" Loaded="Window_Loaded" Closing="Window_Closing" Background="#FF464646" MinWidth="280" MinHeight="600" ShowInTaskbar="False" Icon="Resources/icon.Ico">
+        Title="Option" Height="600" Width="228" Loaded="Window_Loaded" Closing="Window_Closing" Background="#FF464646" MinWidth="280" MinHeight="600" ShowInTaskbar="False" Icon="Resources/icon.Ico" StateChanged="Window_StateChanged">
 
     <Window.Resources>
         <!-- 通常時のボタンの色 -->
@@ -42,14 +42,302 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style TargetType="ComboBoxItem">
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="Background" Value="#FF464646" />
+        </Style>
+        <Style x:Key="FocusVisual">
+            <Setter Property="Control.Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Rectangle Margin="2" SnapsToDevicePixels="true" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" StrokeThickness="1" StrokeDashArray="1 2"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <LinearGradientBrush x:Key="ComboBox.Static.Background" EndPoint="0,1" StartPoint="0,0">
+<!---->            <GradientStop Color="#FF606060" Offset="0.0"/>
+            <GradientStop Color="#FF606060" Offset="1.0"/>
+        </LinearGradientBrush>
+        <SolidColorBrush x:Key="ComboBox.Static.Border" Color="#FFACACAC"/>
+        <SolidColorBrush x:Key="ComboBox.Static.Editable.Background" Color="#FFFFFFFF"/>
+        <SolidColorBrush x:Key="ComboBox.Static.Editable.Border" Color="#FFABADB3"/>
+        <SolidColorBrush x:Key="ComboBox.Static.Editable.Button.Background" Color="Transparent"/>
+        <SolidColorBrush x:Key="ComboBox.Static.Editable.Button.Border" Color="Transparent"/>
+        <SolidColorBrush x:Key="ComboBox.MouseOver.Glyph" Color="#FF000000"/>
+        <LinearGradientBrush x:Key="ComboBox.MouseOver.Background" EndPoint="0,1" StartPoint="0,0">
+            <GradientStop Color="#FF606060" Offset="0.0"/>
+            <GradientStop Color="#FF606060" Offset="1.0"/>
+        </LinearGradientBrush>
+        <SolidColorBrush x:Key="ComboBox.MouseOver.Border" Color="#FF606060"/>
+        <SolidColorBrush x:Key="ComboBox.MouseOver.Editable.Background" Color="#FF606060"/>
+        <SolidColorBrush x:Key="ComboBox.MouseOver.Editable.Border" Color="White"/>
+        <LinearGradientBrush x:Key="ComboBox.MouseOver.Editable.Button.Background" EndPoint="0,1" StartPoint="0,0">
+            <GradientStop Color="#FF878787" Offset="0.0"/>
+            <GradientStop Color="#FF606060" Offset="1.0"/>
+        </LinearGradientBrush>
+        <SolidColorBrush x:Key="ComboBox.MouseOver.Editable.Button.Border" Color="#FF606060"/>
+        <SolidColorBrush x:Key="ComboBox.Pressed.Glyph" Color="#FF000000"/>
+        <LinearGradientBrush x:Key="ComboBox.Pressed.Background" EndPoint="0,1" StartPoint="0,0">
+            <GradientStop Color="#FF606060" Offset="0.0"/>
+            <GradientStop Color="#FF606060" Offset="1.0"/>
+        </LinearGradientBrush>
+        <SolidColorBrush x:Key="ComboBox.Pressed.Border" Color="#FF569DE5"/>
+        <SolidColorBrush x:Key="ComboBox.Pressed.Editable.Background" Color="#FFFFFFFF"/>
+        <SolidColorBrush x:Key="ComboBox.Pressed.Editable.Border" Color="#FF569DE5"/>
+        <LinearGradientBrush x:Key="ComboBox.Pressed.Editable.Button.Background" EndPoint="0,1" StartPoint="0,0">
+            <GradientStop Color="#FFDAEBFC" Offset="0.0"/>
+            <GradientStop Color="#FFC4E0FC" Offset="1.0"/>
+        </LinearGradientBrush>
+        <SolidColorBrush x:Key="ComboBox.Pressed.Editable.Button.Border" Color="#FF569DE5"/>
+        <SolidColorBrush x:Key="ComboBox.Disabled.Glyph" Color="#FFBFBFBF"/>
+        <SolidColorBrush x:Key="ComboBox.Disabled.Background" Color="#FFF0F0F0"/>
+        <SolidColorBrush x:Key="ComboBox.Disabled.Border" Color="#FFD9D9D9"/>
+        <SolidColorBrush x:Key="ComboBox.Disabled.Editable.Background" Color="#FFFFFFFF"/>
+        <SolidColorBrush x:Key="ComboBox.Disabled.Editable.Border" Color="#FFBFBFBF"/>
+        <SolidColorBrush x:Key="ComboBox.Disabled.Editable.Button.Background" Color="Transparent"/>
+        <SolidColorBrush x:Key="ComboBox.Disabled.Editable.Button.Border" Color="Transparent"/>
+        <SolidColorBrush x:Key="ComboBox.Static.Glyph" Color="White"/>
+        <Style x:Key="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="IsTabStop" Value="false"/>
+            <Setter Property="Focusable" Value="false"/>
+            <Setter Property="ClickMode" Value="Press"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                        <Border x:Name="templateRoot" BorderBrush="{StaticResource ComboBox.Static.Border}" BorderThickness="{TemplateBinding BorderThickness}" Background="{StaticResource ComboBox.Static.Background}" SnapsToDevicePixels="true">
+                            <Border x:Name="splitBorder" BorderBrush="Transparent" BorderThickness="1" HorizontalAlignment="Right" Margin="0" SnapsToDevicePixels="true" Width="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}">
+                                <Path x:Name="arrow" Data="F1 M 0,0 L 2.667,2.66665 L 5.3334,0 L 5.3334,-1.78168 L 2.6667,0.88501 L0,-1.78168 L0,0 Z" Fill="{StaticResource ComboBox.Static.Glyph}" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center"/>
+                            </Border>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsEditable, RelativeSource={RelativeSource AncestorType={x:Type ComboBox}}}" Value="true"/>
+                                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="false"/>
+                                    <Condition Binding="{Binding IsPressed, RelativeSource={RelativeSource Self}}" Value="false"/>
+                                    <Condition Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="true"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Background" TargetName="templateRoot" Value="{StaticResource ComboBox.Static.Editable.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="templateRoot" Value="{StaticResource ComboBox.Static.Editable.Border}"/>
+                                <Setter Property="Background" TargetName="splitBorder" Value="{StaticResource ComboBox.Static.Editable.Button.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="splitBorder" Value="{StaticResource ComboBox.Static.Editable.Button.Border}"/>
+                            </MultiDataTrigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="Fill" TargetName="arrow" Value="{StaticResource ComboBox.MouseOver.Glyph}"/>
+                            </Trigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="true"/>
+                                    <Condition Binding="{Binding IsEditable, RelativeSource={RelativeSource AncestorType={x:Type ComboBox}}}" Value="false"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Background" TargetName="templateRoot" Value="{StaticResource ComboBox.MouseOver.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="templateRoot" Value="{StaticResource ComboBox.MouseOver.Border}"/>
+                            </MultiDataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="true"/>
+                                    <Condition Binding="{Binding IsEditable, RelativeSource={RelativeSource AncestorType={x:Type ComboBox}}}" Value="true"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Background" TargetName="templateRoot" Value="{StaticResource ComboBox.MouseOver.Editable.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="templateRoot" Value="{StaticResource ComboBox.MouseOver.Editable.Border}"/>
+                                <Setter Property="Background" TargetName="splitBorder" Value="{StaticResource ComboBox.MouseOver.Editable.Button.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="splitBorder" Value="{StaticResource ComboBox.MouseOver.Editable.Button.Border}"/>
+                            </MultiDataTrigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter Property="Fill" TargetName="arrow" Value="{StaticResource ComboBox.Pressed.Glyph}"/>
+                            </Trigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsPressed, RelativeSource={RelativeSource Self}}" Value="true"/>
+                                    <Condition Binding="{Binding IsEditable, RelativeSource={RelativeSource AncestorType={x:Type ComboBox}}}" Value="false"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Background" TargetName="templateRoot" Value="{StaticResource ComboBox.Pressed.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="templateRoot" Value="{StaticResource ComboBox.Pressed.Border}"/>
+                            </MultiDataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsPressed, RelativeSource={RelativeSource Self}}" Value="true"/>
+                                    <Condition Binding="{Binding IsEditable, RelativeSource={RelativeSource AncestorType={x:Type ComboBox}}}" Value="true"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Background" TargetName="templateRoot" Value="{StaticResource ComboBox.Pressed.Editable.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="templateRoot" Value="{StaticResource ComboBox.Pressed.Editable.Border}"/>
+                                <Setter Property="Background" TargetName="splitBorder" Value="{StaticResource ComboBox.Pressed.Editable.Button.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="splitBorder" Value="{StaticResource ComboBox.Pressed.Editable.Button.Border}"/>
+                            </MultiDataTrigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Fill" TargetName="arrow" Value="{StaticResource ComboBox.Disabled.Glyph}"/>
+                            </Trigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="false"/>
+                                    <Condition Binding="{Binding IsEditable, RelativeSource={RelativeSource AncestorType={x:Type ComboBox}}}" Value="false"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Background" TargetName="templateRoot" Value="{StaticResource ComboBox.Disabled.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="templateRoot" Value="{StaticResource ComboBox.Disabled.Border}"/>
+                            </MultiDataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="false"/>
+                                    <Condition Binding="{Binding IsEditable, RelativeSource={RelativeSource AncestorType={x:Type ComboBox}}}" Value="true"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Background" TargetName="templateRoot" Value="{StaticResource ComboBox.Disabled.Editable.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="templateRoot" Value="{StaticResource ComboBox.Disabled.Editable.Border}"/>
+                                <Setter Property="Background" TargetName="splitBorder" Value="{StaticResource ComboBox.Disabled.Editable.Button.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="splitBorder" Value="{StaticResource ComboBox.Disabled.Editable.Button.Border}"/>
+                            </MultiDataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <ControlTemplate x:Key="ComboBoxTemplate" TargetType="{x:Type ComboBox}">
+            <Grid x:Name="templateRoot" SnapsToDevicePixels="true">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition MinWidth="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}" Width="0"/>
+                </Grid.ColumnDefinitions>
+                <Popup x:Name="PART_Popup" AllowsTransparency="true" Grid.ColumnSpan="2" IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Margin="1" PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}" Placement="Bottom">
+                    <Themes:SystemDropShadowChrome x:Name="shadow" Color="Transparent" MaxHeight="{TemplateBinding MaxDropDownHeight}" MinWidth="{Binding ActualWidth, ElementName=templateRoot}">
+                        <Border x:Name="dropDownBorder" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" BorderThickness="1" Background="Gray">
+                            <ScrollViewer x:Name="DropDownScrollViewer">
+                                <Grid x:Name="grid" RenderOptions.ClearTypeHint="Enabled">
+                                    <Canvas x:Name="canvas" HorizontalAlignment="Left" Height="0" VerticalAlignment="Top" Width="0">
+                                        <Rectangle x:Name="opaqueRect" Fill="{Binding Background, ElementName=dropDownBorder}" Height="{Binding ActualHeight, ElementName=dropDownBorder}" Width="{Binding ActualWidth, ElementName=dropDownBorder}"/>
+                                    </Canvas>
+                                    <ItemsPresenter x:Name="ItemsPresenter" KeyboardNavigation.DirectionalNavigation="Contained" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                </Grid>
+                            </ScrollViewer>
+                        </Border>
+                    </Themes:SystemDropShadowChrome>
+                </Popup>
+                <ToggleButton x:Name="toggleButton" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Grid.ColumnSpan="2" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Style="{StaticResource ComboBoxToggleButton}" Foreground="White"/>
+                <ContentPresenter x:Name="contentPresenter" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" Content="{TemplateBinding SelectionBoxItem}" ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" IsHitTestVisible="false" Margin="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="HasDropShadow" SourceName="PART_Popup" Value="true">
+                    <Setter Property="Margin" TargetName="shadow" Value="0,0,5,5"/>
+                    <Setter Property="Color" TargetName="shadow" Value="#71000000"/>
+                </Trigger>
+                <Trigger Property="HasItems" Value="false">
+                    <Setter Property="Height" TargetName="dropDownBorder" Value="95"/>
+                </Trigger>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsGrouping" Value="true"/>
+                        <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="false"/>
+                    </MultiTrigger.Conditions>
+                    <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+                </MultiTrigger>
+                <Trigger Property="ScrollViewer.CanContentScroll" SourceName="DropDownScrollViewer" Value="false">
+                    <Setter Property="Canvas.Top" TargetName="opaqueRect" Value="{Binding VerticalOffset, ElementName=DropDownScrollViewer}"/>
+                    <Setter Property="Canvas.Left" TargetName="opaqueRect" Value="{Binding HorizontalOffset, ElementName=DropDownScrollViewer}"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+        <SolidColorBrush x:Key="TextBox.Static.Background" Color="#FFFFFFFF"/>
+        <Style x:Key="ComboBoxEditableTextBox" TargetType="{x:Type TextBox}">
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="AllowDrop" Value="true"/>
+            <Setter Property="MinWidth" Value="0"/>
+            <Setter Property="MinHeight" Value="0"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst"/>
+            <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBox}">
+                        <ScrollViewer x:Name="PART_ContentHost" Background="Transparent" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <ControlTemplate x:Key="ComboBoxEditableTemplate" TargetType="{x:Type ComboBox}">
+            <Grid x:Name="templateRoot" SnapsToDevicePixels="true">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition MinWidth="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}" Width="0"/>
+                </Grid.ColumnDefinitions>
+                <Popup x:Name="PART_Popup" AllowsTransparency="true" Grid.ColumnSpan="2" IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}" PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}" Placement="Bottom">
+                    <Themes:SystemDropShadowChrome x:Name="shadow" Color="Transparent" MaxHeight="{TemplateBinding MaxDropDownHeight}" MinWidth="{Binding ActualWidth, ElementName=templateRoot}">
+                        <Border x:Name="dropDownBorder" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
+                            <ScrollViewer x:Name="DropDownScrollViewer">
+                                <Grid x:Name="grid" RenderOptions.ClearTypeHint="Enabled">
+                                    <Canvas x:Name="canvas" HorizontalAlignment="Left" Height="0" VerticalAlignment="Top" Width="0">
+                                        <Rectangle x:Name="opaqueRect" Fill="{Binding Background, ElementName=dropDownBorder}" Height="{Binding ActualHeight, ElementName=dropDownBorder}" Width="{Binding ActualWidth, ElementName=dropDownBorder}"/>
+                                    </Canvas>
+                                    <ItemsPresenter x:Name="ItemsPresenter" KeyboardNavigation.DirectionalNavigation="Contained" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                </Grid>
+                            </ScrollViewer>
+                        </Border>
+                    </Themes:SystemDropShadowChrome>
+                </Popup>
+                <ToggleButton x:Name="toggleButton" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Grid.ColumnSpan="2" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Style="{StaticResource ComboBoxToggleButton}"/>
+                <Border x:Name="border" Background="{StaticResource TextBox.Static.Background}" Margin="{TemplateBinding BorderThickness}">
+                    <TextBox x:Name="PART_EditableTextBox" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" IsReadOnly="{Binding IsReadOnly, RelativeSource={RelativeSource TemplatedParent}}" Margin="{TemplateBinding Padding}" Style="{StaticResource ComboBoxEditableTextBox}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                </Border>
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsEnabled" Value="false">
+                    <Setter Property="Opacity" TargetName="border" Value="0.56"/>
+                </Trigger>
+                <Trigger Property="IsKeyboardFocusWithin" Value="true">
+                    <Setter Property="Foreground" Value="Black"/>
+                </Trigger>
+                <Trigger Property="HasDropShadow" SourceName="PART_Popup" Value="true">
+                    <Setter Property="Margin" TargetName="shadow" Value="0,0,5,5"/>
+                    <Setter Property="Color" TargetName="shadow" Value="#71000000"/>
+                </Trigger>
+                <Trigger Property="HasItems" Value="false">
+                    <Setter Property="Height" TargetName="dropDownBorder" Value="95"/>
+                </Trigger>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsGrouping" Value="true"/>
+                        <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="false"/>
+                    </MultiTrigger.Conditions>
+                    <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+                </MultiTrigger>
+                <Trigger Property="ScrollViewer.CanContentScroll" SourceName="DropDownScrollViewer" Value="false">
+                    <Setter Property="Canvas.Top" TargetName="opaqueRect" Value="{Binding VerticalOffset, ElementName=DropDownScrollViewer}"/>
+                    <Setter Property="Canvas.Left" TargetName="opaqueRect" Value="{Binding HorizontalOffset, ElementName=DropDownScrollViewer}"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+        <Style x:Key="ComboBoxStyle1" TargetType="{x:Type ComboBox}">
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
+            <Setter Property="Background" Value="{StaticResource ComboBox.Static.Background}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ComboBox.Static.Border}"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="Padding" Value="6,3,5,3"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
+            <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
+            <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+            <Setter Property="Template" Value="{StaticResource ComboBoxTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="IsEditable" Value="true">
+                    <Setter Property="IsTabStop" Value="false"/>
+                    <Setter Property="Padding" Value="2"/>
+                    <Setter Property="Template" Value="{StaticResource ComboBoxEditableTemplate}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+
+
+
     </Window.Resources>
 
     <Grid Margin="1,0">
         <Grid.RowDefinitions>
-            <RowDefinition Height="9*"/>
-            <RowDefinition Height="560*"/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
-        <TabControl Background="#FF464646" BorderBrush="#FF464646" Grid.RowSpan="2" Margin="-5,-2,-5,37" SelectionChanged="TabControl_SelectionChanged">
+        <TabControl Background="#FF464646" BorderBrush="#FF464646" Margin="-5,-2,-5,37" SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="Convert" Margin="-2,-1,0,-1" BorderBrush="#FFEDEDED">
                 <TabItem.Background>
                     <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
@@ -59,15 +347,26 @@
                 </TabItem.Background>
                 <Grid Background="#FF464646" Margin="0,0,0,2">
 
-                    <Border BorderBrush="Black" BorderThickness="1" Height="42" Margin="10,313,10,0" VerticalAlignment="Top">
-                        <Grid>
-                            <ComboBox x:Name="ComboBox_extension" Margin="90,7,10,8" SelectionChanged="ComboBox_extension_SelectionChanged" FontSize="14" Background="#FF646464"/>
-                            <TextBlock Margin="10,9,0,9" TextWrapping="Wrap" Text="Format" HorizontalAlignment="Left" Width="62" Foreground="White" FontSize="14" FontWeight="Bold"/>
+                    <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="10,443,10,0" VerticalAlignment="Top">
+                        <Grid ToolTip="It will not be more than its original size.">
+                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="109" FontSize="14" Foreground="White" Margin="10,10,0,0" FontWeight="Bold"><Run Text="Not"/><Run Text=" s"/><Run Text="caleu"/><Run Text="p"/></TextBlock>
+                            <ToggleSwitch:ToggleSwitch x:Name="NotScaleUp_toggle" Height="24" Margin="0,10,10,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" HorizontalAlignment="Right" Width="40" PreviewMouseDown="NotScaleUp_toggle_PreviewMouseDown"/>
                         </Grid>
                     </Border>
 
 
-                    <Border BorderBrush="Black" BorderThickness="1" Height="296" Margin="10,12,10,0" VerticalAlignment="Top">
+
+                    <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="-270,162,290,0" VerticalAlignment="Top"/>
+
+                    <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="10,9,10,0" VerticalAlignment="Top">
+                        <Grid>
+                            <ComboBox x:Name="ComboBox_extension" Margin="144,8,10,8" SelectionChanged="ComboBox_extension_SelectionChanged" FontSize="14" Background="White" Style="{DynamicResource ComboBoxStyle1}" Foreground="White"/>
+                            <TextBlock Margin="10,10,0,8" TextWrapping="Wrap" Text="Format" HorizontalAlignment="Left" Width="105" Foreground="White" FontSize="14" FontWeight="Bold"/>
+                        </Grid>
+                    </Border>
+
+
+                    <Border BorderBrush="Black" BorderThickness="1" Height="329" Margin="10,109,10,0" VerticalAlignment="Top">
                         <Grid>
                             <CheckBox x:Name="tf_checkbox" Content="Transform (priority)" HorizontalAlignment="Left" Margin="4,4,0,0" VerticalAlignment="Top" Width="160" Height="20" RenderTransformOrigin="0,0" Unchecked="tf_checkbox_Unchecked" Checked="tf_checkbox_Checked" Background="White" Foreground="White" Padding="4,-1,0,0" FontWeight="Bold">
                                 <CheckBox.RenderTransform>
@@ -87,8 +386,8 @@
                             <TextBlock Margin="0,30,12,0" TextWrapping="Wrap" Text="[px]" VerticalAlignment="Top" Foreground="White" FontFamily="Yu Gothic Medium" FontSize="14" HorizontalAlignment="Right" Width="26"/>
                             <TextBlock Margin="0,65,12,0" TextWrapping="Wrap" Text="[px]" VerticalAlignment="Top" Foreground="White" FontFamily="Yu Gothic Medium" FontSize="14" HorizontalAlignment="Right" Width="26"/>
                             <TextBlock Margin="0,105,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" HorizontalAlignment="Right" Width="36"><Run Text="["/><Run Text="deg"/><Run Text="]"/></TextBlock>
-                            <TextBlock HorizontalAlignment="Left" Margin="10,184,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White" Width="56" FontWeight="Bold"><Run Text="M"/><Run Text="irror"/></TextBlock>
-                            <ToggleSwitch:ToggleSwitch x:Name="Mirror_toggle" Height="24" Margin="0,177,10,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" PreviewMouseDown="Mirror_toggle_PreviewMouseDown" HorizontalAlignment="Right" Width="40"/>
+                            <TextBlock HorizontalAlignment="Left" Margin="10,180,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White" Width="56" FontWeight="Bold"><Run Text="M"/><Run Text="irror"/></TextBlock>
+                            <ToggleSwitch:ToggleSwitch x:Name="Mirror_toggle" Height="24" Margin="0,173,10,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" PreviewMouseDown="Mirror_toggle_PreviewMouseDown" HorizontalAlignment="Right" Width="40"/>
                             <Button x:Name="ChainButton"  HorizontalAlignment="Left" Margin="105,45,0,0" VerticalAlignment="Top" Width="37" Click="ChainButton_Click" Height="27" BorderBrush="{x:Null}" Foreground="{x:Null}" Background="{x:Null}" RenderTransformOrigin="0.5,0.5">
                                 <Button.RenderTransform>
                                     <TransformGroup>
@@ -108,18 +407,75 @@
             StrokeDashArray="0.5 0.5" Margin="-12,-14,-10,-279"  />
                             <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Rotate" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White" Width="56" Margin="10,103,0,0" RenderTransformOrigin="0.369,0.319" FontWeight="Bold"/>
                             <Slider x:Name="Rotate_Slider" Margin="25,142,12,0" VerticalAlignment="Top" PreviewMouseWheel="Rotate_Slider_PreviewMouseWheel" PreviewMouseDoubleClick="Rotate_Slider_PreviewMouseDoubleClick" ValueChanged="Rotate_Slider_ValueChanged" Maximum="180" Minimum="-180"/>
-                            <TextBlock HorizontalAlignment="Left" Margin="10,220,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" FontSize="14" Foreground="White" Width="75" FontWeight="Bold"><Run Text="Gray"/><Run Text="S"/><Run Text="cale"/></TextBlock>
-                            <ToggleSwitch:ToggleSwitch x:Name="GrayScale_toggle" Height="24" Margin="0,218,10,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" HorizontalAlignment="Right" Width="40" PreviewMouseDown="GrayScale_toggle_PreviewMouseDown"/>
-                            <TextBlock HorizontalAlignment="Left" Margin="10,259,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" FontSize="14" Foreground="White" Width="129" FontWeight="Bold"><Run Text="Gamma"/><Run Text=" "/><Run Text="correction"/><LineBreak/><Run/></TextBlock>
-                            <TextBox x:Name="gamma_TextBox" Height="22" Margin="144,257,10,0" TextWrapping="Wrap" Text="1.0" VerticalAlignment="Top" FontSize="14" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" PreviewTextInput="gamma_TextBox_PreviewTextInput" Background="#FF646464" Foreground="White" TextChanged="gamma_TextBox_TextChanged" PreviewKeyDown="gamma_TextBox_PreviewKeyDown" PreviewMouseDoubleClick="gamma_TextBox_PreviewMouseDoubleClick" PreviewMouseWheel="gamma_TextBox_PreviewMouseWheel"/>
+                            <TextBlock HorizontalAlignment="Left" Margin="10,216,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" FontSize="14" Foreground="White" Width="75" FontWeight="Bold"><Run Text="Gray"/><Run Text="S"/><Run Text="cale"/></TextBlock>
+                            <ToggleSwitch:ToggleSwitch x:Name="GrayScale_toggle" Height="24" Margin="0,214,10,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" HorizontalAlignment="Right" Width="40" PreviewMouseDown="GrayScale_toggle_PreviewMouseDown"/>
+                            <TextBlock HorizontalAlignment="Left" Margin="10,255,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" FontSize="14" Foreground="White" Width="129" FontWeight="Bold"><Run Text="Gamma"/><Run Text=" "/><Run Text="correction"/><LineBreak/><Run/></TextBlock>
+                            <TextBox x:Name="gamma_TextBox"  Height="22" Margin="144,253,10,0" TextWrapping="Wrap" Text="1.0" VerticalAlignment="Top" FontSize="14" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" PreviewTextInput="gamma_TextBox_PreviewTextInput" Background="#FF646464" Foreground="White" TextChanged="gamma_TextBox_TextChanged" PreviewKeyDown="gamma_TextBox_PreviewKeyDown" PreviewMouseDoubleClick="gamma_TextBox_PreviewMouseDoubleClick" PreviewMouseWheel="gamma_TextBox_PreviewMouseWheel"/>
+                            <ComboBox x:Name="ComboBox_backgroundColor" Style="{DynamicResource ComboBoxStyle1}" Margin="120,290,10,0" SelectionChanged="ComboBox_backgroundColor_SelectionChanged" FontSize="14" Height="27" VerticalAlignment="Top" Background="#FF646464" Foreground="White"/>
+                            <TextBlock Margin="10,292,0,0" ToolTip="Background Color" TextWrapping="Wrap" HorizontalAlignment="Left" Width="105" Foreground="White" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.602,0.493" Height="25" VerticalAlignment="Top"><Run Text="B"/><Run Text="GColor"/></TextBlock>
+                        </Grid>
+                    </Border>
+                    <Rectangle x:Name="mask2" Fill="#7F000000" Height="446" Margin="10,9,10,0" Stroke="Black" VerticalAlignment="Top" Visibility="Hidden"/>
+                    <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="10,59,10,0" VerticalAlignment="Top">
+                        <Grid ToolTip="JPEG / PNG Quality">
+                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="100" FontSize="14" Foreground="White" Margin="10,10,0,0" FontWeight="Bold" Text="Quality"/>
+                            <ToggleSwitch:ToggleSwitch x:Name="NotScaleUp_toggle2" Height="24" Margin="0,10,10,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" HorizontalAlignment="Right" Width="40" PreviewMouseDown="NotScaleUp_toggle_PreviewMouseDown"/>
+                            <TextBox x:Name="Quality_TextBox" Height="22" Margin="144,12,10,0" TextWrapping="Wrap" Text="75" VerticalAlignment="Top" FontSize="14" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" PreviewTextInput="Quality_TextBox_PreviewTextInput" Background="#FF646464" Foreground="White" PreviewKeyDown="Quality_TextBox_PreviewKeyDown" PreviewMouseDoubleClick="Quality_TextBox_PreviewMouseDoubleClick" PreviewMouseWheel="Quality_TextBox_PreviewMouseWheel" TextChanged="Quality_TextBox_TextChanged"/>
                         </Grid>
                     </Border>
 
 
-                    <Border BorderBrush="Black" BorderThickness="1" Height="134" Margin="10,360,10,0" VerticalAlignment="Top">
+
+                </Grid>
+            </TabItem>
+            <TabItem Header="Advanced" Margin="0,-1,-4,-1" BorderBrush="#FFEEEEEE">
+                <TabItem.Background>
+                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                        <GradientStop Color="#FFF0F0F0" Offset="0"/>
+                        <GradientStop Color="#FFD8D8D8" Offset="1"/>
+                    </LinearGradientBrush>
+                </TabItem.Background>
+                <Grid Background="#FF464646">
+                    <Border BorderBrush="Black" BorderThickness="1" Height="44" Margin="10,149,10,0" VerticalAlignment="Top">
+                        <Grid>
+                            <ComboBox x:Name="ComboBox_GPU" Style="{DynamicResource ComboBoxStyle1}" Margin="82,8,10,8" FontSize="14" SelectionChanged="ComboBox_GPU_SelectionChanged" PreviewMouseDown="ComboBox_GPU_PreviewMouseDown"  Foreground="White" BorderBrush="White" IsReadOnly="True">
+                                <ComboBox.Background>
+                                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                                        <GradientStop Color="#FF464646" Offset="0"/>
+                                        <GradientStop Color="#FF4B4B4B" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </ComboBox.Background>
+                            </ComboBox>
+                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="72" FontSize="14" Foreground="White" Margin="10,10,0,0" RenderTransformOrigin="0.639,0.864" FontWeight="Bold"><Run Text="OpenCL"/><LineBreak/><Run/></TextBlock>
+                        </Grid>
+                    </Border>
+                    <Border BorderBrush="Black" BorderThickness="1" Height="113" Margin="10,247,10,0" VerticalAlignment="Top">
+                        <Grid>
+                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="109" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="10,12,0,0" Text="memory limit"/>
+                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="109" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="10,44,0,0"><Run Text="disk"/><Run Text=" limit"/></TextBlock>
+                            <TextBlock x:Name="ResourcesMemTxt" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="124,12,0,0"><Run Text="use mem"/><LineBreak/><Run/></TextBlock>
+                            <TextBlock x:Name="ResourcesDiskTxt" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="124,44,0,0"><Run Text="use"/><Run Text=" "/><Run Text="disk"/><LineBreak/><Run/></TextBlock>
+                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="109" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="10,77,0,0"><Run Text="t"/><Run Text="hread"/></TextBlock>
+                            <TextBlock x:Name="ResourcesThreadTxt" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="124,77,0,0"><Run Text="use"/><Run Text=" "/><Run Text="thread num"/><LineBreak/><Run/></TextBlock>
+                        </Grid>
+                    </Border>
+                    <Border BorderBrush="Black" BorderThickness="1" Height="44" Margin="10,198,10,0" VerticalAlignment="Top">
+                        <Grid>
+                            <ComboBox x:Name="ComboBox_CPU" Style="{DynamicResource ComboBoxStyle1}" Margin="125,8,10,8" FontSize="14" SelectionChanged="ComboBox_CPU_SelectionChanged" Foreground="White"/>
+                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="95" FontSize="14" Foreground="White" Margin="10,10,0,0" RenderTransformOrigin="0.639,0.864" FontWeight="Bold"><Run Text="p"/><Run Text="arallels"/><Run Text=" max"/></TextBlock>
+                        </Grid>
+                    </Border>
+                    <Button x:Name="CheckUpdate_Button" Style="{StaticResource HoverButtonStyle}" Content="Check Update" Margin="10,465,10,0" Foreground="White" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" BorderBrush="White" Click="CheckUpdate_Button_Click" Height="25" VerticalAlignment="Top" FontFamily="Yu Gothic Medium"/>
+                    <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="10,415,10,0" VerticalAlignment="Top">
+                        <Grid Margin="0,0,0,-1">
+                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="109" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="10,10,0,0" Text="Imagemagick"/>
+                            <Button x:Name="openLocalTemp_Button" Style="{StaticResource HoverButtonStyle}" Content="Open AppLocal" Margin="122.667,10,10,0" Foreground="White" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" BorderBrush="White" Height="25" VerticalAlignment="Top" Click="openLocalTemp_Button_Click"/>
+                        </Grid>
+                    </Border>
+                    <Border BorderBrush="Black" BorderThickness="1" Height="134" Margin="10,10,10,0" VerticalAlignment="Top">
                         <Grid>
                             <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="122" FontSize="14" Foreground="White" Margin="10,10,0,0" TextDecorations="{x:Null}" FontWeight="Bold"><Run Text="Output"/><Run Text="s"/><Run Text=" "/><Run Text="Directory"/></TextBlock>
-                            <Button x:Name="OpenFolder" Style="{StaticResource HoverButtonStyle}" Content="Open" Click="OpenFolder_Click" Foreground="White" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" HorizontalAlignment="Right" Width="62" Height="23" VerticalAlignment="Top" BorderBrush="White" FontFamily="Yu Gothic Medium" Margin="0,8,10,0"/>
+                            <Button x:Name="OpenFolder" Style="{StaticResource HoverButtonStyle}" Content="Open" Click="OpenFolder_Click" Foreground="White" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" HorizontalAlignment="Right" Width="62" Height="23" VerticalAlignment="Top" BorderBrush="White" Margin="0,8,10,0" FontWeight="Bold"/>
                             <TextBox x:Name="selectDirTextBox" Height="22" Text="TextBox" VerticalAlignment="Top" FontSize="14" MaxLines="1" TextChanged="selectDirTextBox_TextChanged" FontFamily="Yu Gothic Medium" Background="#FF646464" Foreground="White" Margin="9,39,43,0"/>
                             <Button x:Name="Select_folder" VerticalAlignment="Top" Click="Button_Click" Height="22" HorizontalAlignment="Right" Width="28" Background="White" Margin="0,39,11,0">
                                 <Image Source="Resources/Folder.png" />
@@ -138,63 +494,19 @@
                             <ToggleSwitch:ToggleSwitch x:Name="passthrough_toggle" Height="24" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" HorizontalAlignment="Right" Width="40" PreviewMouseDown="passthrough_toggle_PreviewMouseDown" Margin="0,98,10,0"/>
                         </Grid>
                     </Border>
-                    <Rectangle x:Name="mask2" Fill="#7F000000" Height="296" Margin="10,12,10,0" Stroke="Black" VerticalAlignment="Top" Visibility="Hidden"/>
-
-
-
-                </Grid>
-            </TabItem>
-            <TabItem Header="Advanced" Margin="0,-1,-4,-1" BorderBrush="#FFEEEEEE">
-                <TabItem.Background>
-                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-                        <GradientStop Color="#FFF0F0F0" Offset="0"/>
-                        <GradientStop Color="#FFD8D8D8" Offset="1"/>
-                    </LinearGradientBrush>
-                </TabItem.Background>
-                <Grid Background="#FF464646">
-                    <Border BorderBrush="Black" BorderThickness="1" Height="44" Margin="10,11,10,0" VerticalAlignment="Top">
-                        <Grid>
-                            <ComboBox x:Name="ComboBox_GPU" Margin="82,8,10,8" FontSize="14" SelectionChanged="ComboBox_GPU_SelectionChanged"/>
-                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="72" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="10,10,0,0" RenderTransformOrigin="0.639,0.864"><Run Text="OpenCL"/><LineBreak/><Run/></TextBlock>
+                    <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="10,365,10,0" VerticalAlignment="Top">
+                        <Grid ToolTip="DPI to rasterize PDF / AI files">
+                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="109" FontSize="14" Foreground="White" Margin="10,10,0,0"><Run Text="Rasterize"/><Run Text=" "/><Run Text="(DPI)"/></TextBlock>
+                            <ToggleSwitch:ToggleSwitch x:Name="NotScaleUp_toggle1" Height="24" Margin="0,10,10,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" HorizontalAlignment="Right" Width="40" PreviewMouseDown="NotScaleUp_toggle_PreviewMouseDown"/>
+                            <ComboBox x:Name="ComboBox_DPI" Style="{DynamicResource ComboBoxStyle1}" Margin="124,10,11,7" FontSize="14" SelectionChanged="ComboBox_DPI_SelectionChanged" Foreground="White"/>
                         </Grid>
                     </Border>
-                    <Border BorderBrush="Black" BorderThickness="1" Height="113" Margin="10,109,10,0" VerticalAlignment="Top">
-                        <Grid>
-                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="109" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="10,12,0,0" Text="memory limit"/>
-                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="109" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="10,44,0,0"><Run Text="disk"/><Run Text=" limit"/></TextBlock>
-                            <TextBlock x:Name="ResourcesMemTxt" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="124,12,0,0"><Run Text="use mem"/><LineBreak/><Run/></TextBlock>
-                            <TextBlock x:Name="ResourcesDiskTxt" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="124,44,0,0"><Run Text="use"/><Run Text=" "/><Run Text="disk"/><LineBreak/><Run/></TextBlock>
-                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="109" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="10,77,0,0"><Run Text="t"/><Run Text="hread"/></TextBlock>
-                            <TextBlock x:Name="ResourcesThreadTxt" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="124,77,0,0"><Run Text="use"/><Run Text=" "/><Run Text="thread num"/><LineBreak/><Run/></TextBlock>
-                        </Grid>
-                    </Border>
-                    <Border BorderBrush="Black" BorderThickness="1" Height="44" Margin="10,11,10,0" VerticalAlignment="Top">
-                        <Grid>
-                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="72" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="10,10,0,0" RenderTransformOrigin="0.639,0.864"><Run Text="OpenCL"/><LineBreak/><Run/></TextBlock>
-                        </Grid>
-                    </Border>
-                    <Border BorderBrush="Black" BorderThickness="1" Height="44" Margin="10,60,10,0" VerticalAlignment="Top">
-                        <Grid>
-                            <ComboBox x:Name="ComboBox_CPU" Margin="125,8,10,8" FontSize="14" SelectionChanged="ComboBox_CPU_SelectionChanged"/>
-                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="95" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="10,10,0,0" RenderTransformOrigin="0.639,0.864"><Run Text="p"/><Run Text="arallels"/><Run Text=" max"/></TextBlock>
-                        </Grid>
-                    </Border>
-                    <Button x:Name="CheckUpdate_Button" Style="{StaticResource HoverButtonStyle}" Content="Check Update" Margin="10,227,10,0" Foreground="White" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" BorderBrush="White" Click="CheckUpdate_Button_Click" Height="25" VerticalAlignment="Top" FontFamily="Yu Gothic Medium"/>
                 </Grid>
             </TabItem>
         </TabControl>
-        <CheckBox x:Name="Dock_checkbox" Content="Dock" HorizontalAlignment="Left" Margin="18,0,0,12" Click="CheckBox_Click" RenderTransformOrigin="0.5,0.5" Height="14" VerticalAlignment="Bottom" Foreground="White" FontFamily="Yu Gothic Medium" Grid.Row="1">
-            <CheckBox.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform ScaleX="1.2" ScaleY="1.2"/>
-                    <SkewTransform/>
-                    <RotateTransform/>
-                    <TranslateTransform/>
-                </TransformGroup>
-            </CheckBox.RenderTransform>
-        </CheckBox>
-        <TextBox x:Name="Info_TextBox" Margin="10,528,6,32" TextWrapping="Wrap" Background="#FF575757" Foreground="#FF0AE6BE" Grid.Row="1"/>
-
+        <TextBox x:Name="Info_TextBox" Margin="10,537,6,32" TextWrapping="Wrap" Background="#FF575757" Foreground="#FF0AE6BE"/>
+        <ToggleSwitch:ToggleSwitch x:Name="Dock_toggle" Margin="10,0,0,4" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF2F9CBB" HorizontalAlignment="Left" Width="40" PreviewMouseDown="Dock_toggle_PreviewMouseDown" IsOn="True" Height="24" VerticalAlignment="Bottom"/>
+        <TextBlock TextWrapping="Wrap" FontSize="14" Foreground="White" Margin="60,0,0,5" Text="Dock" Height="22" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="109" FontWeight="Bold"/>
 
     </Grid>
 </Window>
