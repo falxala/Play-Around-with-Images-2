@@ -64,7 +64,7 @@ namespace PlayAroundwithImages2
 
             var a = System.AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\');
             //よく使う拡張子だけを抜き出す(enum参照)
-            var extLsit = new[] { 6, 17, 53, 74, 90, 105, 172, 177, 178, 186, 221, 223, 240 };
+            var extLsit = new[] { 6, 17, 53, 74, 90, 106, 172, 177, 178, 186, 221, 223, 240 };
 
             //コンボボックスに拡張子名と値をセット
             foreach (var Value in Enum.GetValues(typeof(ImageMagick.MagickFormat)))
@@ -112,6 +112,8 @@ namespace PlayAroundwithImages2
             //Info_TextBox.Text = Sub_CnvOption.Transform.ToString();
 
             Sub_CnvOption.Quality = 75;
+            Rotate_TextBox.Text = "0";
+            Sub_CnvOption.Rotate = 0;
 
         }
 
@@ -171,7 +173,7 @@ namespace PlayAroundwithImages2
         {
             ImageMagick.MagickFormat magickFormat = (ImageMagick.MagickFormat)((ItemSet)ComboBox_extension.SelectedItem).ItemValue;
             Sub_CnvOption.Format = magickFormat;
-            if (magickFormat != ImageMagick.MagickFormat.Jpeg)
+            if (magickFormat != ImageMagick.MagickFormat.Jpg)
                 Mainwin.mask1_.Visibility = Visibility.Visible;
             else if (!Sub_CnvOption.Passthrough && !Sub_CnvOption.Passthrough)
                 Mainwin.mask1_.Visibility = Visibility.Hidden;

@@ -12,11 +12,13 @@ using System.Windows.Media.Imaging;
 using System.Threading;
 using System.Text.RegularExpressions;
 using Color = System.Drawing.Color;
+using System.Drawing.Imaging;
 
 namespace PlayAroundwithImages2
 {
     public class Process_Image
     {
+        static ImageConverter imgconv = new ImageConverter();
         public static BitmapSource Create_thumbnail(string imagePath)
         {
             var myMagickSettings = new ImageMagick.MagickReadSettings();
@@ -37,6 +39,7 @@ namespace PlayAroundwithImages2
             {
                 //myMagick.BackgroundColor = new ImageMagick.MagickColor("white");
                 //myMagick.Alpha(ImageMagick.AlphaOption.Remove);
+
 
                 myMagick.Strip();
                 myMagick.Thumbnail(255, 255);
@@ -147,7 +150,7 @@ namespace PlayAroundwithImages2
             var Result = await Task.Run(() =>
             {
             var myMagickSettings = new ImageMagick.Formats.Jpeg.JpegWriteDefines();
-                myMagickSettings.Extent = (int)(option.Filesize * 1024);
+                myMagickSettings.Extent = (int)(option.Filesize*1024);
             string outputPath = "";
             string outputDir = option.SaveDirectory + "\\";
             Directory.CreateDirectory(outputDir);

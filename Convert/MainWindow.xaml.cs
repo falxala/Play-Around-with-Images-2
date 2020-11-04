@@ -17,6 +17,8 @@ using Reactive.Bindings;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
+using System.IO.Compression;
+using System.ComponentModel;
 
 
 
@@ -81,7 +83,6 @@ namespace PlayAroundwithImages2
             Subwin.Mainwin = this;
 
             preview_model.RenderTransformOrigin_.Value = new System.Windows.Point(0.5, 0.5);
-
         }
 
 
@@ -192,8 +193,38 @@ namespace PlayAroundwithImages2
                     {
                         //フォルダ内のファイル名を取得|サブフォルダ内も全て検索
                         files.AddRange(System.IO.Directory.GetFiles(@dropItem, "*", System.IO.SearchOption.AllDirectories));
+                    }
+                    else if (Path.GetExtension(dropItem).ToLower() == ".zip")
+                    {
+                        try
+                        {
+                            string unzipDir = TempPath + "\\" + Path.GetFileNameWithoutExtension(dropItem);
+                            
+                            /*
+                            System.IO.Compression.ZipFile.ExtractToDirectory(
+                             dropItem,
+                             unzipDir,
+                             System.Text.Encoding.GetEncoding("shift_jis"));
+                            files.AddRange(System.IO.Directory.GetFiles(@unzipDir, "*", System.IO.SearchOption.AllDirectories));
+                            */
 
+                            using (ZipArchive a = ZipFile.OpenRead(dropItem))
+                            {
+                                //↓unzipDirを使うとなぜか例外
+                                if (Directory.Exists(TempPath + "\\" + Path.GetFileNameWithoutExtension(dropItem)) == false)
+                                {
+                                    Directory.CreateDirectory(unzipDir);
+                                }
 
+                                foreach (var item in a.Entries)
+                                {
+
+                                    item.ExtractToFile(unzipDir + "\\" + item.FullName, true);
+                                    files.Add(unzipDir + "\\" + item.FullName);
+                                }
+                            }
+                        }
+                        catch(Exception ex) { Console.WriteLine(ex.Message); }
                     }
                     //ドロップがディレクトリ以外
                     else
@@ -202,7 +233,6 @@ namespace PlayAroundwithImages2
                     }
 
                 }
-
 
                 //縮小表示
                 if (files.Count >= 0 && Image_ListView.Items.Count == 0)
@@ -261,6 +291,11 @@ namespace PlayAroundwithImages2
                 {
                     drop_grid.Visibility = Visibility.Visible;
                 }
+
+                //並び替え
+                var cv = CollectionViewSource.GetDefaultView(drop_Images);
+                cv.SortDescriptions.Clear();
+                cv.SortDescriptions.Add(new SortDescription("File_name", ListSortDirection.Ascending));
             }
         }
 
@@ -525,30 +560,48 @@ namespace PlayAroundwithImages2
 
                     if (preview_original)
                     {
-                        string size = selected_item.Image_size.Width.ToString() + "x" + selected_item.Image_size.Height.ToString();
-                        var myMagickSettings = new ImageMagick.MagickReadSettings();
-                        myMagickSettings.ColorSpace = ImageMagick.ColorSpace.sRGB;
-                        myMagickSettings.Density = new ImageMagick.Density(72);
-                        myMagickSettings.ColorType = ImageMagick.ColorType.TrueColor;
-                        myMagickSettings.SetDefine(ImageMagick.MagickFormat.Jpg, "size", size);
-                        var source = new BitmapImage();
-                        using (var myMagick = new ImageMagick.MagickImage(selected_item.Image_path, myMagickSettings))
+
+                        try
                         {
-                            if (cnvOption.GrayScale)
-                                myMagick.Grayscale();
-                            if (cnvOption.Gamma != 1)
-                                myMagick.GammaCorrect(cnvOption.Gamma);
-                            MemoryStream ms = new MemoryStream(myMagick.ToByteArray(ImageMagick.MagickFormat.Bmp));
-                            using (Stream stream = ms)
-                            {
-                                source.BeginInit();
-                                source.StreamSource = stream;
-                                source.CacheOption = BitmapCacheOption.OnLoad;
-                                source.EndInit();
-                                source.Freeze();
-                            }
+                            
+
+                            if (cnvOption.GrayScale || cnvOption.Gamma != 1)
+                                throw new Exception();
+
+                            var source = new BitmapImage();
+                            source.BeginInit();
+                            source.UriSource = new Uri(selected_item.Image_path);
+                            source.EndInit();
+                            preview_image.Source = source;
                         }
-                        preview_image.Source = source;
+                        catch
+                        {
+                            var source = new BitmapImage();
+                            string size = selected_item.Image_size.Width.ToString() + "x" + selected_item.Image_size.Height.ToString();
+                            var myMagickSettings = new ImageMagick.MagickReadSettings();
+                            myMagickSettings.ColorSpace = ImageMagick.ColorSpace.sRGB;
+                            myMagickSettings.Density = new ImageMagick.Density(72);
+                            myMagickSettings.ColorType = ImageMagick.ColorType.TrueColor;
+                            myMagickSettings.SetDefine(ImageMagick.MagickFormat.Jpg, "size", size);
+
+                            using (var myMagick = new ImageMagick.MagickImage(selected_item.Image_path, myMagickSettings))
+                            {
+                                if (cnvOption.GrayScale)
+                                    myMagick.Grayscale();
+                                if (cnvOption.Gamma != 1)
+                                    myMagick.GammaCorrect(cnvOption.Gamma);
+                                MemoryStream ms = new MemoryStream(myMagick.ToByteArray(ImageMagick.MagickFormat.Bmp));
+                                using (Stream stream = ms)
+                                {
+                                    source.BeginInit();
+                                    source.StreamSource = stream;
+                                    source.CacheOption = BitmapCacheOption.OnLoad;
+                                    source.EndInit();
+                                    source.Freeze();
+                                }
+                            }
+                            preview_image.Source = source;
+                        }
                     }
 
                     
@@ -767,6 +820,7 @@ namespace PlayAroundwithImages2
         {            
             //JPEGを選択
             Subwin.ComboBox_extension.SelectedIndex = 5;
+            Set_Option();
         }
 
         private void limit_longside_tb_TextChanged(object sender, TextChangedEventArgs e)

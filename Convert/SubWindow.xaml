@@ -57,7 +57,8 @@
             </Setter>
         </Style>
         <LinearGradientBrush x:Key="ComboBox.Static.Background" EndPoint="0,1" StartPoint="0,0">
-<!---->            <GradientStop Color="#FF606060" Offset="0.0"/>
+            <!---->
+            <GradientStop Color="#FF606060" Offset="0.0"/>
             <GradientStop Color="#FF606060" Offset="1.0"/>
         </LinearGradientBrush>
         <SolidColorBrush x:Key="ComboBox.Static.Border" Color="#FFACACAC"/>
@@ -354,10 +355,6 @@
                         </Grid>
                     </Border>
 
-
-
-                    <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="-270,162,290,0" VerticalAlignment="Top"/>
-
                     <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="10,9,10,0" VerticalAlignment="Top">
                         <Grid>
                             <ComboBox x:Name="ComboBox_extension" Margin="144,8,10,8" SelectionChanged="ComboBox_extension_SelectionChanged" FontSize="14" Background="White" Style="{DynamicResource ComboBoxStyle1}" Foreground="White"/>
@@ -415,14 +412,13 @@
                             <TextBlock Margin="10,292,0,0" ToolTip="Background Color" TextWrapping="Wrap" HorizontalAlignment="Left" Width="105" Foreground="White" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.602,0.493" Height="25" VerticalAlignment="Top"><Run Text="B"/><Run Text="GColor"/></TextBlock>
                         </Grid>
                     </Border>
-                    <Rectangle x:Name="mask2" Fill="#7F000000" Height="446" Margin="10,9,10,0" Stroke="Black" VerticalAlignment="Top" Visibility="Hidden"/>
                     <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="10,59,10,0" VerticalAlignment="Top">
                         <Grid ToolTip="JPEG / PNG Quality">
                             <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="100" FontSize="14" Foreground="White" Margin="10,10,0,0" FontWeight="Bold" Text="Quality"/>
-                            <ToggleSwitch:ToggleSwitch x:Name="NotScaleUp_toggle2" Height="24" Margin="0,10,10,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" HorizontalAlignment="Right" Width="40" PreviewMouseDown="NotScaleUp_toggle_PreviewMouseDown"/>
                             <TextBox x:Name="Quality_TextBox" Height="22" Margin="144,12,10,0" TextWrapping="Wrap" Text="75" VerticalAlignment="Top" FontSize="14" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" PreviewTextInput="Quality_TextBox_PreviewTextInput" Background="#FF646464" Foreground="White" PreviewKeyDown="Quality_TextBox_PreviewKeyDown" PreviewMouseDoubleClick="Quality_TextBox_PreviewMouseDoubleClick" PreviewMouseWheel="Quality_TextBox_PreviewMouseWheel" TextChanged="Quality_TextBox_TextChanged"/>
                         </Grid>
                     </Border>
+                    <Rectangle x:Name="mask2" Fill="#7F000000" Height="479" Margin="10,9,10,0" Stroke="Black" VerticalAlignment="Top" Visibility="Hidden"/>
 
 
 
