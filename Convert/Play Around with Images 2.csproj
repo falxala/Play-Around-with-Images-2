@@ -261,6 +261,10 @@
     <Resource Include="Resources\noimage.png" />
     <Resource Include="Resources\3737.png" />
     <None Include="Resources\conditioner.ico" />
+    <Resource Include="sin.png" />
+    <Resource Include="sin%40.png" />
+    <Resource Include="sin_.png" />
+    <Resource Include="sin1%404x.png" />
     <Content Include="ToggleSwitch.dll" />
   </ItemGroup>
   <ItemGroup>

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PlayAroundwithImages2"
         mc:Ignorable="d"
-        Title="Update" Height="360" Width="500"
+        Title="Update" Height="400" Width="600"
         MouseLeftButtonDown="Window_MouseLeftButtonDown" WindowStyle="None" ResizeMode="NoResize">
 
     <Grid Background="White">

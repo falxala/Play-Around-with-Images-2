@@ -92,6 +92,11 @@ namespace PlayAroundwithImages2
             ComboBox_DPI.Items.Add(1200);
             ComboBox_DPI.SelectedIndex = 3;
 
+            for (int i = 10; i > 0; i--)
+            {
+                ComboBox_opacity.Items.Add(i * 10);
+            }
+
 
             for (int i = 1; i <= Mainwin.CpuCount * 2; i++)
             {
@@ -114,7 +119,11 @@ namespace PlayAroundwithImages2
             Sub_CnvOption.Quality = 75;
             Rotate_TextBox.Text = "0";
             Sub_CnvOption.Rotate = 0;
-
+            Sub_CnvOption.Crop = new int[4] { 0, 0, 0, 0 };
+            x.Text = "0";
+            y.Text = "0";
+            width.Text = "0";
+            height.Text = "0";
         }
 
         private void check_Resources()
@@ -366,37 +375,6 @@ namespace PlayAroundwithImages2
                 Height_TextBox.Text = Sub_CnvOption.Size.Height.ToString();
                 return;
             }
-        }
-
-        private void tf_checkbox_Checked(object sender, RoutedEventArgs e)
-        {
-            Sub_CnvOption.Transform = true;
-            Width_TextBox.IsEnabled = true;
-            Height_TextBox.IsEnabled = true;
-            Mainwin.limit_longside_tb.IsEnabled = false;
-            SetMainCnvOption();
-        }
-
-        private void tf_checkbox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            Sub_CnvOption.Transform = false;
-            Width_TextBox.IsEnabled = false;
-            Height_TextBox.IsEnabled = false;
-            Mainwin.limit_longside_tb.IsEnabled = true;
-            SetMainCnvOption();
-        }
-
-        private void ow_checkbox_Click(object sender, RoutedEventArgs e)
-        {
-            if (ow_checkbox.IsChecked == true)
-            {
-                Sub_CnvOption.Overwrite = true;
-            }
-            else
-            {
-                Sub_CnvOption.Overwrite = false;
-            }
-            SetMainCnvOption();
         }
 
         private void selectDirTextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -920,6 +898,57 @@ namespace PlayAroundwithImages2
                 SetMainCnvOption();
             }
             catch { }
+        }
+
+        private void crop_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                Sub_CnvOption.Crop[0] = int.Parse(x.Text);
+                Sub_CnvOption.Crop[1] = int.Parse(y.Text);
+                Sub_CnvOption.Crop[2] = int.Parse(width.Text);
+                Sub_CnvOption.Crop[3] = int.Parse(height.Text);
+                SetMainCnvOption();
+            }
+            catch {
+            }
+        }
+
+        private void Overwrite_toggle_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Sub_CnvOption.Overwrite = !Overwrite_toggle.IsOn;
+            SetMainCnvOption();
+        }
+
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                this.DragMove();
+        }
+
+        private void ComboBox_opacity_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Opacity = double.Parse(ComboBox_opacity.SelectedItem.ToString()) / 100;
+        }
+
+        public void Tranceform_toggle_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Sub_CnvOption.Transform = !Tranceform_toggle.IsOn;
+            if(Sub_CnvOption.Transform == true)
+            {
+                Sub_CnvOption.Transform = true;
+                Width_TextBox.IsEnabled = true;
+                Height_TextBox.IsEnabled = true;
+                Mainwin.limit_longside_tb.IsEnabled = false;
+            }
+            else
+            {
+                Sub_CnvOption.Transform = false;
+                Width_TextBox.IsEnabled = false;
+                Height_TextBox.IsEnabled = false;
+                Mainwin.limit_longside_tb.IsEnabled = true;
+            }
+            SetMainCnvOption();
         }
     }
 }

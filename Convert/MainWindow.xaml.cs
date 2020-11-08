@@ -30,7 +30,7 @@ namespace PlayAroundwithImages2
     /// </summary>
     public partial class MainWindow : Window
     {
-
+        ICollectionView cv;
         public ObservableCollection<Model.drop_Image> drop_Images = new ObservableCollection<Model.drop_Image>(); // コレクションのインスタンスを作る。
         ViewModel preview_model = new ViewModel();
 
@@ -43,6 +43,9 @@ namespace PlayAroundwithImages2
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            //プロセス環境変数の設定
+            Environment.SetEnvironmentVariable("PATH", "Ghostscript\\lib;Ghostscript\\bin;gs\\lib;gs\\bin;", EnvironmentVariableTarget.Process);
+
             Get_MemorySize();
             ImageMagick.ResourceLimits.Memory = FreePhysicalMemory;
             ImageMagick.OpenCL.IsEnabled = false;
@@ -82,7 +85,18 @@ namespace PlayAroundwithImages2
             Subwin.Owner = this;
             Subwin.Mainwin = this;
 
+            cnvOption.Crop = new int[4] { 0, 0, 0, 0 };
+
             preview_model.RenderTransformOrigin_.Value = new System.Windows.Point(0.5, 0.5);
+
+            sortComboBox.Items.Add("Ascending");
+            sortComboBox.Items.Add("Descending");
+            sortComboBox.SelectedIndex = 0;
+
+            //並び替え
+            cv = CollectionViewSource.GetDefaultView(drop_Images);
+            cv.SortDescriptions.Clear();
+            cv.SortDescriptions.Add(new SortDescription("File_name", ListSortDirection.Ascending));
         }
 
 
@@ -215,11 +229,15 @@ namespace PlayAroundwithImages2
                                 {
                                     Directory.CreateDirectory(unzipDir);
                                 }
-
                                 foreach (var item in a.Entries)
                                 {
-
-                                    item.ExtractToFile(unzipDir + "\\" + item.FullName, true);
+                                    if (!item.FullName.EndsWith("/"))
+                                        item.ExtractToFile(unzipDir + "\\" + item.FullName, true);
+                                    else
+                                    {
+                                        var b = unzipDir + item.FullName;
+                                        Directory.CreateDirectory(unzipDir + "\\" + item.FullName);
+                                    }
                                     files.Add(unzipDir + "\\" + item.FullName);
                                 }
                             }
@@ -286,16 +304,11 @@ namespace PlayAroundwithImages2
             finally
             {
                 Working_Flag = false;
-                await Task.Delay(1000);
+                await Task.Delay(1500);
                 if (Image_ListView.Items.Count == 0)
                 {
                     drop_grid.Visibility = Visibility.Visible;
                 }
-
-                //並び替え
-                var cv = CollectionViewSource.GetDefaultView(drop_Images);
-                cv.SortDescriptions.Clear();
-                cv.SortDescriptions.Add(new SortDescription("File_name", ListSortDirection.Ascending));
             }
         }
 
@@ -394,15 +407,22 @@ namespace PlayAroundwithImages2
                          drop_Images.Add(drop_Image);
                          Count++;
                      }
-                     catch { Error++; }
+                     catch{
+                         Error++;
+                         this.Dispatcher.Invoke((Action)(() =>
+                         {
+                             Subwin.Info_TextBox.AppendText(files[i] + "\r\n");
+                         }));
+
+                     }
                  }
                  catch
                  {
                      //Console.WriteLine(ex.Message);
-
                      if (Image_ListView.Items.Count <= 0)
                      {
                          drop_grid.Visibility = Visibility.Visible;
+
                      }
                  }
                  finally
@@ -453,13 +473,14 @@ namespace PlayAroundwithImages2
         {
             try
             {
-                if (drop_Images.Count < 1) return; // コレクションの数が0の場合は何もしない。
+                //if (drop_Images.Count < 1) return; // コレクションの数が0の場合は何もしない。
 
                 if (Image_ListView.SelectedItems.Count == Image_ListView.Items.Count)
                 {
                     drop_Images.Clear();
                     Image_ListView.ClearValue(ListView.ItemsSourceProperty);
                     Image_ListView.ItemsSource = drop_Images;
+                    dropHere_Text.Text = "Drop files here\r\nor\r\nClick to add";
                     drop_grid.Visibility = Visibility.Visible;
                     return;
                 }
@@ -483,6 +504,7 @@ namespace PlayAroundwithImages2
                 if (Image_ListView.Items.Count <= 0)
                 {
                     drop_grid.Visibility = Visibility.Visible;
+                    dropHere_Text.Text = "Drop files here\r\nor\r\nClick to add";
                 }
             }
             catch { }
@@ -531,10 +553,10 @@ namespace PlayAroundwithImages2
 
                 if (Image_ListView.SelectedItems.Count > 1)
                 {
-                    Clear_info();
-                    selected_TextB.Visibility = text_grid.Visibility = Visibility.Visible;
-                    selected_TextB.Text = Image_ListView.SelectedItems.Count + " selected";
-                    return;
+                    //Clear_info();
+                    //selected_TextB.Visibility = text_grid.Visibility = Visibility.Visible;
+                    //selected_TextB.Text = Image_ListView.SelectedItems.Count + " selected";
+                    //return;
                 }
                 else if (Image_ListView.SelectedItems.Count == 0)
                 {
@@ -542,12 +564,20 @@ namespace PlayAroundwithImages2
                     return;
                 }
                 int w, h, gcd;
+                int count = 0;
                 foreach (Model.drop_Image selected_item in Image_ListView.SelectedItems)
                 {
+                    count++;
+                    if(Image_ListView.SelectedItems.Count != count)
+                    {
+                        continue;
+                    }
                     w = selected_item.Image_size.Width;
                     h = selected_item.Image_size.Height;
                     gcd = Gcd(w, h);
-                    selected_TextB.Visibility = text_grid.Visibility = Visibility.Hidden;
+                    
+                    if(Image_ListView.SelectedItems.Count >= 1)
+                        selected_TextB.Visibility = text_grid.Visibility = Visibility.Hidden;
 
                     if (selected_item.Create_thumunail == false)
                     {
@@ -611,7 +641,7 @@ namespace PlayAroundwithImages2
                     Detail_textB.Text += "  |  " + ((float)selected_item.File_size / 1024 / 1024).ToString("F2") + " [MB]\r\n";
                     Detail_textB.Text += "Format : " + selected_item.Format + " | " + "ColorSpace : " + selected_item.ColorSpace + "\r\n";
                     Detail_textB.Text += "ICC : " + selected_item.Icc;
-                    //Detail_textB.Text += "\r\nBitDepth : " + selected_item.Bit;
+                    
                 }
             }
             catch(Exception ex)
@@ -628,17 +658,6 @@ namespace PlayAroundwithImages2
             return a > b ? gcd(a, b) : gcd(b, a);
         }
 
-        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            double num = Slider1.Value;
-            if (num <= 10)
-                limit_filesize_tb.Text = num.ToString("F2");
-
-            if (Slider1.Value == 0)
-            {
-                limit_filesize_tb.Text = "NONE";
-            }
-        }
 
         public void Progress(int n,int Count,String addText)
         {
@@ -807,6 +826,13 @@ namespace PlayAroundwithImages2
                 }
         }
 
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            double num = Slider1.Value;
+            if (num <= 10)
+                limit_filesize_tb.Text = num.ToString("F2");
+        }
+
         private void Slider2_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             int longside = (int)Slider2.Value;
@@ -814,6 +840,8 @@ namespace PlayAroundwithImages2
                 limit_longside_tb.Text = longside.ToString();
             if (longside == 8192)
                 limit_longside_tb.Text = longside.ToString();
+
+            SetSliderFromText(Slider2, limit_longside_tb, Slider2.Maximum);
         }
 
         private void limit_filesize_tb_TextChanged(object sender, TextChangedEventArgs e)
@@ -821,15 +849,20 @@ namespace PlayAroundwithImages2
             //JPEGを選択
             Subwin.ComboBox_extension.SelectedIndex = 5;
             Set_Option();
+            if (cnvOption.Filesize == 0)
+            {
+                limit_filesize_tb.Text = "Unlimited";
+            }
         }
 
         private void limit_longside_tb_TextChanged(object sender, TextChangedEventArgs e)
         {
-            SetSliderFromText(Slider2, limit_longside_tb, Slider2.Maximum);
-            Subwin.tf_checkbox.IsChecked = false;
-            
+            if (Subwin.Tranceform_toggle.IsOn == true)
+                Subwin.Tranceform_toggle_PreviewMouseDown(null, null);
+            Subwin.Tranceform_toggle.IsOn = false;
+            Set_Option();
             //longsideが0ならNONEに
-            if(cnvOption.Size.Width == 0)
+            if (cnvOption.Size.Width == 0)
             {
                 limit_longside_tb.Text = "Original";
             }
@@ -1064,7 +1097,7 @@ namespace PlayAroundwithImages2
                 Subwin.Left = point.X;
                 Subwin.Top = point.Y;
 
-                Subwin.Height = this.Height;
+                Subwin.Height = this.Height - 8;
             }
         }
 
@@ -1072,7 +1105,8 @@ namespace PlayAroundwithImages2
         {
             try
             {
-                cnvOption.Filesize = Double.Parse(limit_filesize_tb.Text);
+                if (limit_filesize_tb.Text != "Unlimited")
+                    cnvOption.Filesize = Double.Parse(limit_filesize_tb.Text);
                 if (limit_longside_tb.Text != "Original")
                     cnvOption.Size = new System.Drawing.Size(Int32.Parse(limit_longside_tb.Text), Int32.Parse(limit_longside_tb.Text));
 
@@ -1445,7 +1479,7 @@ namespace PlayAroundwithImages2
                 limit_filesize_tb.Text = cnvOption.Filesize.ToString("0.00");
                 if (cnvOption.Filesize == 0)
                 {
-                    limit_filesize_tb.Text = "NONE";
+                    limit_filesize_tb.Text = "Unlimited";
                 }
             }
         }
@@ -1454,10 +1488,46 @@ namespace PlayAroundwithImages2
         {
             if(e.Key == Key.Enter)
             {
+                SetSliderFromText(Slider2, limit_longside_tb, Slider2.Maximum);
                 limit_longside_tb.Text = cnvOption.Size.Width.ToString("0");
-
             }
         }
 
+        private void sortComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            cv = CollectionViewSource.GetDefaultView(drop_Images);
+            cv.SortDescriptions.Clear();
+            cv.SortDescriptions.Add(new SortDescription("File_name", (ListSortDirection)sortComboBox.SelectedIndex));
+
+        }
+
+        private void filter_button_Click(object sender, RoutedEventArgs e)
+        {
+            if (drop_Images.Count != 0)
+                try
+                {
+                    cv.Filter = (object b) => Regex.IsMatch((b as Model.drop_Image).File_name, filterText.Text);
+                    if (drop_Images.Count != 0 && Image_ListView.Items.Count == 0)
+                    {
+                        dropHere_Text.Text = "Not Applicable";
+                        drop_grid.Visibility = Visibility.Visible;
+                    }
+                    else
+                        drop_grid.Visibility = Visibility.Hidden;
+                }
+                catch
+                {
+                    drop_grid.Visibility = Visibility.Hidden;
+                    cv.Filter = null;
+                }
+        }
+
+        private void filterText_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter)
+            {
+                filter_button_Click(null, null);
+            }
+        }
     }
 }

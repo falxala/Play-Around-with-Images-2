@@ -13,6 +13,7 @@ using System.Threading;
 using System.Text.RegularExpressions;
 using Color = System.Drawing.Color;
 using System.Drawing.Imaging;
+using ImageMagick;
 
 namespace PlayAroundwithImages2
 {
@@ -37,9 +38,6 @@ namespace PlayAroundwithImages2
 
             using (var myMagick = new ImageMagick.MagickImage(imagePath, myMagickSettings))
             {
-                //myMagick.BackgroundColor = new ImageMagick.MagickColor("white");
-                //myMagick.Alpha(ImageMagick.AlphaOption.Remove);
-
 
                 myMagick.Strip();
                 myMagick.Thumbnail(255, 255);
@@ -127,6 +125,8 @@ namespace PlayAroundwithImages2
             public ImageMagick.MagickColor BackgroundColor { get; set; }
 
             public int DPI { get; set; }
+
+            public int[] Crop { get; set; }
         }
 
         /// <summary>
@@ -196,6 +196,11 @@ namespace PlayAroundwithImages2
 
                         ImageMagick.MagickImage myMagick = (ImageMagick.MagickImage)myMagicks[i];
 
+                        if ((long)option.Crop[2] * (long)option.Crop[3] > 0)
+                        {
+                            MagickGeometry geometry = new MagickGeometry(option.Crop[0], option.Crop[1], option.Crop[2], option.Crop[3]);
+                            myMagick.Crop(geometry, ImageMagick.Gravity.Center);
+                        }
                         myMagick.Format = option.Format;
 
                         //quality = 0は75になる

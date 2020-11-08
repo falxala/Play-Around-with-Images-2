@@ -4,9 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PlayAroundwithImages2"
-        xmlns:ToggleSwitch="clr-namespace:WpfControlLibrary;assembly=ToggleSwitch" xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" x:Class="PlayAroundwithImages2.SubWindow"
+        xmlns:ToggleSwitch="clr-namespace:WpfControlLibrary;assembly=ToggleSwitch"
+        xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" 
+        x:Class="PlayAroundwithImages2.SubWindow"
         mc:Ignorable="d"
-        Title="Option" Height="600" Width="228" Loaded="Window_Loaded" Closing="Window_Closing" Background="#FF464646" MinWidth="280" MinHeight="600" ShowInTaskbar="False" Icon="Resources/icon.Ico" StateChanged="Window_StateChanged">
+        Title="Option" Height="600" Width="260" Loaded="Window_Loaded" Closing="Window_Closing" Background="#FF464646" MinWidth="260" MinHeight="570" ShowInTaskbar="False" Icon="Resources/icon.Ico" StateChanged="Window_StateChanged" MouseDown="Window_MouseDown" AllowsTransparency="True" WindowStyle="None" ResizeMode="CanResizeWithGrip" BorderBrush="Black" BorderThickness="0.5" >
 
     <Window.Resources>
         <!-- 通常時のボタンの色 -->
@@ -328,9 +330,161 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        <Style x:Key="SliderThumbStyle" TargetType="{x:Type Thumb}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Ellipse Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Slider}, Mode=FindAncestor}}" Width="20" Height="20" Stroke="#FF464646"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="CustomSliderStyle" TargetType="{x:Type Slider}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Grid>
+                            <Grid.Background>
+                                <ImageBrush ImageSource="sin1@4x.png">
+                                    <ImageBrush.RelativeTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform CenterY="0.5" CenterX="0.5" ScaleY="1.95" ScaleX="1.3"/>
+                                            <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                                            <RotateTransform CenterY="0.5" CenterX="0.5"/>
+                                            <TranslateTransform/>
+                                        </TransformGroup>
+                                    </ImageBrush.RelativeTransform>
+                                </ImageBrush>
+                            </Grid.Background>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="25" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <!-- 上の目盛り -->
+                            <TickBar Grid.Row="0" x:Name="TopTick" Placement="Top" Visibility="Collapsed" Fill="{TemplateBinding Foreground}" Height="8" Opacity="0.64" Margin="0,0,0,2" />
 
+                            <!-- 下の目盛り -->
+                            <TickBar Grid.Row="2" x:Name="BottomTick" Placement="Bottom" Visibility="Collapsed" Fill="{TemplateBinding Foreground}" Height="8" Opacity="0.64" Margin="0,2,0,0" />
 
+                            <Track Grid.Row="1" x:Name="PART_Track">
+                                <!-- 減少側のトラック（レール） -->
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="Slider.DecreaseLarge" Background="{TemplateBinding Foreground}" Height="5" BorderBrush="{x:Null}" Opacity="0.5"/>
+                                </Track.DecreaseRepeatButton>
 
+                                <!-- 増加側のトラック（レール） -->
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="Slider.IncreaseLarge" Background="{TemplateBinding Foreground}" Height="5" BorderBrush="{x:Null}" Opacity="0.5"/>
+                                </Track.IncreaseRepeatButton>
+
+                                <!-- つまみ -->
+                                <Track.Thumb>
+                                    <Thumb Style="{StaticResource SliderThumbStyle}"/>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                        <!-- TickPlacement の設定によって目盛りの表示を切り替え -->
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Slider.TickPlacement" Value="TopLeft">
+                                <Setter TargetName="TopTick" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                            <Trigger Property="Slider.TickPlacement" Value="BottomRight">
+                                <Setter TargetName="BottomTick" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                            <Trigger Property="Slider.TickPlacement" Value="Both">
+                                <Setter TargetName="TopTick" Property="Visibility" Value="Visible" />
+                                <Setter TargetName="BottomTick" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- TabItemの枠線の色 -->
+        <SolidColorBrush x:Key="TabItemNormalBorderBrush" Color="Black"/>
+        <!-- TabItemの背景色 -->
+        <LinearGradientBrush x:Key="TabItemBackground" EndPoint="0,1" StartPoint="0,0">
+            <GradientStop Color="#B5D8FB" Offset="0"/>
+            <GradientStop Color="#6DB9F1" Offset="0.5"/>
+            <GradientStop Color="#0493E8" Offset="0.5"/>
+            <GradientStop Color="#1CC0FF" Offset="1"/>
+        </LinearGradientBrush>
+        <!-- TabItemのマウスオーバー時の背景色 -->
+        <LinearGradientBrush x:Key="TabItemHotBackground" EndPoint="0,1" StartPoint="0,0">
+            <GradientStop Color="#FFB1BEC7" Offset="0.15"/>
+        </LinearGradientBrush>
+        <!-- TabItemのマウスオーバー時の枠線の色 -->
+        <SolidColorBrush x:Key="TabItemHotBorderBrush" Color="#FFACACAC"/>
+        <!-- TabItem選択時の背景色 -->
+        <LinearGradientBrush x:Key="TabItemSelectedBackground" EndPoint="0,1" StartPoint="0,0">
+            <GradientStop Color="#FF7E98AA" Offset="0"/>
+
+        </LinearGradientBrush>
+        <!-- TabItem無効化時の色 -->
+        <SolidColorBrush x:Key="TabItemDisabledBackground" Color="DarkGray"/>
+        <!-- TabItem無効化時の枠線の色 -->
+        <SolidColorBrush x:Key="TabItemDisabledBorderBrush" Color="#FFC9C7BA"/>
+
+        <Style TargetType="{x:Type TabItem}">
+            <!-- TabItemの文字の色 -->
+            <Setter Property="Foreground" Value="White"/>
+            <!-- TabItemの枠線の色-->
+            <Setter Property="BorderBrush" Value="{StaticResource TabItemNormalBorderBrush}"/>
+            <!-- TabItemの背景色の設定 -->
+            <Setter Property="Background" Value="{StaticResource TabItemBackground}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TabItem}">
+                        <Grid SnapsToDevicePixels="true">
+                            <Border x:Name="Bd" 
+                        BorderBrush="{TemplateBinding BorderBrush}" 
+                        BorderThickness="1,1,1,0" 
+                        Background="{TemplateBinding Background}" 
+                        Padding="{TemplateBinding Padding}">
+                                <ContentPresenter x:Name="Content" 
+                                      ContentSource="Header" 
+                                      HorizontalAlignment="{Binding HorizontalContentAlignment, 
+                                        RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" 
+                                      RecognizesAccessKey="True" 
+                                      SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                                      VerticalAlignment="{Binding VerticalContentAlignment, 
+                                        RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <!-- マウスオーバー時の背景色 -->
+                                <Setter Property="Background" TargetName="Bd" Value="{StaticResource TabItemHotBackground}"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="true">
+                                <Setter Property="Panel.ZIndex" Value="1"/>
+                                <!-- 選択時の背景色 -->
+                                <Setter Property="Background" TargetName="Bd" Value="{StaticResource TabItemSelectedBackground}"/>
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsSelected" Value="false"/>
+                                    <Condition Property="IsMouseOver" Value="true"/>
+                                </MultiTrigger.Conditions>
+                                <!-- マウスオーバー時の枠線の色 -->
+                                <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource TabItemHotBorderBrush}"/>
+                            </MultiTrigger>
+
+                            <Trigger Property="IsEnabled" Value="false">
+                                <!-- 無効化時の背景色 -->
+                                <Setter Property="Background" TargetName="Bd" Value="{StaticResource TabItemDisabledBackground}"/>
+                                <!-- 無効化時の枠線の色-->
+                                <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource TabItemDisabledBorderBrush}"/>
+                                <!-- 無効化時の文字の色 -->
+                                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style >
 
     </Window.Resources>
 
@@ -338,54 +492,71 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <TabControl Background="#FF464646" BorderBrush="#FF464646" Margin="-5,-2,-5,37" SelectionChanged="TabControl_SelectionChanged">
-            <TabItem Header="Convert" Margin="-2,-1,0,-1" BorderBrush="#FFEDEDED">
-                <TabItem.Background>
-                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-                        <GradientStop Color="#FFF0F0F0" Offset="0"/>
-                        <GradientStop Color="#FFD8D8D8" Offset="1"/>
-                    </LinearGradientBrush>
-                </TabItem.Background>
+        <Grid Height="32" VerticalAlignment="Top" Margin="-1,0"/>
+
+        <TabControl Background="{x:Null}" BorderBrush="{x:Null}" Margin="5,10,5,25" SelectionChanged="TabControl_SelectionChanged">
+            <TabItem Header="Output" Margin="1,-3,-3,-2" BorderBrush="{x:Null}" Background="#FF464646" Foreground="White" FontSize="14">
+                <Grid Background="#FF464646" Margin="0,0,0,2">
+                    <Border BorderBrush="Black" BorderThickness="1" Height="104" Margin="0,60,0,0" VerticalAlignment="Top">
+                        <Grid>
+                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="148" FontSize="14" Foreground="White" Margin="9,9,0,0" TextDecorations="{x:Null}" FontWeight="Bold"><Run Text="Output"/><Run Text="s"/><Run Text=" "/><Run Text="Directory"/><Run Text=" "/></TextBlock>
+                            <Button x:Name="OpenFolder" Style="{StaticResource HoverButtonStyle}" Content="Open" Click="OpenFolder_Click" Foreground="White" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" HorizontalAlignment="Right" Width="62" Height="23" VerticalAlignment="Top" BorderBrush="White" Margin="0,8,10,0" FontWeight="Bold" ToolTip="Open the outputs folder"/>
+                            <TextBox x:Name="selectDirTextBox" Height="22" Text="TextBox" VerticalAlignment="Top" FontSize="14" MaxLines="1" TextChanged="selectDirTextBox_TextChanged" FontFamily="Yu Gothic Medium" Background="#FF646464" Foreground="White" Margin="9,40,41,0" ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}"/>
+                            <Button x:Name="Select_folder" VerticalAlignment="Top" Click="Button_Click" Height="22" HorizontalAlignment="Right" Width="25" Background="White" Margin="0,40,11,0" ToolTip="Select a path">
+                                <Image Source="Resources/Folder.png" />
+                            </Button>
+                            <ToggleSwitch:ToggleSwitch x:Name="Overwrite_toggle" Height="24" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FFC14343" HorizontalAlignment="Right" Width="40" PreviewMouseDown="Overwrite_toggle_PreviewMouseDown" Margin="0,71,10,0" ToolTip="Overwrite the file with the same name"/>
+                            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" FontSize="14" Foreground="White" Width="90" Margin="10,71,0,0" ToolTip="Overwrite the file with the same name"><Run Text="Over"/><Run Text="w"/><Run Text="rite"/></TextBlock>
+                        </Grid>
+                    </Border>
+                    <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="0,10,0,0" VerticalAlignment="Top">
+                        <Grid>
+                            <ComboBox x:Name="ComboBox_extension" Margin="144,8,10,8" SelectionChanged="ComboBox_extension_SelectionChanged" FontSize="14" Background="White" Style="{DynamicResource ComboBoxStyle1}" Foreground="White"/>
+                            <TextBlock Margin="10,10,0,8" TextWrapping="Wrap" Text="Format" HorizontalAlignment="Left" Width="105" Foreground="White" FontSize="14" FontWeight="Bold"/>
+                        </Grid>
+                    </Border>
+                    <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="0,169,0,0" VerticalAlignment="Top">
+                        <Grid>
+                            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White" Width="91" Margin="10,11,0,0" FontWeight="Bold"><Run Text="P"/><Run Text="assthrough"/></TextBlock>
+                            <ToggleSwitch:ToggleSwitch x:Name="passthrough_toggle" Height="24" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" HorizontalAlignment="Right" Width="40" PreviewMouseDown="passthrough_toggle_PreviewMouseDown" Margin="0,9,10,0"/>
+                        </Grid>
+                    </Border>
+
+                </Grid>
+            </TabItem>
+            <TabItem Header="Option" Margin="1,-3,-2,-2" BorderBrush="{x:Null}" Background="#FF464646" Foreground="White" FontSize="14">
                 <Grid Background="#FF464646" Margin="0,0,0,2">
 
-                    <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="10,443,10,0" VerticalAlignment="Top">
+                    <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="0,401,0,0" VerticalAlignment="Top">
+                        <Grid ToolTip="DPI to rasterize PDF / AI files">
+                            <ComboBox x:Name="ComboBox_DPI" Style="{DynamicResource ComboBoxStyle1}" Margin="124,9,11,8" FontSize="14" SelectionChanged="ComboBox_DPI_SelectionChanged" Foreground="White"/>
+                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="109" FontSize="14" Foreground="White" Margin="10,10,0,0" FontWeight="Bold"><Run Text="Rasterize"/><Run Text=" "/><Run Text="(DPI)"/></TextBlock>
+                        </Grid>
+                    </Border>
+
+
+
+                    <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="0,451,0,0" VerticalAlignment="Top">
                         <Grid ToolTip="It will not be more than its original size.">
                             <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="109" FontSize="14" Foreground="White" Margin="10,10,0,0" FontWeight="Bold"><Run Text="Not"/><Run Text=" s"/><Run Text="caleu"/><Run Text="p"/></TextBlock>
                             <ToggleSwitch:ToggleSwitch x:Name="NotScaleUp_toggle" Height="24" Margin="0,10,10,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" HorizontalAlignment="Right" Width="40" PreviewMouseDown="NotScaleUp_toggle_PreviewMouseDown"/>
                         </Grid>
                     </Border>
 
-                    <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="10,9,10,0" VerticalAlignment="Top">
-                        <Grid>
-                            <ComboBox x:Name="ComboBox_extension" Margin="144,8,10,8" SelectionChanged="ComboBox_extension_SelectionChanged" FontSize="14" Background="White" Style="{DynamicResource ComboBoxStyle1}" Foreground="White"/>
-                            <TextBlock Margin="10,10,0,8" TextWrapping="Wrap" Text="Format" HorizontalAlignment="Left" Width="105" Foreground="White" FontSize="14" FontWeight="Bold"/>
-                        </Grid>
-                    </Border>
 
-
-                    <Border BorderBrush="Black" BorderThickness="1" Height="329" Margin="10,109,10,0" VerticalAlignment="Top">
+                    <Border BorderBrush="Black" BorderThickness="1" Height="336" Margin="0,60,0,0" VerticalAlignment="Top">
                         <Grid>
-                            <CheckBox x:Name="tf_checkbox" Content="Transform (priority)" HorizontalAlignment="Left" Margin="4,4,0,0" VerticalAlignment="Top" Width="160" Height="20" RenderTransformOrigin="0,0" Unchecked="tf_checkbox_Unchecked" Checked="tf_checkbox_Checked" Background="White" Foreground="White" Padding="4,-1,0,0" FontWeight="Bold">
-                                <CheckBox.RenderTransform>
-                                    <TransformGroup>
-                                        <ScaleTransform ScaleY="1.2" ScaleX="1.2"/>
-                                        <SkewTransform/>
-                                        <RotateTransform/>
-                                        <TranslateTransform/>
-                                    </TransformGroup>
-                                </CheckBox.RenderTransform>
-                            </CheckBox>
-                            <TextBlock HorizontalAlignment="Left" Margin="28,30,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium"><Run Text="W"/><Run Text="idth"/></TextBlock>
-                            <TextBlock HorizontalAlignment="Left" Margin="28,64,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="14" Height="23" RenderTransformOrigin="0.553,0.174" Foreground="White" FontFamily="Yu Gothic Medium"><Run Text="H"/><Run Text="eight"/><LineBreak/><Run/></TextBlock>
-                            <TextBox x:Name="Rotate_TextBox" Height="22" Margin="144,104,55,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" FontSize="14" TextChanged="Rotate_TextBox_TextChanged" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" PreviewTextInput="Rotate_TextBox_PreviewTextInput" Background="#FF646464" Foreground="White"/>
-                            <TextBox x:Name="Height_TextBox" Height="22" Margin="144,67,55,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" FontSize="14" TextChanged="Height_TextBox_TextChanged" PreviewTextInput="Height_TextBox_PreviewTextInput" HorizontalContentAlignment="Center" IsEnabled="False" Foreground="White" Background="#FF646464"/>
-                            <TextBox x:Name="Width_TextBox" Height="22" Margin="144,29,55,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" FontSize="14" TextChanged="Width_TextBox_TextChanged" PreviewTextInput="Width_TextBox_PreviewTextInput" HorizontalContentAlignment="Center" IsEnabled="False" Foreground="White" Background="#FF646464"/>
-                            <TextBlock Margin="0,30,12,0" TextWrapping="Wrap" Text="[px]" VerticalAlignment="Top" Foreground="White" FontFamily="Yu Gothic Medium" FontSize="14" HorizontalAlignment="Right" Width="26"/>
-                            <TextBlock Margin="0,65,12,0" TextWrapping="Wrap" Text="[px]" VerticalAlignment="Top" Foreground="White" FontFamily="Yu Gothic Medium" FontSize="14" HorizontalAlignment="Right" Width="26"/>
-                            <TextBlock Margin="0,105,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" HorizontalAlignment="Right" Width="36"><Run Text="["/><Run Text="deg"/><Run Text="]"/></TextBlock>
-                            <TextBlock HorizontalAlignment="Left" Margin="10,180,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White" Width="56" FontWeight="Bold"><Run Text="M"/><Run Text="irror"/></TextBlock>
-                            <ToggleSwitch:ToggleSwitch x:Name="Mirror_toggle" Height="24" Margin="0,173,10,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" PreviewMouseDown="Mirror_toggle_PreviewMouseDown" HorizontalAlignment="Right" Width="40"/>
-                            <Button x:Name="ChainButton"  HorizontalAlignment="Left" Margin="105,45,0,0" VerticalAlignment="Top" Width="37" Click="ChainButton_Click" Height="27" BorderBrush="{x:Null}" Foreground="{x:Null}" Background="{x:Null}" RenderTransformOrigin="0.5,0.5">
+                            <TextBlock HorizontalAlignment="Left" Margin="42,34,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium"><Run Text="W"/><Run Text="idth"/></TextBlock>
+                            <TextBlock HorizontalAlignment="Left" Margin="40,68,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="14" Height="23" RenderTransformOrigin="0.553,0.174" Foreground="White" FontFamily="Yu Gothic Medium"><Run Text="H"/><Run Text="eight"/><LineBreak/><Run/></TextBlock>
+                            <TextBox x:Name="Rotate_TextBox" Height="22" Margin="144,110,55,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" FontSize="14" TextChanged="Rotate_TextBox_TextChanged" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" PreviewTextInput="Rotate_TextBox_PreviewTextInput" Background="#FF646464" Foreground="White"/>
+                            <TextBox x:Name="Height_TextBox" Height="22" Margin="144,71,55,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" FontSize="14" TextChanged="Height_TextBox_TextChanged" PreviewTextInput="Height_TextBox_PreviewTextInput" HorizontalContentAlignment="Center" IsEnabled="False" Foreground="White" Background="#FF646464"/>
+                            <TextBox x:Name="Width_TextBox" Height="22" Margin="144,33,55,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" FontSize="14" TextChanged="Width_TextBox_TextChanged" PreviewTextInput="Width_TextBox_PreviewTextInput" HorizontalContentAlignment="Center" IsEnabled="False" Foreground="White" Background="#FF646464"/>
+                            <TextBlock Margin="0,34,12,0" TextWrapping="Wrap" Text="[px]" VerticalAlignment="Top" Foreground="White" FontFamily="Yu Gothic Medium" FontSize="14" HorizontalAlignment="Right" Width="26"/>
+                            <TextBlock Margin="0,69,12,0" TextWrapping="Wrap" Text="[px]" VerticalAlignment="Top" Foreground="White" FontFamily="Yu Gothic Medium" FontSize="14" HorizontalAlignment="Right" Width="26"/>
+                            <TextBlock Margin="0,111,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" HorizontalAlignment="Right" Width="36"><Run Text="["/><Run Text="deg"/><Run Text="]"/></TextBlock>
+                            <TextBlock HorizontalAlignment="Left" Margin="10,186,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White" Width="56" FontWeight="Bold"><Run Text="M"/><Run Text="irror"/></TextBlock>
+                            <ToggleSwitch:ToggleSwitch x:Name="Mirror_toggle" Height="24" Margin="0,179,10,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" PreviewMouseDown="Mirror_toggle_PreviewMouseDown" HorizontalAlignment="Right" Width="40"/>
+                            <Button x:Name="ChainButton"  HorizontalAlignment="Left" Margin="105,50,0,0" VerticalAlignment="Top" Width="37" Click="ChainButton_Click" Height="27" BorderBrush="{x:Null}" Foreground="{x:Null}" Background="{x:Null}" RenderTransformOrigin="0.5,0.5">
                                 <Button.RenderTransform>
                                     <TransformGroup>
                                         <ScaleTransform/>
@@ -398,41 +569,37 @@
                             </Button>
                             <Polyline Points="135,83 135,97 155,97"
             Stroke="white" StrokeThickness="2"
-            StrokeDashArray="0.5 0.5" Margin="-12,-10,-10,-283"  />
+            StrokeDashArray="0.5 0.5" Margin="-12,-6,-10,-287"  />
                             <Polyline Points="135,60 135,44 155,44"
             Stroke="white" StrokeThickness="2"
-            StrokeDashArray="0.5 0.5" Margin="-12,-14,-10,-279"  />
-                            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Rotate" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White" Width="56" Margin="10,103,0,0" RenderTransformOrigin="0.369,0.319" FontWeight="Bold"/>
-                            <Slider x:Name="Rotate_Slider" Margin="25,142,12,0" VerticalAlignment="Top" PreviewMouseWheel="Rotate_Slider_PreviewMouseWheel" PreviewMouseDoubleClick="Rotate_Slider_PreviewMouseDoubleClick" ValueChanged="Rotate_Slider_ValueChanged" Maximum="180" Minimum="-180"/>
-                            <TextBlock HorizontalAlignment="Left" Margin="10,216,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" FontSize="14" Foreground="White" Width="75" FontWeight="Bold"><Run Text="Gray"/><Run Text="S"/><Run Text="cale"/></TextBlock>
-                            <ToggleSwitch:ToggleSwitch x:Name="GrayScale_toggle" Height="24" Margin="0,214,10,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" HorizontalAlignment="Right" Width="40" PreviewMouseDown="GrayScale_toggle_PreviewMouseDown"/>
-                            <TextBlock HorizontalAlignment="Left" Margin="10,255,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" FontSize="14" Foreground="White" Width="129" FontWeight="Bold"><Run Text="Gamma"/><Run Text=" "/><Run Text="correction"/><LineBreak/><Run/></TextBlock>
-                            <TextBox x:Name="gamma_TextBox"  Height="22" Margin="144,253,10,0" TextWrapping="Wrap" Text="1.0" VerticalAlignment="Top" FontSize="14" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" PreviewTextInput="gamma_TextBox_PreviewTextInput" Background="#FF646464" Foreground="White" TextChanged="gamma_TextBox_TextChanged" PreviewKeyDown="gamma_TextBox_PreviewKeyDown" PreviewMouseDoubleClick="gamma_TextBox_PreviewMouseDoubleClick" PreviewMouseWheel="gamma_TextBox_PreviewMouseWheel"/>
-                            <ComboBox x:Name="ComboBox_backgroundColor" Style="{DynamicResource ComboBoxStyle1}" Margin="120,290,10,0" SelectionChanged="ComboBox_backgroundColor_SelectionChanged" FontSize="14" Height="27" VerticalAlignment="Top" Background="#FF646464" Foreground="White"/>
-                            <TextBlock Margin="10,292,0,0" ToolTip="Background Color" TextWrapping="Wrap" HorizontalAlignment="Left" Width="105" Foreground="White" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.602,0.493" Height="25" VerticalAlignment="Top"><Run Text="B"/><Run Text="GColor"/></TextBlock>
+            StrokeDashArray="0.5 0.5" Margin="-12,-10,-10,-283"  />
+                            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Rotate" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White" Width="56" Margin="10,109,0,0" RenderTransformOrigin="0.369,0.319" FontWeight="Bold"/>
+                            <Slider x:Name="Rotate_Slider" Margin="25,146,12,0" VerticalAlignment="Top" PreviewMouseWheel="Rotate_Slider_PreviewMouseWheel" PreviewMouseDoubleClick="Rotate_Slider_PreviewMouseDoubleClick" ValueChanged="Rotate_Slider_ValueChanged" Maximum="180" Minimum="-180" Height="28" RenderTransformOrigin="0.5,0.5" Foreground="White" BorderBrush="White" Style="{DynamicResource CustomSliderStyle}" Background="{x:Null}"/>
+                            <TextBlock HorizontalAlignment="Left" Margin="10,222,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" FontSize="14" Foreground="White" Width="75" FontWeight="Bold"><Run Text="Gray"/><Run Text="S"/><Run Text="cale"/></TextBlock>
+                            <ToggleSwitch:ToggleSwitch x:Name="GrayScale_toggle" Height="24" Margin="0,220,10,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" HorizontalAlignment="Right" Width="40" PreviewMouseDown="GrayScale_toggle_PreviewMouseDown"/>
+                            <TextBlock HorizontalAlignment="Left" Margin="10,261,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" FontSize="14" Foreground="White" Width="129" FontWeight="Bold"><Run Text="Gamma"/><Run Text=" "/><Run Text="correction"/><LineBreak/><Run/></TextBlock>
+                            <TextBox x:Name="gamma_TextBox"  Height="22" Margin="144,259,10,0" TextWrapping="Wrap" Text="1.0" VerticalAlignment="Top" FontSize="14" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" PreviewTextInput="gamma_TextBox_PreviewTextInput" Background="#FF646464" Foreground="White" TextChanged="gamma_TextBox_TextChanged" PreviewKeyDown="gamma_TextBox_PreviewKeyDown" PreviewMouseDoubleClick="gamma_TextBox_PreviewMouseDoubleClick" PreviewMouseWheel="gamma_TextBox_PreviewMouseWheel"/>
+                            <ComboBox x:Name="ComboBox_backgroundColor" Style="{DynamicResource ComboBoxStyle1}" Margin="125,296,10,0" SelectionChanged="ComboBox_backgroundColor_SelectionChanged" FontSize="14" Height="27" VerticalAlignment="Top" Background="#FF646464" Foreground="White"/>
+                            <TextBlock Margin="10,298,0,0" ToolTip="Background Color" TextWrapping="Wrap" HorizontalAlignment="Left" Width="105" Foreground="White" FontSize="14" FontWeight="Bold" RenderTransformOrigin="0.602,0.493" Height="25" VerticalAlignment="Top"><Run Text="B"/><Run Text="GColor"/></TextBlock>
+                            <ToggleSwitch:ToggleSwitch x:Name="Tranceform_toggle" Height="24" Margin="0,4,10,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" HorizontalAlignment="Right" Width="40" PreviewMouseDown="Tranceform_toggle_PreviewMouseDown"/>
+                            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Tranceform" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White" Width="90" Margin="10,6,0,0" RenderTransformOrigin="0.369,0.319" FontWeight="Bold"/>
                         </Grid>
                     </Border>
-                    <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="10,59,10,0" VerticalAlignment="Top">
+                    <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="0,10,0,0" VerticalAlignment="Top">
                         <Grid ToolTip="JPEG / PNG Quality">
                             <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="100" FontSize="14" Foreground="White" Margin="10,10,0,0" FontWeight="Bold" Text="Quality"/>
                             <TextBox x:Name="Quality_TextBox" Height="22" Margin="144,12,10,0" TextWrapping="Wrap" Text="75" VerticalAlignment="Top" FontSize="14" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" PreviewTextInput="Quality_TextBox_PreviewTextInput" Background="#FF646464" Foreground="White" PreviewKeyDown="Quality_TextBox_PreviewKeyDown" PreviewMouseDoubleClick="Quality_TextBox_PreviewMouseDoubleClick" PreviewMouseWheel="Quality_TextBox_PreviewMouseWheel" TextChanged="Quality_TextBox_TextChanged"/>
                         </Grid>
                     </Border>
-                    <Rectangle x:Name="mask2" Fill="#7F000000" Height="479" Margin="10,9,10,0" Stroke="Black" VerticalAlignment="Top" Visibility="Hidden"/>
+                    <Rectangle x:Name="mask2" Fill="#7F000000" Height="486" Margin="0,10,0,0" Stroke="Black" VerticalAlignment="Top" Visibility="Hidden"/>
 
 
 
                 </Grid>
             </TabItem>
-            <TabItem Header="Advanced" Margin="0,-1,-4,-1" BorderBrush="#FFEEEEEE">
-                <TabItem.Background>
-                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-                        <GradientStop Color="#FFF0F0F0" Offset="0"/>
-                        <GradientStop Color="#FFD8D8D8" Offset="1"/>
-                    </LinearGradientBrush>
-                </TabItem.Background>
+            <TabItem Header="Advanced" Margin="1,-3,-5,-2" BorderBrush="{x:Null}" Background="#FF464646" Foreground="White" FontSize="14">
                 <Grid Background="#FF464646">
-                    <Border BorderBrush="Black" BorderThickness="1" Height="44" Margin="10,149,10,0" VerticalAlignment="Top">
+                    <Border BorderBrush="Black" BorderThickness="1" Height="44" Margin="0,128,0,0" VerticalAlignment="Top">
                         <Grid>
                             <ComboBox x:Name="ComboBox_GPU" Style="{DynamicResource ComboBoxStyle1}" Margin="82,8,10,8" FontSize="14" SelectionChanged="ComboBox_GPU_SelectionChanged" PreviewMouseDown="ComboBox_GPU_PreviewMouseDown"  Foreground="White" BorderBrush="White" IsReadOnly="True">
                                 <ComboBox.Background>
@@ -445,7 +612,7 @@
                             <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="72" FontSize="14" Foreground="White" Margin="10,10,0,0" RenderTransformOrigin="0.639,0.864" FontWeight="Bold"><Run Text="OpenCL"/><LineBreak/><Run/></TextBlock>
                         </Grid>
                     </Border>
-                    <Border BorderBrush="Black" BorderThickness="1" Height="113" Margin="10,247,10,0" VerticalAlignment="Top">
+                    <Border BorderBrush="Black" BorderThickness="1" Height="113" Margin="0,10,0,0" VerticalAlignment="Top">
                         <Grid>
                             <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="109" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="10,12,0,0" Text="memory limit"/>
                             <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="109" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="10,44,0,0"><Run Text="disk"/><Run Text=" limit"/></TextBlock>
@@ -455,54 +622,45 @@
                             <TextBlock x:Name="ResourcesThreadTxt" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="124,77,0,0"><Run Text="use"/><Run Text=" "/><Run Text="thread num"/><LineBreak/><Run/></TextBlock>
                         </Grid>
                     </Border>
-                    <Border BorderBrush="Black" BorderThickness="1" Height="44" Margin="10,198,10,0" VerticalAlignment="Top">
+                    <Border BorderBrush="Black" BorderThickness="1" Height="44" Margin="0,177,0,0" VerticalAlignment="Top">
                         <Grid>
                             <ComboBox x:Name="ComboBox_CPU" Style="{DynamicResource ComboBoxStyle1}" Margin="125,8,10,8" FontSize="14" SelectionChanged="ComboBox_CPU_SelectionChanged" Foreground="White"/>
                             <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="95" FontSize="14" Foreground="White" Margin="10,10,0,0" RenderTransformOrigin="0.639,0.864" FontWeight="Bold"><Run Text="p"/><Run Text="arallels"/><Run Text=" max"/></TextBlock>
                         </Grid>
                     </Border>
-                    <Button x:Name="CheckUpdate_Button" Style="{StaticResource HoverButtonStyle}" Content="Check Update" Margin="10,465,10,0" Foreground="White" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" BorderBrush="White" Click="CheckUpdate_Button_Click" Height="25" VerticalAlignment="Top" FontFamily="Yu Gothic Medium"/>
-                    <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="10,415,10,0" VerticalAlignment="Top">
+                    <Button x:Name="CheckUpdate_Button" Style="{StaticResource HoverButtonStyle}" Content="Check Update" Margin="0,276,0,0" Foreground="White" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" BorderBrush="White" Click="CheckUpdate_Button_Click" Height="25" VerticalAlignment="Top" FontFamily="Yu Gothic Medium"/>
+                    <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="0,226,0,0" VerticalAlignment="Top">
                         <Grid Margin="0,0,0,-1">
                             <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="109" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="10,10,0,0" Text="Imagemagick"/>
                             <Button x:Name="openLocalTemp_Button" Style="{StaticResource HoverButtonStyle}" Content="Open AppLocal" Margin="122.667,10,10,0" Foreground="White" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" BorderBrush="White" Height="25" VerticalAlignment="Top" Click="openLocalTemp_Button_Click"/>
                         </Grid>
                     </Border>
-                    <Border BorderBrush="Black" BorderThickness="1" Height="134" Margin="10,10,10,0" VerticalAlignment="Top">
+                </Grid>
+            </TabItem>
+            <TabItem Header="exp." Margin="2,-3,-7,-2" BorderBrush="{x:Null}" Background="#FF464646" Foreground="White" FontSize="14">
+                <Grid Background="#FF464646">
+                    <Border BorderBrush="Black" BorderThickness="1" Height="90" Margin="0,10,0,0" VerticalAlignment="Top">
                         <Grid>
-                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="122" FontSize="14" Foreground="White" Margin="10,10,0,0" TextDecorations="{x:Null}" FontWeight="Bold"><Run Text="Output"/><Run Text="s"/><Run Text=" "/><Run Text="Directory"/></TextBlock>
-                            <Button x:Name="OpenFolder" Style="{StaticResource HoverButtonStyle}" Content="Open" Click="OpenFolder_Click" Foreground="White" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" HorizontalAlignment="Right" Width="62" Height="23" VerticalAlignment="Top" BorderBrush="White" Margin="0,8,10,0" FontWeight="Bold"/>
-                            <TextBox x:Name="selectDirTextBox" Height="22" Text="TextBox" VerticalAlignment="Top" FontSize="14" MaxLines="1" TextChanged="selectDirTextBox_TextChanged" FontFamily="Yu Gothic Medium" Background="#FF646464" Foreground="White" Margin="9,39,43,0"/>
-                            <Button x:Name="Select_folder" VerticalAlignment="Top" Click="Button_Click" Height="22" HorizontalAlignment="Right" Width="28" Background="White" Margin="0,39,11,0">
-                                <Image Source="Resources/Folder.png" />
-                            </Button>
-                            <CheckBox x:Name="ow_checkbox" Content="Overwrite if same name" HorizontalAlignment="Left" VerticalAlignment="Top" Width="160" RenderTransformOrigin="0,0" Click="ow_checkbox_Click" Background="White" Foreground="White" Margin="8,70,0,0">
-                                <CheckBox.RenderTransform>
-                                    <TransformGroup>
-                                        <ScaleTransform ScaleY="1.2" ScaleX="1.2"/>
-                                        <SkewTransform/>
-                                        <RotateTransform/>
-                                        <TranslateTransform/>
-                                    </TransformGroup>
-                                </CheckBox.RenderTransform>
-                            </CheckBox>
-                            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White" Width="91" Margin="10,98,0,0" FontWeight="Bold"><Run Text="P"/><Run Text="assthrough"/></TextBlock>
-                            <ToggleSwitch:ToggleSwitch x:Name="passthrough_toggle" Height="24" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" HorizontalAlignment="Right" Width="40" PreviewMouseDown="passthrough_toggle_PreviewMouseDown" Margin="0,98,10,0"/>
+                            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" Height="21" Margin="10,6,0,0" FontSize="14" FontWeight="Bold"><Run Text="Crop"/><LineBreak/><Run/></TextBlock>
+                            <TextBox x:Name="y" HorizontalAlignment="Left" Height="23" Margin="46,56,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="50" MaxLines="1" TextChanged="crop_TextChanged" Background="#FF646464" Foreground="White" BorderBrush="#FFA6B6A4" FontSize="14"/>
+                            <TextBox x:Name="x" HorizontalAlignment="Left" Height="22" Margin="46,33,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="50" MaxLines="1" TextChanged="crop_TextChanged" Background="#FF646464" Foreground="White" BorderBrush="#FFA6B6A4" FontSize="14"/>
+                            <TextBlock HorizontalAlignment="Left" Margin="24,34,0,0" TextWrapping="Wrap" Text="X" VerticalAlignment="Top" Foreground="#FFECFFEA" FontSize="14"/>
+                            <TextBlock HorizontalAlignment="Left" Margin="24,58,0,0" TextWrapping="Wrap" Text="Y" VerticalAlignment="Top" Foreground="#FFECFFEA" FontSize="14"/>
+                            <TextBlock HorizontalAlignment="Left" Margin="125,34,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#FFF6E8FF" Width="38" FontSize="14"><Run Text="W"/><Run Text="idth"/></TextBlock>
+                            <TextBlock HorizontalAlignment="Left" Margin="121,58,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#FFF6E8FF" Width="42" FontSize="14"><Run Text="H"/><Run Text="eight"/></TextBlock>
+                            <TextBox x:Name="width" Height="22" Margin="170,33,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" MaxLines="1" TextChanged="crop_TextChanged" Background="#FF646464" Foreground="White" HorizontalAlignment="Left" Width="50" BorderBrush="#FFAF9EB9" FontSize="14"/>
+                            <TextBox x:Name="height" Height="22" Margin="170,56,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" MaxLines="1" TextChanged="crop_TextChanged" Background="#FF646464" Foreground="White" HorizontalAlignment="Left" Width="50" BorderBrush="#FFAF9EB9" FontSize="14"/>
                         </Grid>
                     </Border>
-                    <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="10,365,10,0" VerticalAlignment="Top">
-                        <Grid ToolTip="DPI to rasterize PDF / AI files">
-                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="109" FontSize="14" Foreground="White" Margin="10,10,0,0"><Run Text="Rasterize"/><Run Text=" "/><Run Text="(DPI)"/></TextBlock>
-                            <ToggleSwitch:ToggleSwitch x:Name="NotScaleUp_toggle1" Height="24" Margin="0,10,10,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" HorizontalAlignment="Right" Width="40" PreviewMouseDown="NotScaleUp_toggle_PreviewMouseDown"/>
-                            <ComboBox x:Name="ComboBox_DPI" Style="{DynamicResource ComboBoxStyle1}" Margin="124,10,11,7" FontSize="14" SelectionChanged="ComboBox_DPI_SelectionChanged" Foreground="White"/>
-                        </Grid>
-                    </Border>
+                    <TextBox x:Name="Info_TextBox" Margin="0,105,0,23" TextWrapping="Wrap" Background="#FF515151" Foreground="#FF0AE6BE"/>
+
                 </Grid>
             </TabItem>
         </TabControl>
-        <TextBox x:Name="Info_TextBox" Margin="10,537,6,32" TextWrapping="Wrap" Background="#FF575757" Foreground="#FF0AE6BE"/>
-        <ToggleSwitch:ToggleSwitch x:Name="Dock_toggle" Margin="10,0,0,4" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF2F9CBB" HorizontalAlignment="Left" Width="40" PreviewMouseDown="Dock_toggle_PreviewMouseDown" IsOn="True" Height="24" VerticalAlignment="Bottom"/>
-        <TextBlock TextWrapping="Wrap" FontSize="14" Foreground="White" Margin="60,0,0,5" Text="Dock" Height="22" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="109" FontWeight="Bold"/>
+        <ToggleSwitch:ToggleSwitch x:Name="Dock_toggle" Margin="10,0,0,8" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF2F9CBB" HorizontalAlignment="Left" Width="40" PreviewMouseDown="Dock_toggle_PreviewMouseDown" IsOn="True" Height="24" VerticalAlignment="Bottom"/>
+        <TextBlock TextWrapping="Wrap" FontSize="14" Foreground="White" Margin="60,0,0,9" Text="Dock" Height="22" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="78" FontWeight="Bold"/>
+        <ComboBox x:Name="ComboBox_opacity" Style="{DynamicResource ComboBoxStyle1}" Margin="0,0,40,9" FontSize="14" Foreground="White" Height="23" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="50" Background="{x:Null}" BorderBrush="{x:Null}" ToolTip="window opacity" SelectedIndex="0" SelectionChanged="ComboBox_opacity_SelectionChanged"/>
+        <TextBlock TextWrapping="Wrap" FontSize="14" Foreground="White" Margin="0,0,14,9" Text="%" Height="22" VerticalAlignment="Bottom" FontWeight="Bold" HorizontalAlignment="Right" Width="18"/>
 
     </Grid>
 </Window>
