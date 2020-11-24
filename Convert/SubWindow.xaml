@@ -345,7 +345,7 @@
                     <ControlTemplate>
                         <Grid>
                             <Grid.Background>
-                                <ImageBrush ImageSource="sin1@4x.png">
+                                <ImageBrush ImageSource= "Resources/sin.png">
                                     <ImageBrush.RelativeTransform>
                                         <TransformGroup>
                                             <ScaleTransform CenterY="0.5" CenterX="0.5" ScaleY="1.95" ScaleX="1.3"/>
@@ -639,6 +639,13 @@
             </TabItem>
             <TabItem Header="exp." Margin="2,-3,-7,-2" BorderBrush="{x:Null}" Background="#FF464646" Foreground="White" FontSize="14">
                 <Grid Background="#FF464646">
+                    <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="44" Margin="0,105,0,0" VerticalAlignment="Top" Width="242">
+                        <Grid>
+                            <ToggleSwitch:ToggleSwitch x:Name="support_blender_toggle" Height="24" Margin="0,10,10,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" HorizontalAlignment="Right" Width="40" PreviewMouseDown="support_blender_toggle_Copy_PreviewMouseDown"/>
+                            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" Height="20" Margin="10,10,0,0" FontSize="14" FontWeight="Bold"><Run Text="S"/><Run Text="upport Blender"/></TextBlock>
+                        </Grid>
+                    </Border>
+
                     <Border BorderBrush="Black" BorderThickness="1" Height="90" Margin="0,10,0,0" VerticalAlignment="Top">
                         <Grid>
                             <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" Height="21" Margin="10,6,0,0" FontSize="14" FontWeight="Bold"><Run Text="Crop"/><LineBreak/><Run/></TextBlock>
@@ -652,7 +659,7 @@
                             <TextBox x:Name="height" Height="22" Margin="170,56,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" MaxLines="1" TextChanged="crop_TextChanged" Background="#FF646464" Foreground="White" HorizontalAlignment="Left" Width="50" BorderBrush="#FFAF9EB9" FontSize="14"/>
                         </Grid>
                     </Border>
-                    <TextBox x:Name="Info_TextBox" Margin="0,105,0,23" TextWrapping="Wrap" Background="#FF515151" Foreground="#FF0AE6BE"/>
+                    <TextBox x:Name="Info_TextBox" Margin="0,154,0,23" TextWrapping="Wrap" Background="#FF515151" Foreground="#FF0AE6BE" VerticalScrollBarVisibility="Auto"/>
 
                 </Grid>
             </TabItem>

@@ -24,6 +24,9 @@ namespace PlayAroundwithImages2
             pdf,
             heic,
             svg,
+            blend,
+            hdr,
+            exr,
         }
     }
 }

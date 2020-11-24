@@ -1,0 +1,1 @@
+%1 -b %2 -E CYCLES -o %3 -F PNG -f 1

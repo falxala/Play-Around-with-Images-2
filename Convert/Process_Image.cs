@@ -127,6 +127,8 @@ namespace PlayAroundwithImages2
             public int DPI { get; set; }
 
             public int[] Crop { get; set; }
+
+            public string BlenderPath { get; set; }
         }
 
         /// <summary>
@@ -188,54 +190,84 @@ namespace PlayAroundwithImages2
                             break;
                         }
                     }
-
-                using (var myMagicks = new ImageMagick.MagickImageCollection(item.Image_path, myMagicReadkSettings))
-                {
-                    for (int i = 0; i < myMagicks.Count; i++)
+                if (option.Format == MagickFormat.Pdf)
+                    using (var myMagicks = new ImageMagick.MagickImageCollection(item.Image_path, myMagicReadkSettings))
                     {
-
-                        ImageMagick.MagickImage myMagick = (ImageMagick.MagickImage)myMagicks[i];
-
-                        if ((long)option.Crop[2] * (long)option.Crop[3] > 0)
+                        for (int i = 0; i < myMagicks.Count; i++)
                         {
-                            MagickGeometry geometry = new MagickGeometry(option.Crop[0], option.Crop[1], option.Crop[2], option.Crop[3]);
-                            myMagick.Crop(geometry, ImageMagick.Gravity.Center);
-                        }
-                        myMagick.Format = option.Format;
+                            ImageMagick.MagickImage myMagick = (ImageMagick.MagickImage)myMagicks[i];
 
-                        //quality = 0は75になる
-                        myMagick.Quality = ++option.Quality;
+                            _process(option, token, myMagick);
 
-                        myMagick.BackgroundColor = option.BackgroundColor;
-
-                        if (myMagick.Format == ImageMagick.MagickFormat.Jpeg)
-                        {
-                            if (option.BackgroundColor == new ImageMagick.MagickColor("transparent"))
-                                myMagick.BackgroundColor = new ImageMagick.MagickColor("white");
-                            myMagick.Alpha(ImageMagick.AlphaOption.Remove);
-                        }
-
-                        if (option.BackgroundColor != new ImageMagick.MagickColor("transparent"))
-                            myMagick.Alpha(ImageMagick.AlphaOption.Remove);
-
-                        //グレースケール
-                        if (option.GrayScale)
-                            myMagick.Grayscale();
-
-                        //リサイズ・変形
-                        if (option.Transform)
-                        {
-                            if (option.LiquidRescale)
-                            {
-                                //自然なリサイズを試行
-                                var WidthPer = new ImageMagick.Percentage((double)option.Size.Width / myMagick.Width * 100);
-                                var HeightPer = new ImageMagick.Percentage((double)option.Size.Height / myMagick.Height * 100);
-                                myMagick.LiquidRescale(WidthPer, HeightPer);
-                            }
+                            //「ファイル」へ書き出し  
+                            if (i == 0)
+                                myMagick.Write(outputPath, myMagickSettings);
                             else
-                            {
-                                var param = new double[]
-                                {
+                                myMagick.Write(outputDir + output_Num + output_name + "_" + i + "." + f, myMagickSettings);
+
+                            token.ThrowIfCancellationRequested();
+                        }
+
+                        return outputPath;
+                    }
+                else
+                {
+                    using (var myMagick = new ImageMagick.MagickImage(item.Image_path, myMagicReadkSettings))
+                    {
+                        _process(option, token, myMagick);
+                        myMagick.Write(outputPath, myMagickSettings);
+                        token.ThrowIfCancellationRequested();
+                        return outputPath;
+                    }
+                }
+
+            });
+            return Result;
+        }
+
+        public void _process(ConvertOptions option, CancellationToken token, MagickImage myMagick)
+        {
+
+            if ((long)option.Crop[2] * (long)option.Crop[3] > 0)
+            {
+                MagickGeometry geometry = new MagickGeometry(option.Crop[0], option.Crop[1], option.Crop[2], option.Crop[3]);
+                myMagick.Crop(geometry, ImageMagick.Gravity.Center);
+            }
+            myMagick.Format = option.Format;
+
+            //quality = 0は75になる
+            myMagick.Quality = ++option.Quality;
+
+            myMagick.BackgroundColor = option.BackgroundColor;
+
+            if (myMagick.Format == ImageMagick.MagickFormat.Jpeg)
+            {
+                if (option.BackgroundColor == new ImageMagick.MagickColor("transparent"))
+                    myMagick.BackgroundColor = new ImageMagick.MagickColor("white");
+                myMagick.Alpha(ImageMagick.AlphaOption.Remove);
+            }
+
+            if (option.BackgroundColor != new ImageMagick.MagickColor("transparent"))
+                myMagick.Alpha(ImageMagick.AlphaOption.Remove);
+
+            //グレースケール
+            if (option.GrayScale)
+                myMagick.Grayscale();
+
+            //リサイズ・変形
+            if (option.Transform)
+            {
+                if (option.LiquidRescale)
+                {
+                    //自然なリサイズを試行
+                    var WidthPer = new ImageMagick.Percentage((double)option.Size.Width / myMagick.Width * 100);
+                    var HeightPer = new ImageMagick.Percentage((double)option.Size.Height / myMagick.Height * 100);
+                    myMagick.LiquidRescale(WidthPer, HeightPer);
+                }
+                else
+                {
+                    var param = new double[]
+                    {
                             0,0,                                //入力_左上座標
                             0,0,                                //出力_左上座標
                             0,myMagick.Height,                  //入力_左下座標
@@ -244,56 +276,42 @@ namespace PlayAroundwithImages2
                             option.Size.Width,option.Size.Height,               //出力_右下座標
                             myMagick.Width,0,                   //入力_右上座標
                             option.Size.Width,0                         //出力_右上座標
-                                };
-                                //自由変形
-                                //指定したサイズにフィットするようにカンバスサイズを変形する設定
-                                ImageMagick.DistortSettings distortSettings = new ImageMagick.DistortSettings();
-                                distortSettings.Bestfit = true;
-                                distortSettings.Viewport = new ImageMagick.MagickGeometry(option.Size.Width, option.Size.Height);
-                                myMagick.Distort(ImageMagick.DistortMethod.BilinearForward, distortSettings, param);
-                                myMagick.Crop(option.Size.Width, option.Size.Height);
-                                myMagick.RePage();
-                            }
-                        }
-                        else if (option.Size.Width == option.Size.Height && option.Size.Width != 0)
-                        {
-                            if (!option.NotScaleUp)
-                            {
-                                myMagick.Resize(option.Size.Width, option.Size.Height);
-                            }
-                            else if (option.Size.Width * option.Size.Height < myMagick.Width * myMagick.Height)
-                                myMagick.Resize(option.Size.Width, option.Size.Height);
-                        }
-
-                        //回転
-                        if (option.Rotate != 0)
-                        {
-                            myMagick.Rotate(option.Rotate);
-
-                        }
-
-                        //反転
-                        if (option.Mirror)
-                            myMagick.Flop();
-
-                        if (option.Gamma != 1)
-                            myMagick.Level(new ImageMagick.Percentage(0.0), new ImageMagick.Percentage(100.0), (option.Gamma), ImageMagick.Channels.All);
-
-                        token.ThrowIfCancellationRequested();
-
-                        //「ファイル」へ書き出し  
-                        if (i == 0)
-                            myMagick.Write(outputPath, myMagickSettings);
-                        else
-                            myMagick.Write(outputDir + output_Num + output_name + "_" + i + "." + f, myMagickSettings);
-
-                        token.ThrowIfCancellationRequested();
-                    }
-
-                    return outputPath;
+                    };
+                    //自由変形
+                    //指定したサイズにフィットするようにカンバスサイズを変形する設定
+                    ImageMagick.DistortSettings distortSettings = new ImageMagick.DistortSettings();
+                    distortSettings.Bestfit = true;
+                    distortSettings.Viewport = new ImageMagick.MagickGeometry(option.Size.Width, option.Size.Height);
+                    myMagick.Distort(ImageMagick.DistortMethod.BilinearForward, distortSettings, param);
+                    myMagick.Crop(option.Size.Width, option.Size.Height);
+                    myMagick.RePage();
                 }
-            });
-            return Result;
+            }
+            else if (option.Size.Width == option.Size.Height && option.Size.Width != 0)
+            {
+                if (!option.NotScaleUp)
+                {
+                    myMagick.Resize(option.Size.Width, option.Size.Height);
+                }
+                else if (option.Size.Width * option.Size.Height < myMagick.Width * myMagick.Height)
+                    myMagick.Resize(option.Size.Width, option.Size.Height);
+            }
+
+            //回転
+            if (option.Rotate != 0)
+            {
+                myMagick.Rotate(option.Rotate);
+
+            }
+
+            //反転
+            if (option.Mirror)
+                myMagick.Flop();
+
+            if (option.Gamma != 1)
+                myMagick.Level(new ImageMagick.Percentage(0.0), new ImageMagick.Percentage(100.0), (option.Gamma), ImageMagick.Channels.All);
+
+            token.ThrowIfCancellationRequested();
         }
 
         /// <summary>

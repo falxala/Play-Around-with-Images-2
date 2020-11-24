@@ -447,7 +447,7 @@
                       Checked="context_thumbnail_Checked" Unchecked="context_thumbnail_Unchecked" Header="Dissable thumbnail"/>
                 </ContextMenu>
             </Grid.ContextMenu>
-            <ListView x:Name="Image_ListView" ItemsSource="{Binding drop_Images}" Margin="10,58,5,38" DragEnter="Image_ListView_DragEnter" Drop="Image_ListView_Drop" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="Image_ListView_SelectionChanged" Foreground="White" BorderBrush="Black" Background="#FF646464" ScrollViewer.VerticalScrollBarVisibility="Auto" PreviewMouseDoubleClick="Image_ListView_PreviewMouseDoubleClick" PreviewMouseWheel="Image_ListView_PreviewMouseWheel" >
+            <ListView x:Name="Image_ListView" ItemsSource="{Binding drop_Images}" Margin="10,58,5,38" DragEnter="Image_ListView_DragEnter" Drop="Image_ListView_Drop" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="Image_ListView_SelectionChanged" Foreground="White" BorderBrush="Black" Background="#FF646464" ScrollViewer.VerticalScrollBarVisibility="Auto" PreviewMouseDoubleClick="Image_ListView_PreviewMouseDoubleClick" PreviewMouseWheel="Image_ListView_PreviewMouseWheel" PreviewMouseDown="Image_ListView_PreviewMouseDown" SizeChanged="Image_ListView_SizeChanged" >
 
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>

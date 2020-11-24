@@ -19,8 +19,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using System.IO.Compression;
 using System.ComponentModel;
-
-
+using System.Diagnostics;
 
 namespace PlayAroundwithImages2
 {
@@ -56,14 +55,12 @@ namespace PlayAroundwithImages2
             Console.WriteLine(ImageMagick.ResourceLimits.Disk);
 
             Image_ListView.ItemsSource = drop_Images; // コレクションをListBoxにバインドする
-            //preview_image.DataContext = Subwin.Rotate_Slider;
 
             preview_model.Rotate.Value = 0;
             preview_model.Scale_X.Value = 1;
             preview_model.Scale_Y.Value = 1;
             preview_image.DataContext = preview_model;
 
-            //selected_TextB.Visibility = text_grid.Visibility = Visibility.Hidden;
             var window = Window.GetWindow(this);
             window.KeyDown += HandleKeyPress;
             selected_TextB.Text = "";
@@ -208,19 +205,11 @@ namespace PlayAroundwithImages2
                         //フォルダ内のファイル名を取得|サブフォルダ内も全て検索
                         files.AddRange(System.IO.Directory.GetFiles(@dropItem, "*", System.IO.SearchOption.AllDirectories));
                     }
-                    else if (Path.GetExtension(dropItem).ToLower() == ".zip")
+                    else if (Path.GetExtension(dropItem).ToLower() == ".zip" || Path.GetExtension(dropItem).ToLower() == ".xlsx")
                     {
                         try
                         {
                             string unzipDir = TempPath + "\\" + Path.GetFileNameWithoutExtension(dropItem);
-                            
-                            /*
-                            System.IO.Compression.ZipFile.ExtractToDirectory(
-                             dropItem,
-                             unzipDir,
-                             System.Text.Encoding.GetEncoding("shift_jis"));
-                            files.AddRange(System.IO.Directory.GetFiles(@unzipDir, "*", System.IO.SearchOption.AllDirectories));
-                            */
 
                             using (ZipArchive a = ZipFile.OpenRead(dropItem))
                             {
@@ -344,7 +333,6 @@ namespace PlayAroundwithImages2
         int Data_reading(string[] files)
         {
 
-            string[] details = new string[9];
             BitmapImage bitmap = null;
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -359,6 +347,9 @@ namespace PlayAroundwithImages2
             Console.WriteLine(DegreeOfParallelism);
             Parallel.For(0, files.Length, options, i =>
              {
+                 string file = files[i];
+                 string[] details = new string[9];
+
                  try
                  {
                      ///tryで応急処置
@@ -366,9 +357,6 @@ namespace PlayAroundwithImages2
                      //例外が発生すると最後まで画像が読み込まれない
                      try
                      {
-                         string file = files[i];
-
-
                          //許可されている拡張子以外は読み込まない
                          bool check = false;
                          foreach (string name in Enum.GetNames(typeof(permission.Extension)))
@@ -380,6 +368,25 @@ namespace PlayAroundwithImages2
                          }
                          if (check == false)
                              throw new Exception();
+
+                         
+                         if (System.IO.Path.GetExtension(file) == ".blend")
+                         {
+                             var str = "blender.exe -b -noaudio \"" + file + "\" -E BLENDER_EEVEE -o \"" + TempPath + "\\ \" -F PNG -f 1";
+
+                             ProcessStartInfo proc = new ProcessStartInfo();
+                             proc.WorkingDirectory = cnvOption.BlenderPath;
+                             proc.FileName = @"C:\windows\system32\cmd.exe";
+                             proc.Arguments = string.Format("/k  {0}", str);
+
+                             Process newCmdProcess = Process.Start(proc);
+                             string standardOutput = newCmdProcess.StandardOutput.ReadToEnd();
+                             string standardError = newCmdProcess.StandardError.ReadToEnd();
+                             int exitCode = newCmdProcess.ExitCode;
+                             newCmdProcess.WaitForExit();
+                             newCmdProcess.Close();
+
+                         }
 
                          details = process_Image.GetDetail(file);
 
@@ -433,6 +440,8 @@ namespace PlayAroundwithImages2
                          selected_TextB.Visibility = text_grid.Visibility = Visibility.Visible;
                          Progress(Count, files.Length + 1, "NOW LOADING\r\n");
                      }));
+                     file = null;
+                     details = null;
                  }
 
              });
@@ -507,7 +516,10 @@ namespace PlayAroundwithImages2
                     dropHere_Text.Text = "Drop files here\r\nor\r\nClick to add";
                 }
             }
-            catch { }
+            catch {
+                cv.SortDescriptions.Clear();
+                drop_Images.Clear();
+            }
             finally
             {
                 GC();
@@ -847,7 +859,7 @@ namespace PlayAroundwithImages2
         private void limit_filesize_tb_TextChanged(object sender, TextChangedEventArgs e)
         {            
             //JPEGを選択
-            Subwin.ComboBox_extension.SelectedIndex = 5;
+            Subwin.ComboBox_extension.SelectedIndex = 7;
             Set_Option();
             if (cnvOption.Filesize == 0)
             {
@@ -1191,11 +1203,14 @@ namespace PlayAroundwithImages2
         {
             if(Image_ListView.SelectedItems.Count == 1)
             {
-
                 foreach (Model.drop_Image i in Image_ListView.SelectedItems)
                 {
                     System.Diagnostics.Process p = System.Diagnostics.Process.Start(i.Image_path);
                 }
+            }
+            else
+            {
+                AddFile(false);
             }
         }
 
@@ -1528,6 +1543,22 @@ namespace PlayAroundwithImages2
             {
                 filter_button_Click(null, null);
             }
+        }
+
+        double Imagelistview_width = 0;
+        private  void Image_ListView_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            System.Windows.Point point = e.GetPosition(this);
+            if (Imagelistview_width - point.X >= 15)
+                Image_ListView.SelectedIndex = -1;
+        }
+
+        private async void Image_ListView_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            await Dispatcher.BeginInvoke(new Action(() =>
+            {
+                Imagelistview_width = Image_ListView.ActualWidth;
+            }));
         }
     }
 }

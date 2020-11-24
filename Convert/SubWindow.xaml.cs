@@ -30,6 +30,7 @@ namespace PlayAroundwithImages2
     public partial class SubWindow : Window
     {
         public System.Timers.Timer Timer = new System.Timers.Timer();
+        string old_infotext = "";
 
         System.Windows.Media.Brush ichimatsu;
         public SubWindow()
@@ -55,6 +56,7 @@ namespace PlayAroundwithImages2
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            old_infotext = Info_TextBox.Text;
             ichimatsu = Mainwin.back_border.Background;
 
             ComboBox_backgroundColor.Items.Add("Transparent");
@@ -62,9 +64,9 @@ namespace PlayAroundwithImages2
             ComboBox_backgroundColor.Items.Add("Black");
             ComboBox_backgroundColor.SelectedIndex = 0;
 
-            var a = System.AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\');
+            //var a = System.AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\');
             //よく使う拡張子だけを抜き出す(enum参照)
-            var extLsit = new[] { 6, 17, 53, 74, 90, 106, 172, 177, 178, 186, 221, 223, 240 };
+            var extLsit = new[] { 6, 17, 53, 62, 74, 81, 90, 106, 172, 177, 178, 186, 221, 223, 240 };
 
             //コンボボックスに拡張子名と値をセット
             foreach (var Value in Enum.GetValues(typeof(ImageMagick.MagickFormat)))
@@ -78,6 +80,9 @@ namespace PlayAroundwithImages2
                     }
                 }
             }
+
+            ComboBox_extension.DisplayMemberPath = "ItemDisp";
+            ComboBox_extension.SelectedIndex = 7;
 
             //GPUをコンボボックスにセット
             ComboBox_GPU.Items.Add("Disable");
@@ -104,14 +109,10 @@ namespace PlayAroundwithImages2
                 ComboBox_CPU.SelectedIndex = Mainwin.DegreeOfParallelism - 1;
             }
 
-            ComboBox_extension.DisplayMemberPath = "ItemDisp";
-            ComboBox_extension.SelectedIndex = 5;
             if (Mainwin.subDockFlag == false)
                 Dock_toggle.IsOn = true;
 
             selectDirTextBox.Text = Sub_CnvOption.SaveDirectory;
-
-            Type t = Sub_CnvOption.GetType();
 
             check_Resources();
             //Info_TextBox.Text = Sub_CnvOption.Transform.ToString();
@@ -577,7 +578,6 @@ namespace PlayAroundwithImages2
 
         private void ComboBox_GPU_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Info_TextBox.Text = "";
             if (GPUload)
                 foreach (var item in ImageMagick.OpenCL.Devices)
                 {
@@ -585,7 +585,6 @@ namespace PlayAroundwithImages2
                         item.IsEnabled = true;
                     else
                         item.IsEnabled = false;
-                    Info_TextBox.Text += "OpenCL Device : " + item.Name + " = " + item.IsEnabled + "\r\n";
                 }
         }
 
@@ -949,6 +948,23 @@ namespace PlayAroundwithImages2
                 Mainwin.limit_longside_tb.IsEnabled = true;
             }
             SetMainCnvOption();
+        }
+
+        private void support_blender_toggle_Copy_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (support_blender_toggle.IsOn)
+            {
+                Sub_CnvOption.BlenderPath = "";
+            }
+            else
+            {
+                var blenderpath = SerchBlender.GetUninstallList();
+                if (blenderpath != null)
+                    Sub_CnvOption.BlenderPath = blenderpath[0];
+                else
+                    Sub_CnvOption.BlenderPath = null;
+                SetMainCnvOption();
+            }
         }
     }
 }
