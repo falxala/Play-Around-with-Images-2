@@ -27,6 +27,7 @@ namespace PlayAroundwithImages2
             blend,
             hdr,
             exr,
+            ps,
         }
     }
 }

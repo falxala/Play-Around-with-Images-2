@@ -134,8 +134,10 @@ namespace PlayAroundwithImages2
         /// <summary>
         /// 与えられたファイルを変換します
         /// </summary>
-        /// <param name="item"ファイルパス></param>
-        /// <returns>出力ファイル名</returns>
+        /// <param name="item">ファイルパス</param>
+        /// <param name="option"></param>
+        /// <param name="token"></param>
+        /// <returns>出力ファイルパス</returns>
         public async Task<String> Convert(Model.drop_Image item, ConvertOptions option, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();

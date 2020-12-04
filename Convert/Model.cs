@@ -26,6 +26,7 @@ namespace PlayAroundwithImages2
             public bool Create_thumunail { get; set; }
             public float Gamma { get; set; }
             public short Bit { get; set; }
+            public int Number { get; set; }
         }
 
     }

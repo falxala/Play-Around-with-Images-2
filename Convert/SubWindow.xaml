@@ -641,7 +641,7 @@
                 <Grid Background="#FF464646">
                     <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="44" Margin="0,105,0,0" VerticalAlignment="Top" Width="242">
                         <Grid>
-                            <ToggleSwitch:ToggleSwitch x:Name="support_blender_toggle" Height="24" Margin="0,10,10,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" HorizontalAlignment="Right" Width="40" PreviewMouseDown="support_blender_toggle_Copy_PreviewMouseDown"/>
+                            <ToggleSwitch:ToggleSwitch x:Name="support_blender_toggle" Height="24" Margin="0,10,10,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" HorizontalAlignment="Right" Width="40" PreviewMouseDown="support_blender_toggle_Copy_PreviewMouseDown" IsEnabled="False"/>
                             <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" Height="20" Margin="10,10,0,0" FontSize="14" FontWeight="Bold"><Run Text="S"/><Run Text="upport Blender"/></TextBlock>
                         </Grid>
                     </Border>
