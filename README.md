@@ -20,7 +20,7 @@
  
 ***デモ***
  
-![デモ](https://raw.githubusercontent.com/falxala/Play-Around-with-Images-2/master/Convert/Resources/Preview2.jpg)
+![デモ](https://raw.githubusercontent.com/falxala/Play-Around-with-Images-2/master/Convert/Resources/SS1.png)
  
 ## 機能
 
