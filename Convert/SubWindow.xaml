@@ -488,7 +488,7 @@
 
     </Window.Resources>
 
-    <Grid Margin="1,0">
+    <Grid Margin="1,0" Cursor="">
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
@@ -497,12 +497,24 @@
         <TabControl Background="{x:Null}" BorderBrush="{x:Null}" Margin="5,10,5,25" SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="Output" Margin="1,-3,-3,-2" BorderBrush="{x:Null}" Background="#FF464646" Foreground="White" FontSize="14">
                 <Grid Background="#FF464646" Margin="0,0,0,2">
+
+                    <Border BorderBrush="Black" BorderThickness="1" Height="131" Margin="0,219,0,0" VerticalAlignment="Top">
+                        <Grid Margin="0,0,0,-1">
+                            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Height="23" FontSize="14" Foreground="White" Width="70" Margin="10,10,0,0" FontWeight="Bold" Text="Preset"/>
+                            <TextBlock x:Name="PresetTB" TextWrapping="Wrap" VerticalAlignment="Top" Height="40" FontSize="14" Foreground="White" Margin="10,80,10,0"><Run Text="--px "/><Run Text="× "/><Run Text="--px "/><LineBreak/><Run Text="--mm"/><Run Text=" "/><Run Text="×"/><Run Text=" -"/><Run Text="-"/><Run Text="mm"/></TextBlock>
+                            <ComboBox x:Name="ComboBox_PresetSizeAB" Margin="10,38,0,64" FontSize="14" Background="White" Style="{DynamicResource ComboBoxStyle1}" Foreground="White" HorizontalAlignment="Left" Width="38" Height="28" VerticalAlignment="Center" SelectionChanged="ComboBox_PresetSizeAB_SelectionChanged"/>
+                            <ComboBox x:Name="ComboBox_PresetSize" Margin="48,38,0,64" FontSize="14" Background="White" Style="{DynamicResource ComboBoxStyle1}" Foreground="White" HorizontalAlignment="Left" Width="48" Height="28" VerticalAlignment="Center" SelectionChanged="ComboBox_PresetSize_SelectionChanged"/>
+                            <ComboBox x:Name="ComboBox_PresetDPI" Margin="101,38,0,64" FontSize="14" Background="White" Style="{DynamicResource ComboBoxStyle1}" Foreground="White" Height="28" VerticalAlignment="Center" HorizontalAlignment="Left" Width="72" SelectionChanged="ComboBox_PresetDPI_SelectionChanged"/>
+                            <Button x:Name="Preset_Apply_Button" Style="{StaticResource HoverButtonStyle}" Content="Apply" Foreground="White" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" Height="27" VerticalAlignment="Center" BorderBrush="White" Margin="0,39,10,64" FontWeight="Bold" ToolTip="Open the outputs folder" HorizontalAlignment="Right" Width="50" Click="Preset_Apply_Button_Click" RenderTransformOrigin="0.5,0.5"/>
+                        </Grid>
+                    </Border>
+
                     <Border BorderBrush="Black" BorderThickness="1" Height="104" Margin="0,60,0,0" VerticalAlignment="Top">
                         <Grid>
-                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="148" FontSize="14" Foreground="White" Margin="9,9,0,0" TextDecorations="{x:Null}" FontWeight="Bold"><Run Text="Output"/><Run Text="s"/><Run Text=" "/><Run Text="Directory"/><Run Text=" "/></TextBlock>
-                            <Button x:Name="OpenFolder" Style="{StaticResource HoverButtonStyle}" Content="Open" Click="OpenFolder_Click" Foreground="White" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" HorizontalAlignment="Right" Width="62" Height="23" VerticalAlignment="Top" BorderBrush="White" Margin="0,8,10,0" FontWeight="Bold" ToolTip="Open the outputs folder"/>
-                            <TextBox x:Name="selectDirTextBox" Height="22" Text="TextBox" VerticalAlignment="Top" FontSize="14" MaxLines="1" TextChanged="selectDirTextBox_TextChanged" FontFamily="Yu Gothic Medium" Background="#FF646464" Foreground="White" Margin="9,40,41,0" ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}"/>
-                            <Button x:Name="Select_folder" VerticalAlignment="Top" Click="Button_Click" Height="22" HorizontalAlignment="Right" Width="25" Background="White" Margin="0,40,11,0" ToolTip="Select a path">
+                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="148" FontSize="16" Foreground="White" Margin="9,9,0,0" TextDecorations="{x:Null}" FontWeight="Bold"><Run Text="Output"/><Run Text="s"/><Run Text=" "/><Run Text="Directory"/><Run Text=" "/></TextBlock>
+                            <Button x:Name="OpenFolder" Style="{StaticResource HoverButtonStyle}" Content="Open" Foreground="{x:Null}" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" HorizontalAlignment="Right" Width="134.5" Height="26" VerticalAlignment="Top" BorderBrush="{x:Null}" Margin="0,9,95.5,0" FontWeight="Bold" ToolTip="Open the outputs folder" Background="{x:Null}" Opacity="0" MouseDoubleClick="OpenFolder_Click" Cursor="Hand"/>
+                            <TextBox x:Name="selectDirTextBox" Height="22" Text="TextBox" VerticalAlignment="Top" FontSize="14" MaxLines="1" TextChanged="selectDirTextBox_TextChanged" FontFamily="Yu Gothic Medium" Background="#FF646464" Foreground="White" Margin="9,40,55,0" ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}"/>
+                            <Button x:Name="Select_folder" VerticalAlignment="Top" Click="Button_Click" Height="22" HorizontalAlignment="Right" Width="39" Background="White" Margin="0,40,11,0" ToolTip="Select a path" Cursor="Hand">
                                 <Image Source="Resources/Folder.png" />
                             </Button>
                             <ToggleSwitch:ToggleSwitch x:Name="Overwrite_toggle" Height="24" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FFC14343" HorizontalAlignment="Right" Width="40" PreviewMouseDown="Overwrite_toggle_PreviewMouseDown" Margin="0,71,10,0" ToolTip="Overwrite the file with the same name"/>
@@ -511,8 +523,8 @@
                     </Border>
                     <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="0,10,0,0" VerticalAlignment="Top">
                         <Grid>
-                            <ComboBox x:Name="ComboBox_extension" Margin="144,8,10,8" SelectionChanged="ComboBox_extension_SelectionChanged" FontSize="14" Background="White" Style="{DynamicResource ComboBoxStyle1}" Foreground="White"/>
-                            <TextBlock Margin="10,10,0,8" TextWrapping="Wrap" Text="Format" HorizontalAlignment="Left" Width="105" Foreground="White" FontSize="14" FontWeight="Bold"/>
+                            <ComboBox x:Name="ComboBox_extension" Margin="143,8,10,8" SelectionChanged="ComboBox_extension_SelectionChanged" FontSize="16" Background="White" Style="{DynamicResource ComboBoxStyle1}" Foreground="White" FontWeight="Bold" MaxDropDownHeight="600"/>
+                            <TextBlock Margin="10,10,0,8" TextWrapping="Wrap" Text="Format" HorizontalAlignment="Left" Width="105" Foreground="White" FontSize="16" FontWeight="Bold"/>
                         </Grid>
                     </Border>
                     <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="0,169,0,0" VerticalAlignment="Top">
@@ -614,11 +626,11 @@
                     </Border>
                     <Border BorderBrush="Black" BorderThickness="1" Height="113" Margin="0,10,0,0" VerticalAlignment="Top">
                         <Grid>
-                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="109" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="10,12,0,0" Text="memory limit"/>
-                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="109" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="10,44,0,0"><Run Text="disk"/><Run Text=" limit"/></TextBlock>
+                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="109" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="10,12,0,0" Text="memory limit" FontWeight="Bold"/>
+                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="109" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="10,44,0,0" FontWeight="Bold"><Run Text="disk"/><Run Text=" limit"/></TextBlock>
                             <TextBlock x:Name="ResourcesMemTxt" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="124,12,0,0"><Run Text="use mem"/><LineBreak/><Run/></TextBlock>
                             <TextBlock x:Name="ResourcesDiskTxt" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="124,44,0,0"><Run Text="use"/><Run Text=" "/><Run Text="disk"/><LineBreak/><Run/></TextBlock>
-                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="109" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="10,77,0,0"><Run Text="t"/><Run Text="hread"/></TextBlock>
+                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="109" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="10,77,0,0" FontWeight="Bold"><Run Text="t"/><Run Text="hread"/></TextBlock>
                             <TextBlock x:Name="ResourcesThreadTxt" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="124,77,0,0"><Run Text="use"/><Run Text=" "/><Run Text="thread num"/><LineBreak/><Run/></TextBlock>
                         </Grid>
                     </Border>
@@ -628,20 +640,21 @@
                             <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="95" FontSize="14" Foreground="White" Margin="10,10,0,0" RenderTransformOrigin="0.639,0.864" FontWeight="Bold"><Run Text="p"/><Run Text="arallels"/><Run Text=" max"/></TextBlock>
                         </Grid>
                     </Border>
-                    <Button x:Name="CheckUpdate_Button" Style="{StaticResource HoverButtonStyle}" Content="Check Update" Margin="0,276,0,0" Foreground="White" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" BorderBrush="White" Click="CheckUpdate_Button_Click" Height="25" VerticalAlignment="Top" FontFamily="Yu Gothic Medium"/>
+                    <Button x:Name="CheckUpdate_Button" Style="{StaticResource HoverButtonStyle}" Content="Check Update" Margin="0,276,80.333,0" Foreground="White" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" BorderBrush="White" Click="CheckUpdate_Button_Click" Height="25" VerticalAlignment="Top" FontFamily="Yu Gothic Medium" Background="#FFF1F1F1"/>
                     <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="0,226,0,0" VerticalAlignment="Top">
                         <Grid Margin="0,0,0,-1">
                             <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="109" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="10,10,0,0" Text="Imagemagick"/>
                             <Button x:Name="openLocalTemp_Button" Style="{StaticResource HoverButtonStyle}" Content="Open AppLocal" Margin="122.667,10,10,0" Foreground="White" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" BorderBrush="White" Height="25" VerticalAlignment="Top" Click="openLocalTemp_Button_Click"/>
                         </Grid>
                     </Border>
+                    <Button x:Name="CheckReadme" Style="{StaticResource HoverButtonStyle}" Content="Readme" Margin="166.667,276,0,0" Foreground="White" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" BorderBrush="White" Height="25" VerticalAlignment="Top" FontFamily="Yu Gothic Medium" Click="CheckReadme_Click" Cursor="Help"/>
                 </Grid>
             </TabItem>
             <TabItem Header="exp." Margin="2,-3,-7,-2" BorderBrush="{x:Null}" Background="#FF464646" Foreground="White" FontSize="14">
                 <Grid Background="#FF464646">
                     <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="44" Margin="0,105,0,0" VerticalAlignment="Top" Width="242">
                         <Grid>
-                            <ToggleSwitch:ToggleSwitch x:Name="support_blender_toggle" Height="24" Margin="0,10,10,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" HorizontalAlignment="Right" Width="40" PreviewMouseDown="support_blender_toggle_Copy_PreviewMouseDown" IsEnabled="False"/>
+                            <ToggleSwitch:ToggleSwitch x:Name="support_blender_toggle" Height="24" Margin="0,10,10,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" HorizontalAlignment="Right" Width="40" PreviewMouseDown="support_blender_toggle_Copy_PreviewMouseDown" IsEnabled="False" Cursor="Cross"/>
                             <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" Height="20" Margin="10,10,0,0" FontSize="14" FontWeight="Bold"><Run Text="S"/><Run Text="upport Blender"/></TextBlock>
                         </Grid>
                     </Border>

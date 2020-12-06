@@ -70,6 +70,8 @@ namespace PlayAroundwithImages2
             /// </summary>
             public System.Drawing.Size Size { get; set; }
 
+            public System.Drawing.Size longSide { get; set; }
+
             /// <summary>
             /// 同一ファイル名があったとき上書きするかどうか
             /// </summary>
@@ -242,7 +244,7 @@ namespace PlayAroundwithImages2
 
             myMagick.BackgroundColor = option.BackgroundColor;
 
-            if (myMagick.Format == ImageMagick.MagickFormat.Jpeg)
+            if (myMagick.Format == ImageMagick.MagickFormat.Jpg)
             {
                 if (option.BackgroundColor == new ImageMagick.MagickColor("transparent"))
                     myMagick.BackgroundColor = new ImageMagick.MagickColor("white");
@@ -289,14 +291,14 @@ namespace PlayAroundwithImages2
                     myMagick.RePage();
                 }
             }
-            else if (option.Size.Width == option.Size.Height && option.Size.Width != 0)
+            else if (option.longSide.Width == option.longSide.Height && option.longSide.Width != 0)
             {
                 if (!option.NotScaleUp)
                 {
-                    myMagick.Resize(option.Size.Width, option.Size.Height);
+                    myMagick.Resize(option.longSide.Width, option.longSide.Height);
                 }
                 else if (option.Size.Width * option.Size.Height < myMagick.Width * myMagick.Height)
-                    myMagick.Resize(option.Size.Width, option.Size.Height);
+                    myMagick.Resize(option.longSide.Width, option.longSide.Height);
             }
 
             //回転

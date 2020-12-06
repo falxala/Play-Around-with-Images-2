@@ -97,6 +97,24 @@ namespace PlayAroundwithImages2
             ComboBox_DPI.Items.Add(1200);
             ComboBox_DPI.SelectedIndex = 3;
 
+            ComboBox_PresetDPI.Items.Add(72);
+            ComboBox_PresetDPI.Items.Add(144);
+            ComboBox_PresetDPI.Items.Add(300);
+            ComboBox_PresetDPI.Items.Add(350);
+            ComboBox_PresetDPI.Items.Add(600);
+            ComboBox_PresetDPI.Items.Add(1200);
+            ComboBox_PresetDPI.SelectedIndex = 3;
+
+            for (int i = 0; i <= 10; i++)
+                ComboBox_PresetSize.Items.Add(i);
+
+            ComboBox_PresetSize.SelectedIndex = 4;
+
+            ComboBox_PresetSizeAB.Items.Add("A");
+            ComboBox_PresetSizeAB.Items.Add("B");
+            ComboBox_PresetSizeAB.SelectedIndex = 0;
+
+
             for (int i = 10; i > 0; i--)
             {
                 ComboBox_opacity.Items.Add(i * 10);
@@ -382,11 +400,6 @@ namespace PlayAroundwithImages2
         {
             Sub_CnvOption.SaveDirectory = selectDirTextBox.Text;
             SetMainCnvOption();
-        }
-
-        private void OpenFolder_Click(object sender, RoutedEventArgs e)
-        {
-            System.Diagnostics.Process.Start("EXPLORER.EXE", Sub_CnvOption.SaveDirectory);
         }
 
         //冗長な書き方　後でリファクタリング
@@ -966,5 +979,108 @@ namespace PlayAroundwithImages2
                 SetMainCnvOption();
             }
         }
+
+        System.Windows.Size A0 = new System.Windows.Size(841, 1189);
+        System.Windows.Size B0 = new System.Windows.Size(1030, 1456);
+        System.Windows.Size C0 = new System.Windows.Size(917, 1297);
+        private const double inch = 25.4;
+
+        private void Preset_Apply_Button_Click(object sender, RoutedEventArgs e)
+        {
+            PresetAply();
+            Mainwin.limit_longside_tb.Text = Math.Max(p.Width, p.Height).ToString();
+            Width_TextBox.Text = p.Width.ToString();
+            Height_TextBox.Text = p.Height.ToString();
+            var TempSize = Sub_CnvOption.Size;
+            TempSize.Width = (int)p.Width;
+            TempSize.Height = (int)p.Height;
+            Sub_CnvOption.Size = TempSize;
+            SetMainCnvOption();
+
+        }
+
+        Preset p = new Preset();
+        private void PresetAply()
+        {
+            var dpi = int.Parse(ComboBox_PresetDPI.SelectedItem.ToString());
+            var comboIndex = ComboBox_PresetSize.SelectedIndex;
+            if (ComboBox_PresetSizeAB.SelectedIndex == 0)    //A列
+            {
+                p = PresetSize(A0.Width, A0.Height, comboIndex, dpi);
+            }
+            if (ComboBox_PresetSizeAB.SelectedIndex == 1)    //B列
+            {
+                p = PresetSize(B0.Width, B0.Height, comboIndex, dpi);
+            }
+            PresetTB.Text = $"{p.Width} px × {p.Height} px \r\n{p.ActualWidth} mm × {p.ActualHeight} mm";
+        }
+
+        public class Preset
+        {
+            public double Width { get; set; }
+            public double Height { get; set; }
+            public double ActualWidth { get; set; }
+            public double ActualHeight { get; set; }
+        }
+
+        private Preset PresetSize(double width, double height, int series_num, int dpi)
+        {
+            Preset preset = new Preset();
+            if ((ComboBox_PresetSize.SelectedIndex) % 2 == 0)　     //偶数列
+            {
+                preset.ActualWidth = RoundDivision(width, series_num / 2);
+                preset.ActualHeight = RoundDivision(height, series_num / 2);
+                preset.Width = Math.Round(dpi * preset.ActualWidth / inch);
+                preset.Height = Math.Round(dpi * preset.ActualHeight / inch);
+            }
+            else                                                    //奇数列
+            {
+                //縦横を保持させるために反転
+                preset.ActualHeight = RoundDivision(width, series_num / 2);
+                preset.ActualWidth = RoundDivision(Math.Round(height / 2), series_num / 2);
+                preset.Width = Math.Round(dpi * preset.ActualWidth / inch);
+                preset.Height = Math.Round(dpi * preset.ActualHeight / inch);
+            }
+            return preset;
+        }
+
+        /// <summary>
+        /// 累積誤差を含む除算
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="N"></param>
+        /// <returns></returns>
+        private double RoundDivision(double value, int N)
+        {
+            for (int i = 0; i < N; i++)
+                value = Math.Floor(value / 2);
+            return value;
+        }
+
+        private void ComboBox_PresetSizeAB_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            PresetAply();
+        }
+
+        private void ComboBox_PresetSize_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            PresetAply();
+        }
+
+        private void ComboBox_PresetDPI_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            PresetAply();
+        }
+
+        private void CheckReadme_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/falxala/Play-Around-with-Images-2#play-around-with-images-2");
+        }
+
+        private void OpenFolder_Click(object sender, MouseButtonEventArgs e)
+        {
+            System.Diagnostics.Process.Start("EXPLORER.EXE", Sub_CnvOption.SaveDirectory);
+        }
+
     }
 }

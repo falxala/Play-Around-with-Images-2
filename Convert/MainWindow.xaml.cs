@@ -680,6 +680,7 @@ namespace PlayAroundwithImages2
         private CancellationTokenSource tokenSource = null;
         private async void Convert_Button_Click(object sender, RoutedEventArgs e)
         {
+            Set_Option();
             Get_MemorySize();
             ImageMagick.ResourceLimits.Memory = FreePhysicalMemory;
 
@@ -860,7 +861,7 @@ namespace PlayAroundwithImages2
             Subwin.Tranceform_toggle.IsOn = false;
             Set_Option();
             //longsideが0ならNONEに
-            if (cnvOption.Size.Width == 0)
+            if (cnvOption.longSide.Width == 0)
             {
                 limit_longside_tb.Text = "Original";
             }
@@ -1110,7 +1111,7 @@ namespace PlayAroundwithImages2
                 if (limit_filesize_tb.Text != "Unlimited")
                     cnvOption.Filesize = Double.Parse(limit_filesize_tb.Text);
                 if (limit_longside_tb.Text != "Original")
-                    cnvOption.Size = new System.Drawing.Size(Int32.Parse(limit_longside_tb.Text), Int32.Parse(limit_longside_tb.Text));
+                    cnvOption.longSide = new System.Drawing.Size(Int32.Parse(limit_longside_tb.Text), Int32.Parse(limit_longside_tb.Text));
 
             }
             catch { }

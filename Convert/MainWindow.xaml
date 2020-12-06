@@ -550,7 +550,7 @@
             </Grid>
             <Grid Grid.Row="2">
                 <ContentControl Margin="10,0,6,37" BorderBrush="Black">
-                    <ListView x:Name="OutputsListView"  ItemContainerStyle="{StaticResource ContainerStyle}" ItemsSource="{Binding}" Grid.ColumnSpan="2" Background="#FF646464" BorderBrush="Black" BorderThickness="1" Foreground="White" SelectionChanged="OutputsListView_SelectionChanged" LostFocus="OutputsListView_LostFocus" PreviewMouseDoubleClick="OutputsListView_PreviewMouseDoubleClick" PreviewMouseDown="OutputsListView_PreviewMouseDown">
+                    <ListView x:Name="OutputsListView"  ItemContainerStyle="{StaticResource ContainerStyle}" ItemsSource="{Binding}" Grid.ColumnSpan="2" Background="#FF646464" BorderBrush="Black" BorderThickness="1" Foreground="White" SelectionChanged="OutputsListView_SelectionChanged" LostFocus="OutputsListView_LostFocus" PreviewMouseDoubleClick="OutputsListView_PreviewMouseDoubleClick" PreviewMouseDown="OutputsListView_PreviewMouseDown" Cursor="Hand">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn DisplayMemberBinding="{Binding Path=Number}">
@@ -594,7 +594,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition x:Name="row1" Height="200*" MinHeight="100"/>
                     <RowDefinition Height="auto" MinHeight="8"/>
-                    <RowDefinition x:Name="row2" Height="360*" MinHeight="60"/>
+                    <RowDefinition x:Name="row2" Height="360*" MinHeight="5"/>
                 </Grid.RowDefinitions>
 
                 <Path Stroke="Red" StrokeThickness="100" Data="M5,100"/>
