@@ -68,7 +68,13 @@
   -  Jpeg, Png, Webp, Bmp, Gif, Tiff, Ai, Psd, Ico, Eps, EXR, HDR
 
 ## インストール/起動
-[リリースページ](https://github.com/falxala/Play-Around-with-Images-2/releases)から最新バージョンのZIPファイルをダウンロードし任意の場所に展開，exeファイルを実行
+[リリースページ](https://github.com/falxala/Play-Around-with-Images-2/releases)から最新バージョンのZIPファイルをダウンロードし任意の場所に展開，exeファイルを実行します
+どこに配置しても問題ありませんが以下のファイルを同じフォルダ内に置いてください．（ZIPファイルをそのまま展開すると同じ構成になります）
+[ファイル構成]
+PAWI2
+├ gs　[フォルダ]（Ghostscript同梱版のみ）
+├ Magick.Native-Q16-HDRI-OpenMP-x64.dll [ファイル]
+└ PlayAroundwithImages2.exe [ファイル]
 
 ## 使い方
 詳しい操作方法については後日更新します
