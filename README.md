@@ -11,6 +11,14 @@
 - Gamma correction
 - Specify the file size (JPEG)
 
+### 目次
+1. [概要](https://github.com/falxala/Play-Around-with-Images-2#%E6%A6%82%E8%A6%81)
+2. [機能](https://github.com/falxala/Play-Around-with-Images-2#%E6%A9%9F%E8%83%BD)
+3. [動作条件](https://github.com/falxala/Play-Around-with-Images-2#%E5%BF%85%E8%A6%81%E6%9D%A1%E4%BB%B6)
+4. [インストール](https://github.com/falxala/Play-Around-with-Images-2#%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%A8%E8%B5%B7%E5%8B%95)
+5. [使い方](https://github.com/falxala/Play-Around-with-Images-2#%E4%BD%BF%E3%81%84%E6%96%B9)
+
+
 
 ### 日本語説明 
 ## 概要
@@ -49,6 +57,12 @@
   - OpenCLサポート（GPU）
   - マルチコアサポートによる複数ファイル同時変換
   - スクリーンショット自動取り込み機能(クリップボードから画像を取得します)
+  
+  #### 対応フォーマット
+  ##### 読み込み
+  -  Jpeg, Png, Webp, HEIC, Bmp, Gif, Tiff, Ai, Psd, Ico, Eps, PDF, EXR, HDR, ZIP(自動展開)
+  ##### 書き出し
+  -  Jpeg, Png, Webp, Bmp, Gif, Tiff, Ai, Psd, Ico, Eps, EXR, HDR
 
  
 ## 必要条件 
@@ -60,12 +74,6 @@
 ## 推奨要件
 - 8GBメモリ
 - 4コア以上のCPU
- 
-## 対応フォーマット
-  #### 読み込み
-  -  Jpeg, Png, Webp, HEIC, Bmp, Gif, Tiff, Ai, Psd, Ico, Eps, PDF, EXR, HDR, ZIP(自動展開)
-  #### 書き出し
-  -  Jpeg, Png, Webp, Bmp, Gif, Tiff, Ai, Psd, Ico, Eps, EXR, HDR
 
 ## インストールと起動
 [リリースページ](https://github.com/falxala/Play-Around-with-Images-2/releases)から最新バージョンのZIPファイルをダウンロードし任意の場所に展開，exeファイルを実行します
