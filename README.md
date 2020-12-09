@@ -57,9 +57,9 @@
   - スクリーンショット自動取り込み機能(クリップボードから画像を取得します)
   
   #### 対応フォーマット  
-   読み込み  
+  ##### 読み込み  
   -  Jpeg, Png, Webp, HEIC, Bmp, Gif, Tiff, Ai, Psd, Ico, Eps, PDF, EXR, HDR, ZIP(自動展開)  
-   書き出し  
+  ##### 書き出し  
   -  Jpeg, Png, Webp, Bmp, Gif, Tiff, Ai, Psd, Ico, Eps, EXR, HDR  
 
  
@@ -75,12 +75,13 @@
 
 ## インストールと起動
 [リリースページ](https://github.com/falxala/Play-Around-with-Images-2/releases)から最新バージョンのZIPファイルをダウンロードし任意の場所に展開，exeファイルを実行します.  
-どこに配置しても問題ありませんが以下のファイルが同じフォルダ内にあるようにしてください．（ZIPファイルをそのまま展開すると同じ構成になります）  
+どこに配置しても問題ありませんがexeとdllの2つのファイルが同じフォルダ内にあるようにしてください．（ZIPファイルをそのまま展開すると同じ構成になります）  
+
 [ファイル構成]  
-PAWI2  
-├ gs [フォルダ]（Ghostscript同梱版のみ）  
-├ Magick.Native-Q16-HDRI-OpenMP-x64.dll [ファイル]  
-└ PlayAroundwithImages2.exe [ファイル]  
+  PAWI2  [フォルダ]  
+    ├ gs [フォルダ]（Ghostscript同梱版のみ）  
+    ├ Magick.Native-Q16-HDRI-OpenMP-x64.dll [ファイル]  
+    └ PlayAroundwithImages2.exe [ファイル]  
 
 ## 使い方
 詳しい操作方法については後日更新します
