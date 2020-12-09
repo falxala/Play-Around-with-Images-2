@@ -19,8 +19,6 @@
 5. [使い方](https://github.com/falxala/Play-Around-with-Images-2#%E4%BD%BF%E3%81%84%E6%96%B9)
 
 
-
-### 日本語説明 
 ## 概要
   本ソフトはイラスト制作で必要な様々な形式をサポートし，かつ簡単な操作で画像を変換することを目的としたソフトです．
   また，先代ソフト"Play Around with Images"の後継ソフトウェアとなります．
@@ -58,11 +56,11 @@
   - マルチコアサポートによる複数ファイル同時変換
   - スクリーンショット自動取り込み機能(クリップボードから画像を取得します)
   
-  #### 対応フォーマット
-  ##### 読み込み
-  -  Jpeg, Png, Webp, HEIC, Bmp, Gif, Tiff, Ai, Psd, Ico, Eps, PDF, EXR, HDR, ZIP(自動展開)
-  ##### 書き出し
-  -  Jpeg, Png, Webp, Bmp, Gif, Tiff, Ai, Psd, Ico, Eps, EXR, HDR
+  #### 対応フォーマット  
+   読み込み  
+  -  Jpeg, Png, Webp, HEIC, Bmp, Gif, Tiff, Ai, Psd, Ico, Eps, PDF, EXR, HDR, ZIP(自動展開)  
+   書き出し  
+  -  Jpeg, Png, Webp, Bmp, Gif, Tiff, Ai, Psd, Ico, Eps, EXR, HDR  
 
  
 ## 必要条件 
@@ -76,7 +74,7 @@
 - 4コア以上のCPU
 
 ## インストールと起動
-[リリースページ](https://github.com/falxala/Play-Around-with-Images-2/releases)から最新バージョンのZIPファイルをダウンロードし任意の場所に展開，exeファイルを実行します
+[リリースページ](https://github.com/falxala/Play-Around-with-Images-2/releases)から最新バージョンのZIPファイルをダウンロードし任意の場所に展開，exeファイルを実行します.  
 どこに配置しても問題ありませんが以下のファイルが同じフォルダ内にあるようにしてください．（ZIPファイルをそのまま展開すると同じ構成になります）  
 [ファイル構成]  
 PAWI2  
