@@ -263,6 +263,9 @@
     <Resource Include="Resources\blend.bat" />
     <None Include="Resources\conditioner.ico" />
     <Resource Include="Resources\sin.png" />
+    <Resource Include="Resources\close.png" />
+    <Resource Include="Resources\Minimize.png" />
+    <Resource Include="Resources\Maximize.png" />
     <Content Include="ToggleSwitch.dll" />
   </ItemGroup>
   <ItemGroup>

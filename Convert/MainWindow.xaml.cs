@@ -1100,7 +1100,7 @@ namespace PlayAroundwithImages2
                 Subwin.Left = point.X;
                 Subwin.Top = point.Y;
 
-                Subwin.Height = this.Height - 8;
+                Subwin.Height = this.Height;
             }
         }
 
@@ -1276,6 +1276,10 @@ namespace PlayAroundwithImages2
             AddFile(false);
         }
 
+        /// <summary>
+        /// ファイルを追加
+        /// </summary>
+        /// <param name="isFolder">フォルダを選択</param>
         private void AddFile(bool isFolder)
         {
             var dialog = new CommonOpenFileDialog
@@ -1391,7 +1395,7 @@ namespace PlayAroundwithImages2
         private System.Windows.Point mousePoint;
         private void ImageControl_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed)
+            if (e.LeftButton == MouseButtonState.Pressed && text_grid.Visibility == Visibility.Hidden)
             {
                 mousePoint.X = e.MouseDevice.GetPosition(this).X - offset_X;
                 mousePoint.Y = e.MouseDevice.GetPosition(this).Y - offset_Y;
@@ -1400,7 +1404,7 @@ namespace PlayAroundwithImages2
 
         private void ImageControl_PreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed)
+            if (e.LeftButton == MouseButtonState.Pressed && text_grid.Visibility == Visibility.Hidden)
             {
                 if (zoomRatio <= 1)
                 {
@@ -1435,11 +1439,10 @@ namespace PlayAroundwithImages2
             row2.Height = new GridLength(370, GridUnitType.Star);
 
         }
-
         private void GridSplitter_MouseDoubleClick_1(object sender, MouseButtonEventArgs e)
         {
             column1.Width = new GridLength(400, GridUnitType.Star);
-            column2.Width = new GridLength(272, GridUnitType.Star);
+            column2.Width = new GridLength(0, GridUnitType.Star);
         }
 
         private void maximize_Click(object sender, RoutedEventArgs e)
@@ -1464,8 +1467,10 @@ namespace PlayAroundwithImages2
 
         private void window_StateChanged(object sender, EventArgs e)
         {
-            //if (this.WindowState == WindowState.Minimized)
-            //    this.ShowInTaskbar = false;
+            if (WindowState == WindowState.Maximized)
+            {
+                WindowState = WindowState.Normal;
+            }
         }
 
         private void TaskbarIcon_TrayLeftMouseDown(object sender, RoutedEventArgs e)
@@ -1630,15 +1635,14 @@ namespace PlayAroundwithImages2
 
         private void OutputsListView_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-
-            if (OutputsListView.SelectedItems.Count == 1)
+            try
             {
-                Open_Folder(OutputsListView);
+                if (OutputsListView.SelectedItems.Count == 1)
+                    Open_Folder(OutputsListView);
+                else
+                    System.Diagnostics.Process.Start(cnvOption.SaveDirectory);
             }
-            else
-            {
-                System.Diagnostics.Process.Start(cnvOption.SaveDirectory);
-            }
+            catch { }
         }
 
         private void Image_ListView_KeyDown(object sender, KeyEventArgs e)
@@ -1654,6 +1658,66 @@ namespace PlayAroundwithImages2
         private void OutputsListView_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             OutputsListView.SelectedIndex = -1;
+        }
+
+
+        private void listview_splitter_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            row1_1.Height = new GridLength(2, GridUnitType.Star);
+            row2_2.Height = new GridLength(0, GridUnitType.Star);
+        }
+
+        private void OnDragMoveWindow(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                if (e.OriginalSource.GetType() != typeof(System.Windows.Controls.Image))
+                {
+                    DragMove();
+                }
+            }
+            catch { }
+        }
+        private void WindowCloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Close();
+            }
+            catch
+            {
+
+            }
+        }
+
+        private void WindowMaximizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (WindowState == WindowState.Maximized)
+                WindowState = WindowState.Normal;
+            else
+            {
+                WindowState = WindowState.Maximized;
+            }
+        }
+
+        private void WindowMinimizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void MenuItem_quit_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void MenuItem_addFie_Click(object sender, RoutedEventArgs e)
+        {
+            AddFile(false);
+        }
+
+        private void MenuItem_addDir_Click(object sender, RoutedEventArgs e)
+        {
+            AddFile(true);
         }
     }
 }

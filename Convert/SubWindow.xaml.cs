@@ -199,14 +199,25 @@ namespace PlayAroundwithImages2
 
         private void ComboBox_extension_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ImageMagick.MagickFormat magickFormat = (ImageMagick.MagickFormat)((ItemSet)ComboBox_extension.SelectedItem).ItemValue;
-            Sub_CnvOption.Format = magickFormat;
-            if (magickFormat != ImageMagick.MagickFormat.Jpg)
-                Mainwin.mask1_.Visibility = Visibility.Visible;
-            else if (!Sub_CnvOption.Passthrough && !Sub_CnvOption.Passthrough)
-                Mainwin.mask1_.Visibility = Visibility.Hidden;
+            ImageMagick.MagickFormat magickFormat = new ImageMagick.MagickFormat();
+            try
+            {
+                magickFormat = (ImageMagick.MagickFormat)((ItemSet)ComboBox_extension.SelectedItem).ItemValue;
+            }
+            catch
+            {
+                magickFormat = ImageMagick.MagickFormat.Jpg;
+            }
+            finally
+            {
+                Sub_CnvOption.Format = magickFormat;
+                if (magickFormat != ImageMagick.MagickFormat.Jpg)
+                    Mainwin.mask1_.Visibility = Visibility.Visible;
+                else if (!Sub_CnvOption.Passthrough && !Sub_CnvOption.Passthrough)
+                    Mainwin.mask1_.Visibility = Visibility.Hidden;
 
-            SetMainCnvOption();
+                SetMainCnvOption();
+            }
         }
 
         /// <summary>

@@ -231,7 +231,10 @@ namespace PlayAroundwithImages2
 
         public void _process(ConvertOptions option, CancellationToken token, MagickImage myMagick)
         {
-
+            if(option.Crop == null)
+            {
+                option.Crop = new int[] { 0, 0, 0, 0 };
+            }
             if ((long)option.Crop[2] * (long)option.Crop[3] > 0)
             {
                 MagickGeometry geometry = new MagickGeometry(option.Crop[0], option.Crop[1], option.Crop[2], option.Crop[3]);

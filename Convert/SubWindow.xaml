@@ -8,7 +8,7 @@
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" 
         x:Class="PlayAroundwithImages2.SubWindow"
         mc:Ignorable="d"
-        Title="Option" Height="600" Width="260" Loaded="Window_Loaded" Closing="Window_Closing" Background="#FF464646" MinWidth="260" MinHeight="570" ShowInTaskbar="False" Icon="Resources/icon.Ico" StateChanged="Window_StateChanged" MouseDown="Window_MouseDown" AllowsTransparency="True" WindowStyle="None" ResizeMode="CanResizeWithGrip" BorderBrush="Black" BorderThickness="0.5" >
+        Title="Option" Height="572" Width="260" Loaded="Window_Loaded" Closing="Window_Closing" Background="#FF464646" MinWidth="260" MinHeight="572" ShowInTaskbar="False" Icon="Resources/icon.Ico" StateChanged="Window_StateChanged" MouseDown="Window_MouseDown" AllowsTransparency="True" WindowStyle="None" ResizeMode="CanResizeWithGrip" BorderBrush="Black" BorderThickness="0.5" >
 
     <Window.Resources>
         <!-- 通常時のボタンの色 -->
