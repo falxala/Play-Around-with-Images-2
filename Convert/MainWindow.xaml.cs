@@ -74,6 +74,9 @@ namespace PlayAroundwithImages2
             cnvOption.Gamma = 1.0;
             cnvOption.SaveDirectory = System.Environment.CurrentDirectory + "\\outputs";
             cnvOption.Transform = false;
+            cnvOption.ColorMode = "Default";
+            cnvOption.Crop = new int[4] { 0, 0, 0, 0 };
+
             Slider1.Value = 5;
             Slider2.Value = 2048;
 
@@ -84,8 +87,6 @@ namespace PlayAroundwithImages2
             Subwin.SendData = cnvOption;
             Subwin.Owner = this;
             Subwin.Mainwin = this;
-
-            cnvOption.Crop = new int[4] { 0, 0, 0, 0 };
 
             preview_model.RenderTransformOrigin_.Value = new System.Windows.Point(0.5, 0.5);
 
@@ -241,15 +242,15 @@ namespace PlayAroundwithImages2
                 //縮小表示
                 if (files.Count >= 0 && Image_ListView.Items.Count == 0)
                 {
-                    Tslider.Value = 110;
+                    Tslider.Value = 80;
                 }
-                if (files.Count >= 10 && Image_ListView.Items.Count == 0)
+                if (files.Count >= 13 && Image_ListView.Items.Count == 0)
                 {
-                    Tslider.Value = 110;
+                    Tslider.Value = 60;
                 }
                 if (files.Count >= 100 && Image_ListView.Items.Count == 0)
                 {
-                    Tslider.Value = 40;
+                    Tslider.Value = 60;
                 }
 
                 //ファイル数制限
@@ -475,7 +476,7 @@ namespace PlayAroundwithImages2
             ///Sender is the required ListBoxItem
         }
 
-        private void buttonDel_Click(object sender, RoutedEventArgs e)
+        private void buttonRemove_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -626,7 +627,11 @@ namespace PlayAroundwithImages2
                             using (var myMagick = new ImageMagick.MagickImage(selected_item.Image_path, myMagickSettings))
                             {
                                 if (cnvOption.GrayScale)
+                                {
+                                    if (ImageMagick.ColorSpace.CMYK == myMagick.ColorSpace)
+                                        myMagick.Negate();
                                     myMagick.Grayscale();
+                                }
                                 if (cnvOption.Gamma != 1)
                                     myMagick.GammaCorrect(cnvOption.Gamma);
                                 MemoryStream ms = new MemoryStream(myMagick.ToByteArray(ImageMagick.MagickFormat.Bmp));
@@ -845,8 +850,8 @@ namespace PlayAroundwithImages2
 
         private void limit_filesize_tb_TextChanged(object sender, TextChangedEventArgs e)
         {
-            //JPEGを選択
-            Subwin.ComboBox_extension.SelectedIndex = 7;
+            //Subwin.SelectJpeg(); //JPEGを選択
+
             Set_Option();
             if (cnvOption.Filesize == 0)
             {
@@ -973,7 +978,7 @@ namespace PlayAroundwithImages2
 
         private void OnDel(object sender, ExecutedRoutedEventArgs e)
         {
-            buttonDel_Click(null, null);
+            buttonRemove_Click(null, null);
         }
 
         private void OnCtrlA(object sender, ExecutedRoutedEventArgs e)
@@ -1135,26 +1140,38 @@ namespace PlayAroundwithImages2
             monitor.Stop();
             monitor.Dispose();
 
-            //スクリーンショットの一時フォルダを削除する
-            System.IO.DirectoryInfo tempdi = new System.IO.DirectoryInfo(TempPath);
-            if (tempdi.Exists)
-                tempdi.Delete(true);
-
-            //削除されなかったmagicktempファイルを削除する
-            string[] magick_TEMP = Directory.GetFiles(Path.GetTempPath(), @"magick*");
-            foreach (var item in magick_TEMP)
+            try
             {
-                System.IO.File.Delete(item);
+                //スクリーンショットの一時フォルダを削除する
+                System.IO.DirectoryInfo tempdi = new System.IO.DirectoryInfo(TempPath);
+                if (tempdi.Exists)
+                    tempdi.Delete(true);
             }
+            catch { }
 
-            //表示されていないインスタンスを表示し閉じる
-            var notShown = Application.Current.Windows.OfType<SubWindow>().SingleOrDefault(w => true);
-            if (notShown != null)
+            try
             {
-                Subwin.Owner = this;
-                Subwin.Mainwin = this;
-                notShown.Hide();
+                //削除されなかったmagicktempファイルを削除する
+                string[] magick_TEMP = Directory.GetFiles(Path.GetTempPath(), @"magick*");
+                foreach (var item in magick_TEMP)
+                {
+                    System.IO.File.Delete(item);
+                }
             }
+            catch { }
+
+            try
+            {
+                //表示されていないインスタンスを表示し閉じる
+                var notShown = Application.Current.Windows.OfType<SubWindow>().SingleOrDefault(w => true);
+                if (notShown != null)
+                {
+                    Subwin.Owner = this;
+                    Subwin.Mainwin = this;
+                    notShown.Hide();
+                }
+            }
+            catch { }
 
         }
 
@@ -1719,5 +1736,7 @@ namespace PlayAroundwithImages2
         {
             AddFile(true);
         }
+
+
     }
 }

@@ -131,6 +131,8 @@ namespace PlayAroundwithImages2
             public int[] Crop { get; set; }
 
             public string BlenderPath { get; set; }
+
+            public string ColorMode { get; set; }
         }
 
         /// <summary>
@@ -155,7 +157,7 @@ namespace PlayAroundwithImages2
 
             var Result = await Task.Run(() =>
             {
-            var myMagickSettings = new ImageMagick.Formats.Jpeg.JpegWriteDefines();
+            var myMagickSettings = new ImageMagick.Formats.JpegWriteDefines();
                 myMagickSettings.Extent = (int)(option.Filesize*1024);
             string outputPath = "";
             string outputDir = option.SaveDirectory + "\\";
@@ -194,20 +196,20 @@ namespace PlayAroundwithImages2
                             break;
                         }
                     }
-                if (option.Format == MagickFormat.Pdf)
+                if (item.Format.ToLower() == "pdf" || item.Format.ToLower() == "ai")
                     using (var myMagicks = new ImageMagick.MagickImageCollection(item.Image_path, myMagicReadkSettings))
                     {
                         for (int i = 0; i < myMagicks.Count; i++)
                         {
-                            ImageMagick.MagickImage myMagick = (ImageMagick.MagickImage)myMagicks[i];
-
-                            _process(option, token, myMagick);
+                            _process(option, token, (MagickImage)myMagicks[i]);
 
                             //「ファイル」へ書き出し  
                             if (i == 0)
-                                myMagick.Write(outputPath, myMagickSettings);
+                                myMagicks[i].Write(outputPath, myMagickSettings);
                             else
-                                myMagick.Write(outputDir + output_Num + output_name + "_" + i + "." + f, myMagickSettings);
+                                myMagicks[i].Write(outputDir + output_Num + output_name + "_" + i + "." + f, myMagickSettings);
+                            
+                            myMagicks[i].Dispose();
 
                             token.ThrowIfCancellationRequested();
                         }
@@ -256,10 +258,6 @@ namespace PlayAroundwithImages2
 
             if (option.BackgroundColor != new ImageMagick.MagickColor("transparent"))
                 myMagick.Alpha(ImageMagick.AlphaOption.Remove);
-
-            //グレースケール
-            if (option.GrayScale)
-                myMagick.Grayscale();
 
             //リサイズ・変形
             if (option.Transform)
@@ -317,6 +315,56 @@ namespace PlayAroundwithImages2
 
             if (option.Gamma != 1)
                 myMagick.Level(new ImageMagick.Percentage(0.0), new ImageMagick.Percentage(100.0), (option.Gamma), ImageMagick.Channels.All);
+
+            if (option.ColorMode != "Inherit")
+            {
+                //「マッチング方法」→「Perceptual」知覚的（Photoshopデフォルト）
+                myMagick.RenderingIntent = ImageMagick.RenderingIntent.Perceptual;
+                //「黒点の補正を使用」
+                myMagick.BlackPointCompensation = true;
+
+                //「ICCプロファイル」が埋め込まれていなければ
+                if (myMagick.GetColorProfile() == null)
+                {
+                    myMagick.SetProfile(ImageMagick.ColorProfile.SRGB);
+                }
+
+                switch (option.ColorMode)
+                {
+                    case "Default":
+                        break;
+
+                    case "CMYK":
+                        //埋め込まれた「ICCプロファイル」（RGB）から
+                        //他の「ICCプロファイル」（CMYK）へ変換
+                        myMagick.SetProfile(ImageMagick.ColorProfile.CoatedFOGRA39);
+                        //「背景」にする(アルファを白くします)
+                        myMagick.ColorAlpha(ImageMagick.MagickColors.White);
+                        break;
+
+                    case "sRGB":
+                        myMagick.SetProfile(ImageMagick.ColorProfile.SRGB);
+                        break;
+
+                    case "Remove":
+                        //プロファイルの削除
+                        myMagick.RemoveProfile("icc");
+                        break;
+
+                    default:
+                        myMagick.SetProfile(new ColorProfile(option.ColorMode));
+                        break;
+                }
+            }
+
+            //グレースケール
+            if (option.GrayScale)
+            {
+                if (ColorSpace.CMYK == myMagick.ColorSpace)
+                    myMagick.Negate();
+                myMagick.Grayscale();
+                myMagick.RemoveProfile("icc");
+            }
 
             token.ThrowIfCancellationRequested();
         }

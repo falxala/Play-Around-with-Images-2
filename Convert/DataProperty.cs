@@ -18,7 +18,13 @@ namespace PlayAroundwithImages2
         public class Outputvalue
         {
             public string Path { get; set; }
-            public string Number { get; set; }
+            public int Number { get; set; }
+            public string Name { get; set; }
+        }
+        public class ColorMode
+        {
+            public string Space { get; set; }
+            public string[] ICC { get; set; }
             public string Name { get; set; }
         }
     }

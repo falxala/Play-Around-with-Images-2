@@ -553,13 +553,10 @@
 
     <Grid Margin="0,35,0,0">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="column1" MinWidth="302" Width="3*"/>
+            <ColumnDefinition x:Name="column1" MinWidth="5" Width="5*"/>
             <ColumnDefinition Width="Auto" MinWidth="7"/>
             <ColumnDefinition x:Name="column2" Width="0*" MinWidth="251"/>
         </Grid.ColumnDefinitions>
-
-
-        <Rectangle Margin="10,0,5,7" Height="25" VerticalAlignment="Bottom" Fill="#FF646464" Stroke="#FF464646"/>
 
         <GridSplitter Grid.Column="1" Margin="1,184,1,173" Background="#FFB8B8B8" MouseDoubleClick="GridSplitter_MouseDoubleClick_1" MinHeight="96" HorizontalAlignment="Stretch"/>
         <Grid>
@@ -591,7 +588,7 @@
 
             <Grid Grid.Row="0">
                 <ContentControl MouseDoubleClick="ContentControl_MouseDoubleClick">
-                    <Grid x:Name="drop_grid" Background="#00000000" Margin="10,60,5,0" DragEnter="Image_ListView_DragEnter" Drop="Image_ListView_Drop" AllowDrop="True">
+                    <Grid x:Name="drop_grid" Background="#00000000" Margin="12,60,6,0" DragEnter="Image_ListView_DragEnter" Drop="Image_ListView_Drop" AllowDrop="True">
                         <Grid.ContextMenu>
                             <ContextMenu>
                                 <MenuItem  Header="Add file" Click="_AddFile"/>
@@ -606,9 +603,9 @@
                     </Grid>
                 </ContentControl>
             </Grid>
-            <Grid x:Name="listview_grid" Grid.Row="2">
+            <Grid x:Name="listview_grid" Grid.Row="2" Margin="11,0,6,0">
                 <ContentControl Margin="10,0,6,37" BorderBrush="Black">
-                    <ListView x:Name="OutputsListView"  ItemContainerStyle="{StaticResource ContainerStyle}" ItemsSource="{Binding}" Grid.ColumnSpan="2" Background="#FF646464" BorderBrush="Black" BorderThickness="1" Foreground="White" SelectionChanged="OutputsListView_SelectionChanged" LostFocus="OutputsListView_LostFocus" PreviewMouseDoubleClick="OutputsListView_PreviewMouseDoubleClick" PreviewMouseDown="OutputsListView_PreviewMouseDown" Cursor="Hand">
+                    <ListView x:Name="OutputsListView"  ItemContainerStyle="{StaticResource ContainerStyle}" ItemsSource="{Binding}" Grid.ColumnSpan="2" Background="#FF646464" BorderBrush="Black" BorderThickness="1" Foreground="White" SelectionChanged="OutputsListView_SelectionChanged" LostFocus="OutputsListView_LostFocus" PreviewMouseDoubleClick="OutputsListView_PreviewMouseDoubleClick" PreviewMouseDown="OutputsListView_PreviewMouseDown" Cursor="Hand" Margin="-11,0,-7,0">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn DisplayMemberBinding="{Binding Path=Number}">
@@ -624,6 +621,19 @@
                         </ListView.View>
                     </ListView>
                 </ContentControl>
+                <Rectangle Height="32" VerticalAlignment="Bottom" Fill="#FF646464" Stroke="#FF464646" Margin="-1,0,1,3" RadiusY="5.125" RadiusX="5.125"/>
+                <Grid Margin="0,0,3,5" Height="28" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="96">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="9*"/>
+                        <ColumnDefinition Width="7*"/>
+                        <ColumnDefinition Width="9*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="{Binding SelectedItems.Count, ElementName=Image_ListView}" ContentStringFormat="{}{0:N0}" Background="#00000000" Foreground="White" HorizontalContentAlignment="Center" FontSize="16" VerticalContentAlignment="Center" Margin="-1,-3,1,3"/>
+                    <Label Content="{Binding Items.Count, ElementName=Image_ListView}" ContentStringFormat="{}{0:N0}" Background="#00000000" Foreground="White" HorizontalContentAlignment="Center" FontSize="16" Grid.Column="1" VerticalContentAlignment="Center" Margin="26,-3,1,3" Grid.ColumnSpan="2"/>
+                    <Label Content="of" Background="#00000000" Foreground="White" HorizontalContentAlignment="Center" FontSize="16" VerticalContentAlignment="Center" Margin="34,-3,1,3" Grid.ColumnSpan="2"/>
+                </Grid>
+                <Slider x:Name="Tslider" HorizontalAlignment="Left" Margin="0,0,0,10" Width="120" Minimum="30" Maximum="500" Height="18" VerticalAlignment="Bottom" Value="150" SmallChange="1" PreviewMouseDoubleClick="Tslider_PreviewMouseDoubleClick" PreviewMouseWheel="Tslider_PreviewMouseWheel" Background="#FF646464"/>
+                <Label Content="{Binding Value, ElementName=Tslider}" ContentStringFormat="{}{0:N0} px" HorizontalAlignment="Left" Margin="120,0,0,11" Background="#FF646464" Foreground="White" Height="20" VerticalAlignment="Bottom" FontSize="16" Width="58" Padding="5,0" ScrollViewer.CanContentScroll="True"/>
             </Grid>
             <Grid.RowDefinitions>
                 <RowDefinition x:Name="row1_1" MinHeight="200"/>
@@ -634,15 +644,13 @@
 
         <WpfControlLibrary:ToggleSwitch x:Name="Multiple_toggle" HorizontalAlignment="Left" Height="22" Margin="10,5,0,0" VerticalAlignment="Top" Width="45" PreviewMouseDown="ToggleSwitch_PreviewMouseDown" Duration="0.1" CircleBorderColor="White" CircleBackgroundColor="#FF464646" TrackBackgroundOnColor="#FFFFA63B"/>
         <Label Content="Multiple" HorizontalAlignment="Left" Margin="55,0,0,0" VerticalAlignment="Top" Foreground="White" FontWeight="Bold" FontSize="14" Height="31" Width="63"/>
-        <Slider x:Name="Tslider" HorizontalAlignment="Left" Margin="10,0,0,10" Width="150" Minimum="30" Maximum="500" Height="18" VerticalAlignment="Bottom" Value="150" SmallChange="1" PreviewMouseDoubleClick="Tslider_PreviewMouseDoubleClick" PreviewMouseWheel="Tslider_PreviewMouseWheel"/>
-        <Label Content="{Binding Value, ElementName=Tslider}" ContentStringFormat="{}{0:N0} px" HorizontalAlignment="Left" Margin="160,0,0,8" Background="#00000000" Foreground="White" Height="26" VerticalAlignment="Bottom" FontSize="14" Width="59"/>
         <Grid Height="28" Margin="135,2,5,0" VerticalAlignment="Top">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="80*"/>
                 <ColumnDefinition Width="80*"/>
                 <ColumnDefinition Width="80*"/>
             </Grid.ColumnDefinitions>
-            <Button x:Name="buttonDel" Style="{StaticResource HoverButtonStyle}" Content="Delete" Margin="2,1,1,0" VerticalAlignment="Top" Click="buttonDel_Click" Foreground="White" Height="26" Grid.Column="2" FontSize="14"/>
+            <Button x:Name="buttonDel" Style="{StaticResource HoverButtonStyle}" Content="Remove" Margin="2,1,1,0" VerticalAlignment="Top" Click="buttonRemove_Click" Foreground="White" Height="26" Grid.Column="2" FontSize="14"/>
             <Button x:Name="Deselect_All_Button" Style="{StaticResource HoverButtonStyle}" Content="Deselect" Margin="2,1,2,0" VerticalAlignment="Top" Click="Deselect_All_Button_Click" Foreground="White" Height="26" RenderTransformOrigin="0.816,0.65" Grid.Column="1" FontSize="14"/>
             <Button x:Name="Select_All_Button" Style="{StaticResource HoverButtonStyle}" Content="Select All" Margin="1,1,2,0" VerticalAlignment="Top" Click="Select_All_Button_Click" Foreground="White" Height="26" FontSize="14"/>
             <Button x:Name="filter_button" Style="{StaticResource HoverButtonStyle}" Content="Fillter" Margin="0,31,1,-26" VerticalAlignment="Top" Foreground="White" Height="23" Grid.Column="2" Click="filter_button_Click" HorizontalAlignment="Right" Width="45" FontSize="14"/>
@@ -742,16 +750,6 @@
             </ComboBox.Background>
         </ComboBox>
         <TextBox x:Name="filterText" Height="23" Margin="135,33,54,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" Background="#FF646464" HorizontalContentAlignment="Center" FontSize="14" TabIndex="0" MaxLines="1" ToolTip="Enter regular expression text" PreviewKeyDown="filterText_PreviewKeyDown"/>
-        <Grid Margin="0,0,5,6" Height="28" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="96">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="9*"/>
-                <ColumnDefinition Width="7*"/>
-                <ColumnDefinition Width="9*"/>
-            </Grid.ColumnDefinitions>
-            <Label Content="{Binding SelectedItems.Count, ElementName=Image_ListView}" ContentStringFormat="{}{0:N0}" Background="#00000000" Foreground="White" HorizontalContentAlignment="Center" FontSize="14" VerticalContentAlignment="Center"/>
-            <Label Content="{Binding Items.Count, ElementName=Image_ListView}" ContentStringFormat="{}{0:N0}" Background="#00000000" Foreground="White" HorizontalContentAlignment="Center" FontSize="14" Grid.Column="2" VerticalContentAlignment="Center"/>
-            <Label Content="of" Background="#00000000" Foreground="White" HorizontalContentAlignment="Center" FontSize="14" VerticalContentAlignment="Center" Grid.Column="1"/>
-        </Grid>
         <Button Style="{StaticResource HoverButtonStyle}" Grid.Column="2" Margin="0,-30,8,0" VerticalAlignment="Top" Click="WindowCloseButton_Click" HorizontalAlignment="Right" Width="30" Height="30" BorderBrush="{x:Null}" Foreground="{x:Null}" Background="{x:Null}">
             <Grid Height="16" Width="16">
                 <Grid.Background>
@@ -773,11 +771,21 @@
                 </Grid.Background>
             </Grid>
         </Button>
-        <Menu VerticalAlignment="Top" Margin="10,-26,254,0" Background="{x:Null}" Foreground="White">
+        <Menu VerticalAlignment="Top" Margin="10,-27,78,0" Background="{x:Null}" Foreground="White" Grid.ColumnSpan="3" Height="21">
             <MenuItem Header="File" FontSize="14" Template="{DynamicResource MenuItemControlTemplate2}" FontWeight="Bold">
                 <MenuItem x:Name="MenuItem_addFie" Header="Add File" FontWeight="Normal" Click="MenuItem_addFie_Click"/>
                 <MenuItem x:Name="MenuItem_addDir" Header="Add Folder" FontWeight="Normal" Click="MenuItem_addDir_Click"/>
                 <MenuItem x:Name="MenuItem_quit" Header="Quit" FontWeight="Normal" Click="MenuItem_quit_Click"/>
+            </MenuItem>
+            <MenuItem Header="ListView" FontSize="14" Template="{DynamicResource MenuItemControlTemplate2}" FontWeight="Bold">
+                <MenuItem x:Name="MenuItem_selectAll" Header="SelectAll" FontWeight="Normal" Click="Select_All_Button_Click" />
+                <MenuItem x:Name="MenuItem_Deselect" Header="Deselect" FontWeight="Normal" Click="Deselect_All_Button_Click"/>
+                <MenuItem x:Name="MenuItem_delete" Header="Remove" FontWeight="Normal" Click="buttonRemove_Click" />
+            </MenuItem>
+            <MenuItem Header="Output" FontSize="14" Template="{DynamicResource MenuItemControlTemplate2}" FontWeight="Bold">
+                <MenuItem x:Name="MenuItem_Run" Header="Run" FontWeight="Normal" Click="Convert_Button_Click" />
+                <MenuItem x:Name="MenuItem_Mode" Header="ChanegeMode" FontWeight="Normal" Click="cahngemode_Button_Click"/>
+                <MenuItem x:Name="MenuItem_Option" Header="Option" FontWeight="Normal" Click="SettingWindow_Button_Click"/>
             </MenuItem>
         </Menu>
         <Label Content="Play Around with Images 2" Margin="216,-37,216,0" VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.ColumnSpan="3" Foreground="Gray" FontSize="16" FontWeight="Bold" Height="31"/>

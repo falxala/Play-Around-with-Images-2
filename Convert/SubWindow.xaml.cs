@@ -29,6 +29,9 @@ namespace PlayAroundwithImages2
     /// </summary>
     public partial class SubWindow : Window
     {
+        //よく使う拡張子だけを抜き出す(enum参照)
+        int[] extLsit = new[] { 18, 63, 78, 85, 111, 179, 184, 185, 193, 229, 230, 248 };
+
         public System.Timers.Timer Timer = new System.Timers.Timer();
         string old_infotext = "";
 
@@ -44,11 +47,24 @@ namespace PlayAroundwithImages2
         public class ItemSet
         {
             // DisplayMemberとValueMemberにはプロパティで指定する
-            public String ItemDisp { get; set; }
-            public object ItemValue { get; set; }
+            public string ItemDisp { get; set; }
+            public int ItemValue { get; set; }
 
             // プロパティをコンストラクタでセット
-            public ItemSet(int v, String s)
+            public ItemSet(int v, string s)
+            {
+                ItemDisp = s;
+                ItemValue = v;
+            }
+        }
+        public class PathItem
+        {
+            // DisplayMemberとValueMemberにはプロパティで指定する
+            public string ItemDisp { get; set; }
+            public string ItemValue { get; set; }
+
+            // プロパティをコンストラクタでセット
+            public PathItem(string v, string s)
             {
                 ItemDisp = s;
                 ItemValue = v;
@@ -64,10 +80,6 @@ namespace PlayAroundwithImages2
             ComboBox_backgroundColor.Items.Add("Black");
             ComboBox_backgroundColor.SelectedIndex = 0;
 
-            //var a = System.AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\');
-            //よく使う拡張子だけを抜き出す(enum参照)
-            var extLsit = new[] { 6, 17, 53, 62, 74, 81, 90, 106, 172, 177, 178, 186, 221, 223, 240 };
-
             //コンボボックスに拡張子名と値をセット
             foreach (var Value in Enum.GetValues(typeof(ImageMagick.MagickFormat)))
             {
@@ -82,7 +94,23 @@ namespace PlayAroundwithImages2
             }
 
             ComboBox_extension.DisplayMemberPath = "ItemDisp";
-            ComboBox_extension.SelectedIndex = 7;
+            SelectJpeg();//Jpgを選択
+            ComboBox_ColorMode.Items.Add(new PathItem("Default", "Default"));
+            ComboBox_ColorMode.Items.Add(new PathItem("Remove","Remove"));
+            ComboBox_ColorMode.Items.Add(new PathItem("sRGB", ImageMagick.ColorProfile.SRGB.Description));
+            ComboBox_ColorMode.Items.Add(new PathItem("CMYK", ImageMagick.ColorProfile.CoatedFOGRA39.Description));
+            try
+            {
+                IEnumerable<string> files = Directory.EnumerateFiles(@"ICC", "*.icc", SearchOption.AllDirectories);
+                foreach (var icc in files)
+                {
+                    ComboBox_ColorMode.Items.Add(new PathItem(icc,Path.GetFileNameWithoutExtension(icc)));
+                }
+            }
+            catch { }
+            ComboBox_ColorMode.DisplayMemberPath = "ItemDisp";
+            ComboBox_ColorMode.SelectedIndex = 0;
+
 
             //GPUをコンボボックスにセット
             ComboBox_GPU.Items.Add("Disable");
@@ -138,6 +166,8 @@ namespace PlayAroundwithImages2
             Sub_CnvOption.Quality = 75;
             Rotate_TextBox.Text = "0";
             Sub_CnvOption.Rotate = 0;
+            Sub_CnvOption.DPI = 350;
+            Sub_CnvOption.Rotate = 0;
             Sub_CnvOption.Crop = new int[4] { 0, 0, 0, 0 };
             x.Text = "0";
             y.Text = "0";
@@ -145,6 +175,14 @@ namespace PlayAroundwithImages2
             height.Text = "0";
         }
 
+        public void SelectJpeg()
+        {
+            foreach (ItemSet Value in ComboBox_extension.Items)
+            {
+                if (Value.ItemDisp == "Jpg")
+                    ComboBox_extension.SelectedIndex = Array.IndexOf(extLsit, Value.ItemValue);
+            }
+        }
         private void check_Resources()
         {
             ResourcesThreadTxt.Text = ImageMagick.ResourceLimits.Thread.ToString() + " (AUTO)";
@@ -203,6 +241,27 @@ namespace PlayAroundwithImages2
             try
             {
                 magickFormat = (ImageMagick.MagickFormat)((ItemSet)ComboBox_extension.SelectedItem).ItemValue;
+
+                switch (magickFormat)
+                {
+                    case  ImageMagick.MagickFormat.Jpg:
+                        Quality_Border.IsEnabled = true;
+                        break;
+
+                    case ImageMagick.MagickFormat.Png:
+                        Quality_Border.IsEnabled = true;
+                        break;
+                    case ImageMagick.MagickFormat.Png64:
+                        Quality_Border.IsEnabled = true;
+                        break;
+                    case ImageMagick.MagickFormat.Png8:
+                        Quality_Border.IsEnabled = true;
+                        break;
+
+                    default:
+                        Quality_Border.IsEnabled = false;
+                        break;
+                }
             }
             catch
             {
@@ -1093,5 +1152,10 @@ namespace PlayAroundwithImages2
             System.Diagnostics.Process.Start("EXPLORER.EXE", Sub_CnvOption.SaveDirectory);
         }
 
+        private void ComboBox_ColorMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Sub_CnvOption.ColorMode = ((PathItem)ComboBox_ColorMode.SelectedItem).ItemValue;
+            SetMainCnvOption();
+        }
     }
 }
