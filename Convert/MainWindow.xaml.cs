@@ -21,6 +21,7 @@ using System.IO.Compression;
 using System.ComponentModel;
 using System.Diagnostics;
 using static PlayAroundwithImages2.DataProperty;
+using System.Windows.Media;
 
 namespace PlayAroundwithImages2
 {
@@ -134,8 +135,9 @@ namespace PlayAroundwithImages2
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ClipboardMonitor_changed(object sender, EventArgs e)
+        private async void ClipboardMonitor_changed(object sender, EventArgs e)
         {
+            await Task.Delay(200);
             CopyFromClipboard(true);
         }
 
@@ -174,7 +176,11 @@ namespace PlayAroundwithImages2
             {
                 PasteData pasteData = new PasteData();
                 if (e.Data.GetDataPresent("UniformResourceLocator"))
+                {
+                    //pasteData.url = e.Data.GetData(DataFormats.Text).ToString();
                     throw new Exception("URL非対応");
+                }
+
                 pasteData.data = e.Data;
                 ListviewDropPaste(pasteData);
 
@@ -310,12 +316,14 @@ namespace PlayAroundwithImages2
 
             if (pasteData.path != null)
                 ListviewFileLoad(new string[] { pasteData.path });
-            else
+            else if(pasteData.url == null)
             {
-
                 //ドロップアイテム全てのパスを取得
                 string[] dropItemPath = (string[])pasteData.data.GetData(DataFormats.FileDrop, false);
                 ListviewFileLoad(dropItemPath);
+            }
+            else
+            {
 
             }
         }
@@ -612,7 +620,34 @@ namespace PlayAroundwithImages2
                             source.BeginInit();
                             source.UriSource = new Uri(selected_item.Image_path);
                             source.EndInit();
-                            preview_image.Source = source;
+                            /**/
+                            BitmapFrame frame = BitmapFrame.Create(new Uri(selected_item.Image_path), BitmapCreateOptions.DelayCreation, BitmapCacheOption.Default);
+                            var bmData = (BitmapMetadata)frame.Metadata;
+                            var tb = new TransformedBitmap();
+                            tb.BeginInit();
+                            tb.Source = source;
+                            if (bmData != null)
+                            {
+                                var val = bmData.GetQuery("/app1/ifd/exif:{uint=274}").ToString();
+                                switch (int.Parse(val))
+                                {
+                                    case 1:
+                                        preview_image.Source = source;
+                                        break;
+                                    case 3:
+                                        tb.Transform = new RotateTransform(180);
+                                        break;
+                                    case 6:
+                                        tb.Transform = new RotateTransform(90);
+                                        break;
+                                    case 8:
+                                        tb.Transform = new RotateTransform(270);
+                                        break;
+                                }
+                            }
+                            tb.EndInit();
+                            preview_image.Source = tb;/**/
+                            //preview_image.Source = source;
                         }
                         catch
                         {
@@ -626,6 +661,7 @@ namespace PlayAroundwithImages2
 
                             using (var myMagick = new ImageMagick.MagickImage(selected_item.Image_path, myMagickSettings))
                             {
+                                myMagick.AutoOrient();
                                 if (cnvOption.GrayScale)
                                 {
                                     if (ImageMagick.ColorSpace.CMYK == myMagick.ColorSpace)
@@ -716,6 +752,11 @@ namespace PlayAroundwithImages2
                 if (Image_ListView.SelectedItems.Count <= 0)
                 {
                     throw new MyException("アイテムが選択されていません");
+                }
+
+                if (!Directory.Exists(cnvOption.SaveDirectory))
+                {
+                    Directory.CreateDirectory(cnvOption.SaveDirectory);
                 }
 
                 Process_Image process_Image = new Process_Image();
@@ -855,6 +896,7 @@ namespace PlayAroundwithImages2
             Set_Option();
             if (cnvOption.Filesize == 0)
             {
+                cnvOption.Filesize = 1000;
                 limit_filesize_tb.Text = "Unlimited";
             }
         }
@@ -1465,8 +1507,8 @@ namespace PlayAroundwithImages2
         private void maximize_Click(object sender, RoutedEventArgs e)
         {
             row1.Height = new GridLength(100, GridUnitType.Star);
-            row2.Height = new GridLength(1, GridUnitType.Star);
-            column1.Width = new GridLength(1, GridUnitType.Star);
+            row2.Height = new GridLength(0, GridUnitType.Star);
+            column1.Width = new GridLength(0, GridUnitType.Star);
             column2.Width = new GridLength(100, GridUnitType.Star);
         }
 
@@ -1484,9 +1526,9 @@ namespace PlayAroundwithImages2
 
         private void window_StateChanged(object sender, EventArgs e)
         {
-            if (WindowState == WindowState.Maximized)
+            //if (WindowState == WindowState.Maximized)
             {
-                WindowState = WindowState.Normal;
+                //WindowState = WindowState.Normal;
             }
         }
 
@@ -1507,6 +1549,7 @@ namespace PlayAroundwithImages2
                 limit_filesize_tb.Text = cnvOption.Filesize.ToString("0.00");
                 if (cnvOption.Filesize == 0)
                 {
+                    cnvOption.Filesize = 1000;
                     limit_filesize_tb.Text = "Unlimited";
                 }
             }
@@ -1737,6 +1780,38 @@ namespace PlayAroundwithImages2
             AddFile(true);
         }
 
+        private void Label_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            WindowState = WindowState.Normal;
+        }
 
+        private void WindowMaximumButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (WindowState == WindowState.Normal)
+                WindowState = WindowState.Maximized;
+            else
+                WindowState = WindowState.Normal;
+        }
+
+        private void ImageControl_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed && text_grid.Visibility == Visibility.Hidden)
+            {
+                mousePoint.X = e.MouseDevice.GetPosition(this).X - offset_X;
+                mousePoint.Y = e.MouseDevice.GetPosition(this).Y - offset_Y;
+            }
+        }
+
+        private void PreviousButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (Image_ListView.SelectedIndex >= 1)
+                Image_ListView.SelectedIndex = Image_ListView.SelectedIndex - 1;
+        }
+
+        private void NextButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (Image_ListView.Items.Count > Image_ListView.SelectedIndex)
+                Image_ListView.SelectedIndex = Image_ListView.SelectedIndex + 1;
+        }
     }
 }

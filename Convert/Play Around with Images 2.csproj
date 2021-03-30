@@ -37,7 +37,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>false</DebugSymbols>
     <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -182,6 +182,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ClipboardMonitor.cs" />
+    <Compile Include="ColorMatrix.cs" />
     <Compile Include="Content.cs" />
     <Compile Include="Converters\RotateConverter.cs" />
     <Compile Include="DataProperty.cs" />
@@ -279,6 +280,10 @@
     <Resource Include="Resources\close.png" />
     <Resource Include="Resources\Minimize.png" />
     <Resource Include="Resources\Maximize.png" />
+    <None Include="Resources\previous.png" />
+    <None Include="Resources\next.png" />
+    <Resource Include="next.png" />
+    <Resource Include="previous.png" />
     <Content Include="ToggleSwitch.dll" />
   </ItemGroup>
   <ItemGroup>

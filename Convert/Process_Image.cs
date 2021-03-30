@@ -38,7 +38,7 @@ namespace PlayAroundwithImages2
 
             using (var myMagick = new ImageMagick.MagickImage(imagePath, myMagickSettings))
             {
-
+                myMagick.AutoOrient();
                 myMagick.Strip();
                 myMagick.Thumbnail(255, 255);
                 var source = new BitmapImage();
@@ -133,6 +133,8 @@ namespace PlayAroundwithImages2
             public string BlenderPath { get; set; }
 
             public string ColorMode { get; set; }
+
+            public bool ColorSeparation { get; set; }
         }
 
         /// <summary>
@@ -152,34 +154,44 @@ namespace PlayAroundwithImages2
                 string destinationPath = option.SaveDirectory + "\\" + System.IO.Path.GetFileName(item.Image_path);
                 Console.WriteLine(destinationPath);
                 file.CopyTo(destinationPath);
+
+                DateTime LastWriteTime, CreationTime;
+                //更新日時の取得
+                LastWriteTime = System.IO.File.GetLastWriteTime(item.Image_path);
+                //作成日時の取得
+                CreationTime = System.IO.File.GetCreationTime(item.Image_path);
+                //作成・更新日時の設定
+                File.SetCreationTime(destinationPath, CreationTime);
+                File.SetLastWriteTime(destinationPath, LastWriteTime);
+
                 return (destinationPath);
             }
 
             var Result = await Task.Run(() =>
             {
-            var myMagickSettings = new ImageMagick.Formats.JpegWriteDefines();
-                myMagickSettings.Extent = (int)(option.Filesize*1024);
-            string outputPath = "";
-            string outputDir = option.SaveDirectory + "\\";
-            Directory.CreateDirectory(outputDir);
+                var myMagickSettings = new ImageMagick.Formats.JpegWriteDefines();
+                myMagickSettings.Extent = (int)(option.Filesize * 1024);
+                string outputPath = "";
+                string outputDir = option.SaveDirectory + "\\";
+                Directory.CreateDirectory(outputDir);
 
-            string output_Num = "Cnv_";
-            string output_name = System.IO.Path.GetFileNameWithoutExtension(item.Image_path);
+                string output_Num = "Cnv";
+                string output_name = System.IO.Path.GetFileNameWithoutExtension(item.Image_path);
 
-            //PDF、EPS、AIのラスタライズ時の設定
-            var myMagicReadkSettings = new ImageMagick.MagickReadSettings();
-            //ラスタライズ時ICCプロファイル
-            myMagicReadkSettings.ColorSpace = ImageMagick.ColorSpace.sRGB;
-            //ラスタライズ時解像度
-            myMagicReadkSettings.Density = new ImageMagick.Density(option.DPI);
-            //ラスタライズ時カラータイプ
-            myMagicReadkSettings.ColorType = ImageMagick.ColorType.TrueColor;
+                //PDF、EPS、AIのラスタライズ時の設定
+                var myMagicReadkSettings = new ImageMagick.MagickReadSettings();
+                //ラスタライズ時ICCプロファイル
+                myMagicReadkSettings.ColorSpace = ImageMagick.ColorSpace.sRGB;
+                //ラスタライズ時解像度
+                myMagicReadkSettings.Density = new ImageMagick.Density(option.DPI);
+                //ラスタライズ時カラータイプ
+                myMagicReadkSettings.ColorType = ImageMagick.ColorType.TrueColor;
 
 
-            //ファイル名
-            string f = Regex.Replace(option.Format.ToString().ToLowerInvariant(), "[^a-z]+", string.Empty);
+                //ファイル名
+                string f = Regex.Replace(option.Format.ToString().ToLowerInvariant(), "[^a-z]+", string.Empty);
 
-            outputPath = outputDir + output_Num + output_name + "." + f;
+                outputPath = outputDir +  output_name +"_"+ output_Num + "." + f;
 
                 int Count = 2;
                 if (!option.Overwrite)
@@ -187,8 +199,8 @@ namespace PlayAroundwithImages2
                     {
                         if (!option.Overwrite && File.Exists(outputPath))
                         {
-                            output_Num = "Cnv_" + Count + "_";
-                            outputPath = outputDir + output_Num + output_name + "." + f;
+                            output_Num = "_Cnv" + Count;
+                            outputPath = outputDir + output_name + output_Num + "." + f;
                             Count++;
                         }
                         else
@@ -207,8 +219,8 @@ namespace PlayAroundwithImages2
                             if (i == 0)
                                 myMagicks[i].Write(outputPath, myMagickSettings);
                             else
-                                myMagicks[i].Write(outputDir + output_Num + output_name + "_" + i + "." + f, myMagickSettings);
-                            
+                                myMagicks[i].Write(outputDir + output_name + "_" + output_Num + "_" + i + "." + f, myMagickSettings);
+
                             myMagicks[i].Dispose();
 
                             token.ThrowIfCancellationRequested();
@@ -221,7 +233,43 @@ namespace PlayAroundwithImages2
                     using (var myMagick = new ImageMagick.MagickImage(item.Image_path, myMagicReadkSettings))
                     {
                         _process(option, token, myMagick);
-                        myMagick.Write(outputPath, myMagickSettings);
+
+                        if (option.ColorSeparation == true)
+                        {
+                            var clone = myMagick.Clone();
+                            clone.ColorMatrix(new ImageMagick.MagickColorMatrix(6, ColorMatrix.Elemets.RC));
+                            clone.Write(outputDir + output_name + output_Num + "_RC"+"." + f, myMagickSettings);
+
+                            clone = myMagick.Clone();
+                            clone.ColorMatrix(new ImageMagick.MagickColorMatrix(6, ColorMatrix.Elemets.GM));
+                            clone.Write(outputDir + output_name + output_Num + "_GM" + "." + f, myMagickSettings);
+
+                            clone = myMagick.Clone();
+                            clone.ColorMatrix(new ImageMagick.MagickColorMatrix(6, ColorMatrix.Elemets.BY));
+                            clone.Write(outputDir + output_name + output_Num + "_BY" + "." + f, myMagickSettings);
+
+                            if (myMagick.ColorSpace == ColorSpace.CMYK)
+                            {
+                                clone = myMagick.Clone();
+                                clone.ColorMatrix(new ImageMagick.MagickColorMatrix(6, ColorMatrix.Elemets.Bk));
+                                clone.Write(outputDir + output_name + output_Num + "_Bk" + "." + f, myMagickSettings);
+                            }
+
+                            token.ThrowIfCancellationRequested();
+                            return outputPath;
+                        }
+                        else
+                            myMagick.Write(outputPath, myMagickSettings);
+
+                        DateTime LastWriteTime, CreationTime;
+                        //更新日時の取得
+                        LastWriteTime = System.IO.File.GetLastWriteTime(item.Image_path);
+                        //作成日時の取得
+                        CreationTime = System.IO.File.GetCreationTime(item.Image_path);
+                        //作成・更新日時の設定
+                        File.SetCreationTime(outputPath, CreationTime);
+                        File.SetLastWriteTime(outputPath, LastWriteTime);
+
                         token.ThrowIfCancellationRequested();
                         return outputPath;
                     }
@@ -233,7 +281,8 @@ namespace PlayAroundwithImages2
 
         public void _process(ConvertOptions option, CancellationToken token, MagickImage myMagick)
         {
-            if(option.Crop == null)
+            //myMagick.AutoOrient();
+            if (option.Crop == null)
             {
                 option.Crop = new int[] { 0, 0, 0, 0 };
             }
@@ -244,7 +293,7 @@ namespace PlayAroundwithImages2
             }
             myMagick.Format = option.Format;
 
-            //quality = 0は75になる
+            //quality
             myMagick.Quality = ++option.Quality;
 
             myMagick.BackgroundColor = option.BackgroundColor;
@@ -365,6 +414,7 @@ namespace PlayAroundwithImages2
                 myMagick.Grayscale();
                 myMagick.RemoveProfile("icc");
             }
+
 
             token.ThrowIfCancellationRequested();
         }

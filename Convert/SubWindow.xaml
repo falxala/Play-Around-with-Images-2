@@ -678,7 +678,13 @@
                             <TextBox x:Name="height" Height="22" Margin="170,56,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" MaxLines="1" TextChanged="crop_TextChanged" Background="#FF646464" Foreground="White" HorizontalAlignment="Left" Width="50" BorderBrush="#FFAF9EB9" FontSize="14"/>
                         </Grid>
                     </Border>
-                    <TextBox x:Name="Info_TextBox" Margin="0,154,0,23" TextWrapping="Wrap" Background="#FF515151" Foreground="#FF0AE6BE" VerticalScrollBarVisibility="Auto"/>
+                    <TextBox x:Name="Info_TextBox" Margin="0,203,0,23" TextWrapping="Wrap" Background="#FF515151" Foreground="#FF0AE6BE" VerticalScrollBarVisibility="Auto"/>
+                    <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="44" Margin="0,154,0,0" VerticalAlignment="Top" Width="242">
+                        <Grid>
+                            <ToggleSwitch:ToggleSwitch x:Name="ColorSeparation_toggle" Height="24" Margin="0,10,10,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" HorizontalAlignment="Right" Width="40" Cursor="Cross" PreviewMouseDown="ColorSeparation_toggle_PreviewMouseDown"/>
+                            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" Height="20" Margin="10,10,0,0" FontSize="14" FontWeight="Bold"><Run Text="色"/><Run Text="分解"/></TextBlock>
+                        </Grid>
+                    </Border>
 
                 </Grid>
             </TabItem>

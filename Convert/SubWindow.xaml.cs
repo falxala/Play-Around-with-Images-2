@@ -149,7 +149,7 @@ namespace PlayAroundwithImages2
             }
 
 
-            for (int i = 1; i <= Mainwin.CpuCount * 2; i++)
+            for (int i = 1; i <= Mainwin.CpuCount; i++)
             {
                 ComboBox_CPU.Items.Add(i);
                 ComboBox_CPU.SelectedIndex = Mainwin.DegreeOfParallelism - 1;
@@ -1048,6 +1048,12 @@ namespace PlayAroundwithImages2
                     Sub_CnvOption.BlenderPath = null;
                 SetMainCnvOption();
             }
+        }
+
+        private void ColorSeparation_toggle_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Sub_CnvOption.ColorSeparation = !ColorSeparation_toggle.IsOn;
+            SetMainCnvOption();
         }
 
         System.Windows.Size A0 = new System.Windows.Size(841, 1189);
