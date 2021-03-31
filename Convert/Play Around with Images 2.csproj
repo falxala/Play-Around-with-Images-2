@@ -37,7 +37,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>false</DebugSymbols>
     <DebugType>none</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -271,6 +271,7 @@
     <Resource Include="Resources\Folder.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="TopMost.png" />
     <Resource Include="Resources\icon.Ico" />
     <Resource Include="Resources\noimage.png" />
     <Resource Include="Resources\3737.png" />
@@ -284,6 +285,7 @@
     <None Include="Resources\next.png" />
     <Resource Include="next.png" />
     <Resource Include="previous.png" />
+    <None Include="Resources\TopMost.png" />
     <Content Include="ToggleSwitch.dll" />
   </ItemGroup>
   <ItemGroup>

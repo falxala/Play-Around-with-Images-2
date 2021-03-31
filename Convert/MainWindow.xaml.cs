@@ -1408,8 +1408,12 @@ namespace PlayAroundwithImages2
             //double centerY = e.MouseDevice.GetPosition(ImageControl).Y / ImageControl.RenderSize.Height - (oldY / 2);
             //preview_model.RenderTransformOrigin_.Value = new System.Windows.Point(centerX, centerY);
 
+            System.Windows.Point d = ImageControl.TranslatePoint(new System.Windows.Point(0, 0), this);
+            d.X = e.GetPosition(this).X - d.X;
+            d.Y = e.GetPosition(this).Y - d.Y;
+            var Xratio = d.X/ImageControl.ActualWidth;
+            var Yratio = d.Y / ImageControl.ActualHeight;
             preview_model.RenderTransformOrigin_.Value = new System.Windows.Point(0.5, 0.5);
-
             if (e.Delta > 0)
             {
                 preview_model.Scale_X.Value = preview_model.Scale_X.Value * 1.2;
@@ -1420,7 +1424,7 @@ namespace PlayAroundwithImages2
             {
                 preview_model.Scale_X.Value = preview_model.Scale_X.Value / 1.2;
                 preview_model.Scale_Y.Value = preview_model.Scale_Y.Value / 1.2;
-                zoomRatio = zoomRatio / 1.2;
+                //zoomRatio = zoomRatio / 1.2;
             }
             //oldX = centerX - centerX / zoomRatio;
             //oldY = centerY - centerY / zoomRatio;
@@ -1812,6 +1816,20 @@ namespace PlayAroundwithImages2
         {
             if (Image_ListView.Items.Count > Image_ListView.SelectedIndex)
                 Image_ListView.SelectedIndex = Image_ListView.SelectedIndex + 1;
+        }
+
+        private void WindowTopMost_Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.Topmost == false)
+            {
+                this.Topmost = true;
+                WindowTopMost_Button.BorderBrush = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0xFF, 0xD1, 0x1F, 0x1F));
+            }
+            else
+            {
+                this.Topmost = false;
+                WindowTopMost_Button.BorderBrush = null;
+            }
         }
     }
 }

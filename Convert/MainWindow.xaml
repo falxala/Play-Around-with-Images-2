@@ -31,7 +31,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
-                        <Border x:Name="HoverButtonBorder" BorderThickness="2" BorderBrush="{StaticResource NormalButtonBrush}">
+                        <Border x:Name="HoverButtonBorder" BorderThickness="2" BorderBrush="{TemplateBinding BorderBrush}">
                             <!--" Background="{StaticResource NormalBackgroundBrush}">-->
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
@@ -688,7 +688,7 @@
                     </ContentControl.ContextMenu>
                     <Grid>
                         <Border x:Name="back_border" BorderBrush="Black" BorderThickness="2" ClipToBounds="True" Style="{StaticResource TransparentImageBox}">
-                            <Image x:Name="preview_image" Margin="-1,-1" RenderTransformOrigin="{Binding RenderTransformOrigin_.Value}">
+                            <Image x:Name="preview_image" Margin="-1,-1" RenderTransformOrigin="{Binding RenderTransformOrigin_.Value}" ClipToBounds="True">
                                 <Image.RenderTransform>
                                     <TransformGroup>
                                         <ScaleTransform ScaleX="{Binding Scale_X.Value}" ScaleY="{Binding Scale_Y.Value}" CenterX="{Binding Center_X.Value}" CenterY="{Binding Center_Y.Value}"/>
@@ -714,7 +714,7 @@
                     </Border>
                 </Grid>
                 <Grid Margin="5,0,3,0" Grid.Row="2" Height="186" VerticalAlignment="Bottom" Background="#FF464646">
-                    <Button x:Name="Convert_Button" Style="{StaticResource HoverButtonStyle}" Content="CONVERT" Margin="5,0,96,7" FontSize="20" Click="Convert_Button_Click" Height="45" VerticalAlignment="Bottom" Background="#FF999999" Foreground="White" BorderBrush="#FF382F2F" ToolTip="処理を実行します" ToolTipService.InitialShowDelay ="500" BorderThickness="1" RenderTransformOrigin="0.5,0.5" TextOptions.TextHintingMode="Fixed" FontWeight="Bold"/>
+                    <Button x:Name="Convert_Button" Style="{StaticResource HoverButtonStyle}" Content="CONVERT" Margin="5,0,96,7" FontSize="20" Click="Convert_Button_Click" Height="45" VerticalAlignment="Bottom" Background="#FF999999" Foreground="White" BorderBrush="#FF7A7A7A" ToolTip="処理を実行します" ToolTipService.InitialShowDelay ="500" BorderThickness="1" RenderTransformOrigin="0.5,0.5" TextOptions.TextHintingMode="Fixed" FontWeight="Bold"/>
                     <Button x:Name="SettingWindow_Button" Style="{StaticResource HoverButtonStyle}" Margin="0,0,1,7" FontSize="18" Height="45" VerticalAlignment="Bottom" Foreground="White" BorderBrush="#FF404040" Click="SettingWindow_Button_Click" HorizontalAlignment="Right" Width="55" Background="{x:Null}">
                         <ToolTipService.ToolTip>
                             <ToolTip Content="変換設定を開く"/>
@@ -729,7 +729,7 @@
                     <Label Content="Limit File Size (JPG)" Margin="0,0,0,155" FontSize="14" VerticalContentAlignment="Stretch" Height="32" VerticalAlignment="Bottom" Foreground="White" HorizontalAlignment="Left" Width="164" FontWeight="Bold"/>
                     <TextBox x:Name="limit_filesize_tb" Margin="0,0,36,163" TextWrapping="Wrap" Text="5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" TextChanged="limit_filesize_tb_TextChanged" PreviewTextInput="limit_filesize_tb_PreviewTextInput" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="67" Background="#FF646464" Foreground="White" BorderBrush="#FFB6B6B6" PreviewMouseWheel="Slider1_PreviewMouseWheel" PreviewKeyDown="limit_filesize_tb_PreviewKeyDown"/>
                     <Label Content="MB" Margin="0,-1,1,159" FontSize="14" HorizontalContentAlignment="Center" HorizontalAlignment="Right" Width="40" Height="28" VerticalAlignment="Bottom" Foreground="White"/>
-                    <Button x:Name="cahngemode_Button" Style="{StaticResource HoverButtonStyle}" Margin="0,0,61,7" FontSize="20" Height="45" VerticalAlignment="Bottom" Foreground="White" BorderBrush="{x:Null}" ToolTip="モード切替" ToolTipService.InitialShowDelay ="500" BorderThickness="1" RenderTransformOrigin="0.5,0.5" TextOptions.TextHintingMode="Fixed" FontWeight="Bold" HorizontalAlignment="Right" Width="35" Click="cahngemode_Button_Click" Background="{x:Null}">
+                    <Button x:Name="cahngemode_Button" Style="{StaticResource HoverButtonStyle}" Margin="0,0,61,7" FontSize="20" Height="45" VerticalAlignment="Bottom" Foreground="White" BorderBrush="#FF7A7A7A" ToolTip="モード切替" ToolTipService.InitialShowDelay ="500" BorderThickness="1" RenderTransformOrigin="0.5,0.5" TextOptions.TextHintingMode="Fixed" FontWeight="Bold" HorizontalAlignment="Right" Width="35" Click="cahngemode_Button_Click" Background="{x:Null}">
                         <Grid Height="43" Width="31" Background="#FF7A7A7A" UseLayoutRounding="False"/>
                     </Button>
                 </Grid>
@@ -796,14 +796,14 @@
                 </Grid.Background>
             </Grid>
         </Button>
-        <Button x:Name="PreviousButton"  Grid.Column="2" Margin="0,-30,180,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30" Height="30" BorderBrush="{x:Null}" Foreground="{x:Null}" Background="{x:Null}" Click="PreviousButton_Click">
+        <Button x:Name="PreviousButton"  Grid.Column="2" Style="{StaticResource HoverButtonStyle}" Margin="0,-30,215,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30" Height="30" BorderBrush="{x:Null}" Foreground="{x:Null}" Background="{x:Null}" Click="PreviousButton_Click">
             <Grid Height="24" Width="24">
                 <Grid.Background>
                     <ImageBrush ImageSource="previous.png"/>
                 </Grid.Background>
             </Grid>
         </Button>
-        <Button x:Name="NextButton"  Grid.Column="2" Margin="0,-30,145,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30" Height="30" BorderBrush="{x:Null}" Foreground="{x:Null}" Background="{x:Null}" Click="NextButton_Click">
+        <Button x:Name="NextButton"  Grid.Column="2" Style="{StaticResource HoverButtonStyle}" Margin="0,-30,180,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30" Height="30" BorderBrush="{x:Null}" Foreground="{x:Null}" Background="{x:Null}" Click="NextButton_Click">
             <Grid Height="24" Width="24">
                 <Grid.Background>
                     <ImageBrush ImageSource="next.png"/>
@@ -819,6 +819,13 @@
             <TextBox x:Name="filterText" Height="23" Margin="1,0,2,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" Background="#FF646464" HorizontalContentAlignment="Center" FontSize="14" TabIndex="0" MaxLines="1" ToolTip="Enter regular expression text" PreviewKeyDown="filterText_PreviewKeyDown" Grid.ColumnSpan="2"/>
             <Button x:Name="filter_button" Style="{StaticResource HoverButtonStyle}" Content="Fillter" Margin="2,0,0,0" VerticalAlignment="Top" Foreground="White" Height="23" Click="filter_button_Click" FontSize="14" Grid.Column="2"/>
         </Grid>
+        <Button x:Name="WindowTopMost_Button" Style="{StaticResource HoverButtonStyle}" Grid.Column="2" Margin="0,-30,113,0" VerticalAlignment="Top" Click="WindowTopMost_Button_Click" HorizontalAlignment="Right" Width="30" Height="30" BorderBrush="{x:Null}" Foreground="{x:Null}" Background="{x:Null}" BorderThickness="2" ToolTip="常に最前面">
+            <Grid Height="16" Width="16">
+                <Grid.Background>
+                    <ImageBrush ImageSource="TopMost.png"/>
+                </Grid.Background>
+            </Grid>
+        </Button>
         <!--
         <tb:TaskbarIcon IconSource="Resources/icon.ico" ToolTipText="PAI2" TrayLeftMouseDown="TaskbarIcon_TrayLeftMouseDown" />
         -->

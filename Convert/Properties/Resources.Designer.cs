@@ -143,6 +143,16 @@ namespace PlayAroundwithImages2.Properties {
         /// <summary>
         ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
         /// </summary>
+        public static System.Drawing.Bitmap TopMost {
+            get {
+                object obj = ResourceManager.GetObject("TopMost", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        /// </summary>
         public static System.Drawing.Bitmap UnChain {
             get {
                 object obj = ResourceManager.GetObject("UnChain", resourceCulture);
