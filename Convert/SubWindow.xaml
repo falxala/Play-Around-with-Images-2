@@ -646,14 +646,20 @@
                             <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="95" FontSize="14" Foreground="White" Margin="10,10,0,0" RenderTransformOrigin="0.639,0.864" FontWeight="Bold"><Run Text="p"/><Run Text="arallels"/><Run Text=" max"/></TextBlock>
                         </Grid>
                     </Border>
-                    <Button x:Name="CheckUpdate_Button" Style="{StaticResource HoverButtonStyle}" Content="Check Update" Margin="0,276,80.333,0" Foreground="White" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" BorderBrush="White" Click="CheckUpdate_Button_Click" Height="25" VerticalAlignment="Top" FontFamily="Yu Gothic Medium" Background="#FFF1F1F1"/>
+                    <Button x:Name="CheckUpdate_Button" Style="{StaticResource HoverButtonStyle}" Content="Check Update" Margin="0,328,80.333,0" Foreground="White" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" BorderBrush="White" Click="CheckUpdate_Button_Click" Height="25" VerticalAlignment="Top" FontFamily="Yu Gothic Medium" Background="#FFF1F1F1"/>
                     <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="0,226,0,0" VerticalAlignment="Top">
                         <Grid Margin="0,0,0,-1">
                             <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="109" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="10,10,0,0" Text="Imagemagick"/>
                             <Button x:Name="openLocalTemp_Button" Style="{StaticResource HoverButtonStyle}" Content="Open AppLocal" Margin="122.667,10,10,0" Foreground="White" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" BorderBrush="White" Height="25" VerticalAlignment="Top" Click="openLocalTemp_Button_Click"/>
                         </Grid>
                     </Border>
-                    <Button x:Name="CheckReadme" Style="{StaticResource HoverButtonStyle}" Content="Readme" Margin="166.667,276,0,0" Foreground="White" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" BorderBrush="White" Height="25" VerticalAlignment="Top" FontFamily="Yu Gothic Medium" Click="CheckReadme_Click" Cursor="Help"/>
+                    <Button x:Name="CheckReadme" Style="{StaticResource HoverButtonStyle}" Content="Readme" Margin="166.667,328,0,0" Foreground="White" BorderThickness="1" VerticalContentAlignment="Center" Padding="1" HorizontalContentAlignment="Center" UseLayoutRounding="False" FontSize="14" BorderBrush="White" Height="25" VerticalAlignment="Top" FontFamily="Yu Gothic Medium" Click="CheckReadme_Click" Cursor="Help"/>
+                    <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="0,276,0,0" VerticalAlignment="Top">
+                        <Grid Margin="0,0,0,-1">
+                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="22" HorizontalAlignment="Left" Width="128" FontSize="14" Foreground="White" FontFamily="Yu Gothic Medium" Margin="10,10,0,0"><Run Text="ClipBo"/><Run Text="a"/><Run Text="rd"/><Run Text=" Copy"/></TextBlock>
+                            <ToggleSwitch:ToggleSwitch x:Name="ClipBoard_toggle" Height="24" Margin="0,10,10,0" VerticalAlignment="Top" CircleBorderColor="White" CircleBackgroundColor="White" Duration="0.1" TrackBackgroundOnColor="#FF319C3F" HorizontalAlignment="Right" Width="40" PreviewMouseDown="ClipBoard_toggle_PreviewMouseDown"/>
+                        </Grid>
+                    </Border>
                 </Grid>
             </TabItem>
             <TabItem Header="exp." Margin="2,-3,-7,-2" BorderBrush="{x:Null}" Background="#FF464646" Foreground="White" FontSize="14">

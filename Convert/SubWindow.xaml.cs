@@ -30,7 +30,7 @@ namespace PlayAroundwithImages2
     public partial class SubWindow : Window
     {
         //よく使う拡張子だけを抜き出す(enum参照)
-        int[] extLsit = new[] { 18, 63, 78, 85, 111, 179, 184, 185, 193, 229, 230, 248 };
+        int[] extLsit = new[] { 18, 63, 78, 85, 111, 179, 184, 185, 193, 229, 231, 249 };
 
         public System.Timers.Timer Timer = new System.Timers.Timer();
         string old_infotext = "";
@@ -1162,6 +1162,14 @@ namespace PlayAroundwithImages2
         {
             Sub_CnvOption.ColorMode = ((PathItem)ComboBox_ColorMode.SelectedItem).ItemValue;
             SetMainCnvOption();
+        }
+
+        private void ClipBoard_toggle_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (ClipBoard_toggle.IsOn == true)
+                Mainwin.monitor.Stop();
+            else
+                Mainwin.monitor.Start();
         }
     }
 }

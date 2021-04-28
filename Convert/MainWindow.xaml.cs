@@ -36,7 +36,7 @@ namespace PlayAroundwithImages2
         public ObservableCollection<Model.drop_Image> outputs_Images = new ObservableCollection<Model.drop_Image>();
         ViewModel preview_model = new ViewModel();
 
-        ClipboardMonitor monitor;
+        public ClipboardMonitor monitor;
 
         public MainWindow()
         {
@@ -83,7 +83,6 @@ namespace PlayAroundwithImages2
 
             monitor = new ClipboardMonitor(new WindowInteropHelper(this).Handle);
             monitor.ChangeClipboard += ClipboardMonitor_changed;
-            monitor.Start();
 
             Subwin.SendData = cnvOption;
             Subwin.Owner = this;
@@ -1180,6 +1179,7 @@ namespace PlayAroundwithImages2
         {
             //クリップボード監視停止
             monitor.Stop();
+            monitor.Dispose();
             monitor.Dispose();
 
             try

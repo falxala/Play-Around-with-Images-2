@@ -7,7 +7,7 @@
         xmlns:b="clr-namespace:Experiment.Wpf.Behaviors"
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" 
         xmlns:WpfControlLibrary="clr-namespace:WpfControlLibrary;assembly=ToggleSwitch" xmlns:Converters="clr-namespace:PlayAroundwithImages2.Converters" x:Name="window" x:Class="PlayAroundwithImages2.MainWindow"
-        mc:Ignorable="d" Height="580" Width="650" MinWidth="650" Loaded="Window_Loaded" MinHeight="480" Background="#FF464646" LocationChanged="Window_LocationChanged" SizeChanged="Window_SizeChanged" Closing="Window_Closing" Icon="Resources/icon.Ico" ContentRendered="window_ContentRendered" xmlns:tb="http://www.hardcodet.net/taskbar" StateChanged="window_StateChanged"  WindowStyle="None" MouseDown="OnDragMoveWindow">
+        mc:Ignorable="d" Height="580" Width="650" MinWidth="450" Loaded="Window_Loaded" MinHeight="480" Background="#FF464646" LocationChanged="Window_LocationChanged" SizeChanged="Window_SizeChanged" Closing="Window_Closing" Icon="Resources/icon.Ico" ContentRendered="window_ContentRendered" xmlns:tb="http://www.hardcodet.net/taskbar" StateChanged="window_StateChanged"  WindowStyle="None" MouseDown="OnDragMoveWindow">
 
     <WindowChrome.WindowChrome>
         <WindowChrome 
